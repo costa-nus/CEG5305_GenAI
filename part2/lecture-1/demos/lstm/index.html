@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A character LSTM in the browser — CEG5305</title>
+<link rel="stylesheet" href="../../../../assets/css/site.css">
+<style>
+  html, body { height: 100%; }
+  body { font-size: 17px; }
+  main { box-sizing: border-box; height: 100%; max-width: 1100px; margin: 0 auto; padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: .6rem; }
+  h1 { font-size: 1.3rem; margin: 0; }
+  .sub { margin: 0; color: var(--muted); font-size: .92rem; }
+  .bar { display: flex; gap: .6rem; align-items: stretch; }
+  textarea { flex: 1; font: 1.1rem/1.45 var(--font); padding: .45rem .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--text); resize: none; }
+  .bar button { min-width: 8.5em; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 1.2rem; }
+  .row label { display: flex; align-items: center; gap: .45rem; font-size: .9rem; color: var(--muted); }
+  .row output { min-width: 2.2em; font-family: var(--mono); font-size: .88rem; color: var(--text); }
+  #status { font-size: .9rem; color: var(--muted); }
+  #status.err { color: var(--bad); }
+  #out { flex: 1; min-height: 4em; overflow: auto; padding: .6rem .9rem; border: 1px solid var(--line); border-radius: 8px; background: var(--card); font-size: 1.3rem; line-height: 1.5; white-space: pre-wrap; }
+  #out .p { color: var(--muted); }
+  #out .g { color: var(--text); font-weight: 600; background: var(--tint); }
+  #next { font-size: .9rem; color: var(--muted); }
+  #next code { font-size: .95rem; color: var(--text); }
+  /* inside a slide the frame is about 1150 × 250: drop the header, keep the output large */
+  @media (max-height: 460px) {
+    main { padding: .5rem .8rem; gap: .4rem; }
+    header { display: none; }
+    #out { font-size: 1.35rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>A character-level LSTM: continue a text</h1>
+    <p class="sub" id="about">Loading the model…</p>
+  </header>
+  <div class="bar">
+    <textarea id="prompt" rows="1" aria-label="Prompt">The Eiffel Tower is</textarea>
+    <button id="go" class="primary" disabled>Generate</button>
+  </div>
+  <div class="row">
+    <label>Characters to add <input id="len" type="range" min="50" max="500" step="50" value="200"><output id="lenv">200</output></label>
+    <label>Temperature <input id="temp" type="range" min="0" max="1.5" step="0.1" value="0.7"><output id="tempv">0.7</output></label>
+    <span id="status">Loading the model…</span>
+  </div>
+  <div id="out" aria-live="polite"></div>
+  <div id="next"></div>
+</main>
+<script type="module">
+import { loadLSTM, probs, sample } from "./lstm.js";
+
+const $ = id => document.getElementById(id);
+const go = $("go"), status = $("status"), out = $("out");
+let model = null;
+
+for (const [k, v] of [["len", "lenv"], ["temp", "tempv"]]) $(k).addEventListener("input", () => { $(v).value = $(k).value; });
+$("prompt").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!go.disabled) go.click(); } });
+
+function say(msg, err = false) { status.textContent = msg; status.classList.toggle("err", err); }
+const show = c => c === " " ? "space" : c === "\n" ? "new line" : c;
+
+function top5(p) {
+  const idx = [...p.keys()].sort((a, b) => p[b] - p[a]).slice(0, 5);
+  $("next").innerHTML = "Next character, top 5: " + idx.map(i => `<code>${show(model.vocab[i]).replace(/</g, "&lt;")}</code> ${(100 * p[i]).toFixed(0)}%`).join(" · ");
+}
+
+async function generate() {
+  const prompt = $("prompt").value;
+  if (!prompt.trim()) return say("Type a prompt first.", true);
+  const n = +$("len").value, temp = +$("temp").value;
+  go.disabled = true;
+  model.reset();
+  const skipped = model.read(prompt);
+  out.innerHTML = "";
+  const p = document.createElement("span"), g = document.createElement("span");
+  p.className = "p"; g.className = "g"; p.textContent = prompt;
+  out.append(p, g);
+  const t0 = performance.now();
+  let text = "";
+  for (let i = 0; i < n; i++) {
+    const pr = probs(model.logits, temp);
+    top5(pr);
+    const ci = sample(pr);
+    text += model.vocab[ci];
+    model.step(ci);
+    if (i % 3 === 2 || i === n - 1) {        // show the text a few characters at a time
+      g.textContent = text;
+      out.scrollTop = out.scrollHeight;
+      await new Promise(r => setTimeout(r, 12));
+    }
+  }
+  top5(probs(model.logits, temp));
+  const s = (performance.now() - t0) / 1000;
+  say(`${n} characters in ${s.toFixed(1)} s.` + (skipped.length ? ` Skipped characters it never saw: ${[...new Set(skipped)].join(" ")}` : temp > 0 ? " Sampled, so each run differs." : " Temperature 0: always the most likely character."));
+  go.disabled = false;
+}
+
+try {
+  model = await loadLSTM("./");
+  const t = model.meta.trained;
+  const ppl = Math.exp(t.val_nats_per_char).toFixed(1);
+  $("about").textContent = `${model.L} layers of ${model.H} LSTM units, ${model.parameters.toLocaleString()} parameters, reading and writing one character at a time. Trained on Alice's Adventures in Wonderland only; on the last 10% of the book, held out, its perplexity is ${ppl} per character. It runs in this browser.`;
+  say(`Ready. ${model.L}×${model.H} LSTM, ${(model.parameters / 1e6).toFixed(2)}M parameters, trained on Alice. Held-out perplexity ${ppl} per character.`);
+  go.disabled = false;
+} catch (e) { say(`Error: ${e.message}`, true); }
+
+go.addEventListener("click", () => generate().catch(e => { say(`Error: ${e.message}`, true); go.disabled = false; }));
+</script>
+</body>
+</html>

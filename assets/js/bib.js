@@ -1,0 +1,227 @@
+// Course bibliography, one entry per work, rendered in APA 7 style shortened for a
+// slide footer: first author + "et al." from three authors up, and the journal or
+// conference without volume, issue or pages (the link carries the rest). Every URL and every
+// title/author/venue below was checked against the landing page, Crossref or arXiv
+// on 15 Sep 2026 (Lecture 1 session 01) or 16 Sep 2026 (entries added for the other sessions,
+// merged from each session's references/bib_additions.js). brants2007, wu2016, openai2022 and
+// huggingface2025b were added and checked on 29 Sep 2026 (Lecture 1 session 01, slides 5 and 8);
+// hendrycks2021, openai2023, ho2024 and epochai2026 the same day (slide 4, the scaling chart);
+// markov1913 the same day, from Crossref (the Markov-chain slide).
+//
+// Cite in HTML with <a data-ref="key">Author et al.</a>. A slide lists its references
+// in a footer: every data-ref inside it, plus any keys in <section data-refs="…">.
+export const BIB = {
+  markov1913: { a: "Markov, A. A.", y: 1913, t: "An example of statistical investigation of the text Eugene Onegin concerning the connection of samples in chains", v: "English translation in Science in Context, 19(4), 2006", u: "https://doi.org/10.1017/S0269889706001074" },
+  shannon1948: { a: "Shannon, C. E.", y: 1948, t: "A mathematical theory of communication", v: "Bell System Technical Journal", u: "https://doi.org/10.1002/j.1538-7305.1948.tb01338.x" },
+  bradley1952: { a: "Bradley, R. A., & Terry, M. E.", y: 1952, t: "Rank analysis of incomplete block designs: I. The method of paired comparisons", v: "Biometrika", u: "https://doi.org/10.2307/2334029" },
+  elman1990: { a: "Elman, J. L.", y: 1990, t: "Finding structure in time", v: "Cognitive Science", u: "https://doi.org/10.1207/s15516709cog1402_1" },
+  williams1992: { a: "Williams, R. J.", y: 1992, t: "Simple statistical gradient-following algorithms for connectionist reinforcement learning", v: "Machine Learning", u: "https://doi.org/10.1007/BF00992696" },
+  bengio1994: { a: "Bengio, Y., et al.", y: 1994, t: "Learning long-term dependencies with gradient descent is difficult", v: "IEEE Transactions on Neural Networks", u: "https://doi.org/10.1109/72.279181" },
+  hochreiter1997: { a: "Hochreiter, S., & Schmidhuber, J.", y: 1997, t: "Long short-term memory", v: "Neural Computation", u: "https://doi.org/10.1162/neco.1997.9.8.1735" },
+  gers2000: { a: "Gers, F. A., et al.", y: 2000, t: "Learning to forget: Continual prediction with LSTM", v: "Neural Computation", u: "https://doi.org/10.1162/089976600300015015" },
+  bengio2003: { a: "Bengio, Y., et al.", y: 2003, t: "A neural probabilistic language model", v: "Journal of Machine Learning Research", u: "https://www.jmlr.org/papers/v3/bengio03a.html" },
+  brants2007: { a: "Brants, T., et al.", y: 2007, t: "Large language models in machine translation", v: "EMNLP-CoNLL", u: "https://aclanthology.org/D07-1090/" },
+  mikolov2010: { a: "Mikolov, T., et al.", y: 2010, t: "Recurrent neural network based language model", v: "Interspeech", u: "https://www.isca-archive.org/interspeech_2010/mikolov10_interspeech.html" },
+  graves2013: { a: "Graves, A.", y: 2013, t: "Generating sequences with recurrent neural networks", v: "arXiv:1308.0850", u: "https://arxiv.org/abs/1308.0850" },
+  karpathy2014: { a: "Karpathy, A.", y: 2014, t: "RecurrentJS", v: "GitHub", u: "https://github.com/karpathy/recurrentjs", software: true },
+  sutskever2014: { a: "Sutskever, I., et al.", y: 2014, t: "Sequence to sequence learning with neural networks", v: "NeurIPS", u: "https://arxiv.org/abs/1409.3215" },
+  bahdanau2015: { a: "Bahdanau, D., et al.", y: 2015, t: "Neural machine translation by jointly learning to align and translate", v: "ICLR", u: "https://arxiv.org/abs/1409.0473" },
+  ioffe2015: { a: "Ioffe, S., & Szegedy, C.", y: 2015, t: "Batch normalization: Accelerating deep network training by reducing internal covariate shift", v: "ICML", u: "https://arxiv.org/abs/1502.03167" },
+  karpathy2015: { a: "Karpathy, A.", y: 2015, t: "REINFORCEjs", v: "GitHub", u: "https://github.com/karpathy/reinforcejs", software: true },
+  karpathy2015b: { a: "Karpathy, A.", y: 2015, t: "char-rnn", v: "GitHub", u: "https://github.com/karpathy/char-rnn", software: true }, // TinyShakespeare: data/tinyshakespeare/input.txt, checked 29 Sep 2026
+  kingma2015: { a: "Kingma, D. P., & Ba, J.", y: 2015, t: "Adam: A method for stochastic optimization", v: "ICLR", u: "https://arxiv.org/abs/1412.6980" },
+  rumelhart1986: { a: "Rumelhart, D. E., Hinton, G. E., & Williams, R. J.", y: 1986, t: "Learning representations by back-propagating errors", v: "Nature", u: "https://doi.org/10.1038/323533a0" },
+  ba2016: { a: "Ba, J. L., et al.", y: 2016, t: "Layer normalization", v: "arXiv:1607.06450", u: "https://arxiv.org/abs/1607.06450" },
+  he2016: { a: "He, K., et al.", y: 2016, t: "Deep residual learning for image recognition", v: "CVPR", u: "https://arxiv.org/abs/1512.03385" },
+  hendrycks2016: { a: "Hendrycks, D., & Gimpel, K.", y: 2016, t: "Gaussian error linear units (GELUs)", v: "arXiv:1606.08415", u: "https://arxiv.org/abs/1606.08415" },
+  sennrich2016: { a: "Sennrich, R., et al.", y: 2016, t: "Neural machine translation of rare words with subword units", v: "ACL", u: "https://arxiv.org/abs/1508.07909" },
+  wu2016: { a: "Wu, Y., et al.", y: 2016, t: "Google's neural machine translation system: Bridging the gap between human and machine translation", v: "arXiv:1609.08144", u: "https://arxiv.org/abs/1609.08144" },
+  christiano2017: { a: "Christiano, P. F., et al.", y: 2017, t: "Deep reinforcement learning from human preferences", v: "NeurIPS", u: "https://arxiv.org/abs/1706.03741" },
+  oord2017: { a: "van den Oord, A., et al.", y: 2017, t: "Neural discrete representation learning", v: "NeurIPS", u: "https://arxiv.org/abs/1711.00937" },
+  press2017: { a: "Press, O., & Wolf, L.", y: 2017, t: "Using the output embedding to improve language models", v: "EACL", u: "https://arxiv.org/abs/1608.05859" },
+  schulman2017: { a: "Schulman, J., et al.", y: 2017, t: "Proximal policy optimization algorithms", v: "arXiv:1707.06347", u: "https://arxiv.org/abs/1707.06347" },
+  shazeer2017: { a: "Shazeer, N., et al.", y: 2017, t: "Outrageously large neural networks: The sparsely-gated mixture-of-experts layer", v: "ICLR", u: "https://arxiv.org/abs/1701.06538" },
+  vaswani2017: { a: "Vaswani, A., et al.", y: 2017, t: "Attention is all you need", v: "NeurIPS", u: "https://arxiv.org/abs/1706.03762" },
+  fan2018: { a: "Fan, A., et al.", y: 2018, t: "Hierarchical neural story generation", v: "ACL", u: "https://arxiv.org/abs/1805.04833" },
+  gidaris2018: { a: "Gidaris, S., et al.", y: 2018, t: "Unsupervised representation learning by predicting image rotations", v: "ICLR", u: "https://arxiv.org/abs/1803.07728" },
+  gurari2018: { a: "Gurari, D., et al.", y: 2018, t: "VizWiz Grand Challenge: Answering visual questions from blind people", v: "CVPR", u: "https://arxiv.org/abs/1802.08218" },
+  micikevicius2018: { a: "Micikevicius, P., et al.", y: 2018, t: "Mixed precision training", v: "ICLR", u: "https://arxiv.org/abs/1710.03740" },
+  oord2018: { a: "van den Oord, A., et al.", y: 2018, t: "Representation learning with contrastive predictive coding", v: "arXiv:1807.03748", u: "https://arxiv.org/abs/1807.03748" },
+  radford2018: { a: "Radford, A., et al.", y: 2018, t: "Improving language understanding by generative pre-training", v: "OpenAI", u: "https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf" },
+  rohrbach2018: { a: "Rohrbach, A., et al.", y: 2018, t: "Object hallucination in image captioning", v: "EMNLP", u: "https://arxiv.org/abs/1809.02156" },
+  devlin2019: { a: "Devlin, J., et al.", y: 2019, t: "BERT: Pre-training of deep bidirectional Transformers for language understanding", v: "NAACL", u: "https://arxiv.org/abs/1810.04805" },
+  houlsby2019: { a: "Houlsby, N., et al.", y: 2019, t: "Parameter-efficient transfer learning for NLP", v: "ICML", u: "https://arxiv.org/abs/1902.00751" },
+  huang2019: { a: "Huang, Y., et al.", y: 2019, t: "GPipe: Efficient training of giant neural networks using pipeline parallelism", v: "NeurIPS", u: "https://arxiv.org/abs/1811.06965" },
+  kalamkar2019: { a: "Kalamkar, D., et al.", y: 2019, t: "A study of BFLOAT16 for deep learning training", v: "arXiv:1905.12322", u: "https://arxiv.org/abs/1905.12322" },
+  lacoste2019: { a: "Lacoste, A., et al.", y: 2019, t: "Quantifying the carbon emissions of machine learning", v: "arXiv:1910.09700", u: "https://arxiv.org/abs/1910.09700" },
+  loshchilov2019: { a: "Loshchilov, I., & Hutter, F.", y: 2019, t: "Decoupled weight decay regularization", v: "ICLR", u: "https://arxiv.org/abs/1711.05101" },
+  radford2019: { a: "Radford, A., et al.", y: 2019, t: "Language models are unsupervised multitask learners", v: "OpenAI", u: "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" },
+  shoeybi2019: { a: "Shoeybi, M., et al.", y: 2019, t: "Megatron-LM: Training multi-billion parameter language models using model parallelism", v: "arXiv:1909.08053", u: "https://arxiv.org/abs/1909.08053" },
+  zhang2019: { a: "Zhang, B., & Sennrich, R.", y: 2019, t: "Root mean square layer normalization", v: "NeurIPS", u: "https://arxiv.org/abs/1910.07467" },
+  brown2020: { a: "Brown, T. B., et al.", y: 2020, t: "Language models are few-shot learners", v: "NeurIPS", u: "https://arxiv.org/abs/2005.14165" },
+  chen2020a: { a: "Chen, T., et al.", y: 2020, t: "A simple framework for contrastive learning of visual representations", v: "ICML", u: "https://arxiv.org/abs/2002.05709" },
+  grill2020: { a: "Grill, J.-B., et al.", y: 2020, t: "Bootstrap your own latent: A new approach to self-supervised learning", v: "NeurIPS", u: "https://arxiv.org/abs/2006.07733" },
+  he2020: { a: "He, K., et al.", y: 2020, t: "Momentum contrast for unsupervised visual representation learning", v: "CVPR", u: "https://arxiv.org/abs/1911.05722" },
+  henighan2020: { a: "Henighan, T., et al.", y: 2020, t: "Scaling laws for autoregressive generative modeling", v: "arXiv:2010.14701", u: "https://arxiv.org/abs/2010.14701" },
+  holtzman2020: { a: "Holtzman, A., et al.", y: 2020, t: "The curious case of neural text degeneration", v: "ICLR", u: "https://arxiv.org/abs/1904.09751" },
+  kaplan2020: { a: "Kaplan, J., et al.", y: 2020, t: "Scaling laws for neural language models", v: "arXiv:2001.08361", u: "https://arxiv.org/abs/2001.08361" },
+  raffel2020: { a: "Raffel, C., et al.", y: 2020, t: "Exploring the limits of transfer learning with a unified text-to-text Transformer", v: "Journal of Machine Learning Research", u: "https://arxiv.org/abs/1910.10683" },
+  rajbhandari2020: { a: "Rajbhandari, S., et al.", y: 2020, t: "ZeRO: Memory optimizations toward training trillion parameter models", v: "SC20", u: "https://arxiv.org/abs/1910.02054" },
+  shazeer2020: { a: "Shazeer, N.", y: 2020, t: "GLU variants improve Transformer", v: "arXiv:2002.05202", u: "https://arxiv.org/abs/2002.05202" },
+  stiennon2020: { a: "Stiennon, N., et al.", y: 2020, t: "Learning to summarize from human feedback", v: "NeurIPS", u: "https://arxiv.org/abs/2009.01325" },
+  tschannen2020: { a: "Tschannen, M., et al.", y: 2020, t: "On mutual information maximization for representation learning", v: "ICLR", u: "https://arxiv.org/abs/1907.13625" },
+  wang2020: { a: "Wang, T., & Isola, P.", y: 2020, t: "Understanding contrastive representation learning through alignment and uniformity on the hypersphere", v: "ICML", u: "https://arxiv.org/abs/2005.10242" },
+  aghajanyan2021: { a: "Aghajanyan, A., et al.", y: 2021, t: "Intrinsic dimensionality explains the effectiveness of language model fine-tuning", v: "ACL-IJCNLP", u: "https://arxiv.org/abs/2012.13255" },
+  bommasani2021: { a: "Bommasani, R., et al.", y: 2021, t: "On the opportunities and risks of foundation models", v: "arXiv:2108.07258", u: "https://arxiv.org/abs/2108.07258" },
+  caron2021: { a: "Caron, M., et al.", y: 2021, t: "Emerging properties in self-supervised vision Transformers", v: "ICCV", u: "https://arxiv.org/abs/2104.14294" },
+  chen2021b: { a: "Chen, X., et al.", y: 2021, t: "An empirical study of training self-supervised vision Transformers", v: "ICCV", u: "https://arxiv.org/abs/2104.02057" },
+  dosovitskiy2021: { a: "Dosovitskiy, A., et al.", y: 2021, t: "An image is worth 16x16 words: Transformers for image recognition at scale", v: "ICLR", u: "https://arxiv.org/abs/2010.11929" },
+  // Transformers beyond language (slide "Transformers beyond language"); checked 30 Sep 2026 on arXiv, PMLR and Europe PMC
+  peebles2023: { a: "Peebles, W., & Xie, S.", y: 2023, t: "Scalable diffusion models with Transformers", v: "ICCV", u: "https://arxiv.org/abs/2212.09748" },
+  arnab2021: { a: "Arnab, A., et al.", y: 2021, t: "ViViT: A video vision Transformer", v: "ICCV", u: "https://arxiv.org/abs/2103.15691" },
+  radford2023: { a: "Radford, A., et al.", y: 2023, t: "Robust speech recognition via large-scale weak supervision", v: "ICML", u: "https://arxiv.org/abs/2212.04356" },
+  nie2023: { a: "Nie, Y., et al.", y: 2023, t: "A time series is worth 64 words: Long-term forecasting with Transformers", v: "ICLR", u: "https://arxiv.org/abs/2211.14730" },
+  lin2023: { a: "Lin, Z., et al.", y: 2023, t: "Evolutionary-scale prediction of atomic-level protein structure with a language model", v: "Science", u: "https://doi.org/10.1126/science.ade2574" },
+  hendrycks2021: { a: "Hendrycks, D., et al.", y: 2021, t: "Measuring massive multitask language understanding", v: "ICLR", u: "https://arxiv.org/abs/2009.03300" },
+  jaegle2021: { a: "Jaegle, A., et al.", y: 2021, t: "Perceiver: General perception with iterative attention", v: "ICML", u: "https://arxiv.org/abs/2103.03206" },
+  lester2021: { a: "Lester, B., et al.", y: 2021, t: "The power of scale for parameter-efficient prompt tuning", v: "EMNLP", u: "https://arxiv.org/abs/2104.08691" },
+  li2021a: { a: "Li, X. L., & Liang, P.", y: 2021, t: "Prefix-tuning: Optimizing continuous prompts for generation", v: "ACL-IJCNLP", u: "https://arxiv.org/abs/2101.00190" },
+  liu2021: { a: "Liu, Z., et al.", y: 2021, t: "Swin Transformer: Hierarchical vision Transformer using shifted windows", v: "ICCV", u: "https://arxiv.org/abs/2103.14030" },
+  narang2021: { a: "Narang, S., et al.", y: 2021, t: "Do Transformer modifications transfer across implementations and applications?", v: "EMNLP", u: "https://arxiv.org/abs/2102.11972" },
+  patterson2021: { a: "Patterson, D., et al.", y: 2021, t: "Carbon emissions and large neural network training", v: "arXiv:2104.10350", u: "https://arxiv.org/abs/2104.10350" },
+  radford2021: { a: "Radford, A., et al.", y: 2021, t: "Learning transferable visual models from natural language supervision", v: "ICML", u: "https://arxiv.org/abs/2103.00020" },
+  zhao2021: { a: "Zhao, T. Z., et al.", y: 2021, t: "Calibrate before use: Improving few-shot performance of language models", v: "ICML", u: "https://arxiv.org/abs/2102.09690" },
+  alayrac2022: { a: "Alayrac, J.-B., et al.", y: 2022, t: "Flamingo: A visual language model for few-shot learning", v: "NeurIPS", u: "https://arxiv.org/abs/2204.14198" },
+  bai2022a: { a: "Bai, Y., et al.", y: 2022, t: "Training a helpful and harmless assistant with reinforcement learning from human feedback", v: "arXiv:2204.05862", u: "https://arxiv.org/abs/2204.05862" },
+  bai2022b: { a: "Bai, Y., et al.", y: 2022, t: "Constitutional AI: Harmlessness from AI feedback", v: "arXiv:2212.08073", u: "https://arxiv.org/abs/2212.08073" },
+  benzaken2022: { a: "Ben Zaken, E., et al.", y: 2022, t: "BitFit: Simple parameter-efficient fine-tuning for Transformer-based masked language-models", v: "ACL", u: "https://arxiv.org/abs/2106.10199" },
+  fang2022: { a: "Fang, A., et al.", y: 2022, t: "Data determines distributional robustness in contrastive language image pre-training (CLIP)", v: "ICML", u: "https://arxiv.org/abs/2205.01397" },
+  he2022: { a: "He, K., et al.", y: 2022, t: "Masked autoencoders are scalable vision learners", v: "CVPR", u: "https://arxiv.org/abs/2111.06377" },
+  hoffmann2022: { a: "Hoffmann, J., et al.", y: 2022, t: "Training compute-optimal large language models", v: "arXiv:2203.15556", u: "https://arxiv.org/abs/2203.15556" },
+  hu2022: { a: "Hu, E. J., et al.", y: 2022, t: "LoRA: Low-rank adaptation of large language models", v: "ICLR", u: "https://arxiv.org/abs/2106.09685" },
+  karpathy2022: { a: "Karpathy, A.", y: 2022, t: "nanoGPT", v: "GitHub", u: "https://github.com/karpathy/nanoGPT", software: true },
+  kojima2022: { a: "Kojima, T., et al.", y: 2022, t: "Large language models are zero-shot reasoners", v: "NeurIPS", u: "https://arxiv.org/abs/2205.11916" },
+  lee2022: { a: "Lee, K., et al.", y: 2022, t: "Deduplicating training data makes language models better", v: "ACL", u: "https://arxiv.org/abs/2107.06499" },
+  liu2022: { a: "Liu, Z., et al.", y: 2022, t: "A ConvNet for the 2020s", v: "CVPR", u: "https://arxiv.org/abs/2201.03545" },
+  lu2022a: { a: "Lu, Y., et al.", y: 2022, t: "Fantastically ordered prompts and where to find them: Overcoming few-shot prompt order sensitivity", v: "ACL", u: "https://arxiv.org/abs/2104.08786" },
+  min2022: { a: "Min, S., et al.", y: 2022, t: "Rethinking the role of demonstrations: What makes in-context learning work?", v: "EMNLP", u: "https://arxiv.org/abs/2202.12837" },
+  openai2022: { a: "OpenAI", y: 2022, t: "Introducing ChatGPT", v: "OpenAI blog", u: "https://openai.com/index/chatgpt/" },
+  ouyang2022: { a: "Ouyang, L., et al.", y: 2022, t: "Training language models to follow instructions with human feedback", v: "NeurIPS", u: "https://arxiv.org/abs/2203.02155" },
+  perez2022a: { a: "Perez, F., & Ribeiro, I.", y: 2022, t: "Ignore previous prompt: Attack techniques for language models", v: "NeurIPS ML Safety Workshop", u: "https://arxiv.org/abs/2211.09527" },
+  wei2022a: { a: "Wei, J., et al.", y: 2022, t: "Finetuned language models are zero-shot learners", v: "ICLR", u: "https://arxiv.org/abs/2109.01652" },
+  wei2022b: { a: "Wei, J., et al.", y: 2022, t: "Chain-of-thought prompting elicits reasoning in large language models", v: "NeurIPS", u: "https://arxiv.org/abs/2201.11903" },
+  wei2022c: { a: "Wei, J., et al.", y: 2022, t: "Emergent abilities of large language models", v: "Transactions on Machine Learning Research", u: "https://arxiv.org/abs/2206.07682" },
+  xie2022: { a: "Xie, S. M., et al.", y: 2022, t: "An explanation of in-context learning as implicit Bayesian inference", v: "ICLR", u: "https://arxiv.org/abs/2111.02080" },
+  yoo2022: { a: "Yoo, K. M., et al.", y: 2022, t: "Ground-truth labels matter: A deeper look into input-label demonstrations", v: "EMNLP", u: "https://arxiv.org/abs/2205.12685" },
+  ainslie2023: { a: "Ainslie, J., et al.", y: 2023, t: "GQA: Training generalized multi-query Transformer models from multi-head checkpoints", v: "EMNLP", u: "https://arxiv.org/abs/2305.13245" },
+  brohan2023: { a: "Brohan, A., et al.", y: 2023, t: "RT-2: Vision-language-action models transfer web knowledge to robotic control", v: "CoRL", u: "https://arxiv.org/abs/2307.15818" },
+  bycroft2023: { a: "Bycroft, B.", y: 2023, t: "LLM visualization", v: "bbycroft.net", u: "https://bbycroft.net/llm", software: true },
+  casper2023: { a: "Casper, S., et al.", y: 2023, t: "Open problems and fundamental limitations of reinforcement learning from human feedback", v: "Transactions on Machine Learning Research", u: "https://arxiv.org/abs/2307.15217" },
+  dettmers2023: { a: "Dettmers, T., et al.", y: 2023, t: "QLoRA: Efficient finetuning of quantized LLMs", v: "NeurIPS", u: "https://arxiv.org/abs/2305.14314" },
+  duong2023: { a: "Duong, D.", y: 2023, t: "Tiktokenizer", v: "GitHub", u: "https://github.com/dqbd/tiktokenizer", software: true },
+  feng2023: { a: "Feng, G., et al.", y: 2023, t: "Towards revealing the mystery behind chain of thought: A theoretical perspective", v: "NeurIPS", u: "https://arxiv.org/abs/2305.15408" },
+  gao2023: { a: "Gao, L., et al.", y: 2023, t: "Scaling laws for reward model overoptimization", v: "ICML", u: "https://arxiv.org/abs/2210.10760" },
+  girdhar2023: { a: "Girdhar, R., et al.", y: 2023, t: "ImageBind: One embedding space to bind them all", v: "CVPR", u: "https://arxiv.org/abs/2305.05665" },
+  greshake2023: { a: "Greshake, K., et al.", y: 2023, t: "Not what you've signed up for: Compromising real-world LLM-integrated applications with indirect prompt injection", v: "ACM Workshop on Artificial Intelligence and Security", u: "https://arxiv.org/abs/2302.12173" },
+  kirstain2023: { a: "Kirstain, Y., et al.", y: 2023, t: "Pick-a-Pic: An open dataset of user preferences for text-to-image generation", v: "NeurIPS", u: "https://arxiv.org/abs/2305.01569" },
+  li2023a: { a: "Li, J., et al.", y: 2023, t: "BLIP-2: Bootstrapping language-image pre-training with frozen image encoders and large language models", v: "ICML", u: "https://arxiv.org/abs/2301.12597" },
+  li2023b: { a: "Li, Y., et al.", y: 2023, t: "Evaluating object hallucination in large vision-language models", v: "EMNLP", u: "https://arxiv.org/abs/2305.10355" },
+  li2023c: { a: "Li, C., et al.", y: 2023, t: "LLaVA-Med: Training a large language-and-vision assistant for biomedicine in one day", v: "NeurIPS", u: "https://arxiv.org/abs/2306.00890" },
+  liu2023a: { a: "Liu, H., et al.", y: 2023, t: "Visual instruction tuning", v: "NeurIPS", u: "https://arxiv.org/abs/2304.08485" },
+  luccioni2023: { a: "Luccioni, A. S., et al.", y: 2023, t: "Estimating the carbon footprint of BLOOM, a 176B parameter language model", v: "Journal of Machine Learning Research", u: "https://arxiv.org/abs/2211.02001" },
+  muennighoff2023: { a: "Muennighoff, N., et al.", y: 2023, t: "Scaling data-constrained language models", v: "NeurIPS", u: "https://arxiv.org/abs/2305.16264" },
+  openai2023: { a: "OpenAI", y: 2023, t: "GPT-4 technical report", v: "arXiv:2303.08774", u: "https://arxiv.org/abs/2303.08774" },
+  penedo2023: { a: "Penedo, G., et al.", y: 2023, t: "The RefinedWeb dataset for Falcon LLM: Outperforming curated corpora with web data, and web data only", v: "arXiv:2306.01116", u: "https://arxiv.org/abs/2306.01116" },
+  petrov2023: { a: "Petrov, A., et al.", y: 2023, t: "Language model tokenizers introduce unfairness between languages", v: "NeurIPS", u: "https://arxiv.org/abs/2305.15425" },
+  rafailov2023: { a: "Rafailov, R., et al.", y: 2023, t: "Direct preference optimization: Your language model is secretly a reward model", v: "NeurIPS", u: "https://arxiv.org/abs/2305.18290" },
+  rahulschand2023: { a: "RahulSChand", y: 2023, t: "gpu_poor", v: "GitHub", u: "https://github.com/RahulSChand/gpu_poor", software: true },
+  santurkar2023: { a: "Santurkar, S., et al.", y: 2023, t: "Whose opinions do language models reflect?", v: "ICML", u: "https://arxiv.org/abs/2303.17548" },
+  schaeffer2023: { a: "Schaeffer, R., et al.", y: 2023, t: "Are emergent abilities of large language models a mirage?", v: "NeurIPS", u: "https://arxiv.org/abs/2304.15004" },
+  touvron2023a: { a: "Touvron, H., et al.", y: 2023, t: "LLaMA: Open and efficient foundation language models", v: "arXiv:2302.13971", u: "https://arxiv.org/abs/2302.13971" },
+  touvron2023b: { a: "Touvron, H., et al.", y: 2023, t: "Llama 2: Open foundation and fine-tuned chat models", v: "arXiv:2307.09288", u: "https://arxiv.org/abs/2307.09288" },
+  turpin2023: { a: "Turpin, M., et al.", y: 2023, t: "Language models don't always say what they think: Unfaithful explanations in chain-of-thought prompting", v: "NeurIPS", u: "https://arxiv.org/abs/2305.04388" },
+  wang2023a: { a: "Wang, X., et al.", y: 2023, t: "Self-consistency improves chain of thought reasoning in language models", v: "ICLR", u: "https://arxiv.org/abs/2203.11171" },
+  wang2023b: { a: "Wang, Y., et al.", y: 2023, t: "Self-Instruct: Aligning language models with self-generated instructions", v: "ACL", u: "https://arxiv.org/abs/2212.10560" },
+  wei2023: { a: "Wei, A., et al.", y: 2023, t: "Jailbroken: How does LLM safety training fail?", v: "NeurIPS", u: "https://arxiv.org/abs/2307.02483" },
+  yang2023: { a: "Yang, J., et al.", y: 2023, t: "Set-of-Mark prompting unleashes extraordinary visual grounding in GPT-4V", v: "arXiv:2310.11441", u: "https://arxiv.org/abs/2310.11441" },
+  yao2023a: { a: "Yao, S., et al.", y: 2023, t: "ReAct: Synergizing reasoning and acting in language models", v: "ICLR", u: "https://arxiv.org/abs/2210.03629" },
+  yao2023b: { a: "Yao, S., et al.", y: 2023, t: "Tree of thoughts: Deliberate problem solving with large language models", v: "NeurIPS", u: "https://arxiv.org/abs/2305.10601" },
+  zhou2023: { a: "Zhou, C., et al.", y: 2023, t: "LIMA: Less is more for alignment", v: "NeurIPS", u: "https://arxiv.org/abs/2305.11206" },
+  besiroglu2024: { a: "Besiroglu, T., et al.", y: 2024, t: "Chinchilla scaling: A replication attempt", v: "arXiv:2404.10102", u: "https://arxiv.org/abs/2404.10102" },
+  black2024: { a: "Black, K., et al.", y: 2024, t: "Training diffusion models with reinforcement learning", v: "ICLR", u: "https://arxiv.org/abs/2305.13301" },
+  chameleon2024: { a: "Chameleon Team", y: 2024, t: "Chameleon: Mixed-modal early-fusion foundation models", v: "arXiv:2405.09818", u: "https://arxiv.org/abs/2405.09818" },
+  chen2024a: { a: "Chen, L., et al.", y: 2024, t: "Are we on the right way for evaluating large vision-language models?", v: "NeurIPS", u: "https://arxiv.org/abs/2403.20330" },
+  chiang2024: { a: "Chiang, W.-L., et al.", y: 2024, t: "Chatbot Arena: An open platform for evaluating LLMs by human preference", v: "ICML", u: "https://arxiv.org/abs/2403.04132" },
+  deepseekai2024: { a: "DeepSeek-AI", y: 2024, t: "DeepSeek-V3 technical report", v: "arXiv:2412.19437", u: "https://arxiv.org/abs/2412.19437" },
+  gekhman2024: { a: "Gekhman, Z., et al.", y: 2024, t: "Does fine-tuning LLMs on new knowledge encourage hallucinations?", v: "EMNLP", u: "https://arxiv.org/abs/2405.05904" },
+  grattafiori2024: { a: "Grattafiori, A., et al.", y: 2024, t: "The Llama 3 herd of models", v: "arXiv:2407.21783", u: "https://arxiv.org/abs/2407.21783" },
+  ho2024: { a: "Ho, A., et al.", y: 2024, t: "Algorithmic progress in language models", v: "arXiv:2403.05812", u: "https://arxiv.org/abs/2403.05812" },
+  hurst2024: { a: "Hurst, A., et al. (OpenAI)", y: 2024, t: "GPT-4o system card", v: "arXiv:2410.21276", u: "https://arxiv.org/abs/2410.21276" },
+  liu2024a: { a: "Liu, H., et al.", y: 2024, t: "Improved baselines with visual instruction tuning", v: "CVPR", u: "https://arxiv.org/abs/2310.03744" },
+  liu2024b: { a: "Liu, J., et al.", y: 2024, t: "Infini-gram: Scaling unbounded n-gram language models to a trillion tokens", v: "COLM", u: "https://arxiv.org/abs/2401.17377" },
+  longpre2024: { a: "Longpre, S., et al.", y: 2024, t: "Consent in crisis: The rapid decline of the AI data commons", v: "NeurIPS Datasets and Benchmarks Track", u: "https://arxiv.org/abs/2407.14933" },
+  maaz2024: { a: "Maaz, M., et al.", y: 2024, t: "Video-ChatGPT: Towards detailed video understanding via large vision and language models", v: "ACL", u: "https://arxiv.org/abs/2306.05424" },
+  oquab2024: { a: "Oquab, M., et al.", y: 2024, t: "DINOv2: Learning robust visual features without supervision", v: "Transactions on Machine Learning Research", u: "https://arxiv.org/abs/2304.07193" },
+  pearce2024: { a: "Pearce, T., & Song, J.", y: 2024, t: "Reconciling Kaplan and Chinchilla scaling laws", v: "Transactions on Machine Learning Research", u: "https://arxiv.org/abs/2406.12907" },
+  penedo2024: { a: "Penedo, G., et al.", y: 2024, t: "The FineWeb datasets: Decanting the web for the finest text data at scale", v: "NeurIPS Datasets and Benchmarks Track", u: "https://arxiv.org/abs/2406.17557" },
+  porian2024: { a: "Porian, T., et al.", y: 2024, t: "Resolving discrepancies in compute-optimal scaling of language models", v: "NeurIPS", u: "https://arxiv.org/abs/2406.19146" },
+  qi2024: { a: "Qi, X., et al.", y: 2024, t: "Fine-tuning aligned language models compromises safety, even when users do not intend to!", v: "ICLR", u: "https://arxiv.org/abs/2310.03693" },
+  qi2024a: { a: "Qi, X., et al.", y: 2024, t: "Visual adversarial examples jailbreak aligned large language models", v: "AAAI", u: "https://arxiv.org/abs/2306.13213" },
+  ruan2024: { a: "Ruan, C. F., et al.", y: 2024, t: "WebLLM: A high-performance in-browser LLM inference engine", v: "arXiv:2412.15803", u: "https://arxiv.org/abs/2412.15803" },
+  sardana2024: { a: "Sardana, N., et al.", y: 2024, t: "Beyond Chinchilla-optimal: Accounting for inference in language model scaling laws", v: "ICML", u: "https://arxiv.org/abs/2401.00448" },
+  sclar2024: { a: "Sclar, M., et al.", y: 2024, t: "Quantifying language models' sensitivity to spurious features in prompt design or: How I learned to start worrying about prompt formatting", v: "ICLR", u: "https://arxiv.org/abs/2310.11324" },
+  shao2024: { a: "Shao, Z., et al.", y: 2024, t: "DeepSeekMath: Pushing the limits of mathematical reasoning in open language models", v: "arXiv:2402.03300", u: "https://arxiv.org/abs/2402.03300" },
+  sharma2024: { a: "Sharma, M., et al.", y: 2024, t: "Towards understanding sycophancy in language models", v: "ICLR", u: "https://arxiv.org/abs/2310.13548" },
+  singhal2024: { a: "Singhal, P., et al.", y: 2024, t: "A long way to go: Investigating length correlations in RLHF", v: "COLM", u: "https://arxiv.org/abs/2310.03716" },
+  su2024: { a: "Su, J., et al.", y: 2024, t: "RoFormer: Enhanced Transformer with rotary position embedding", v: "Neurocomputing", u: "https://arxiv.org/abs/2104.09864" },
+  tang2024: { a: "Tang, C., et al.", y: 2024, t: "SALMONN: Towards generic hearing abilities for large language models", v: "ICLR", u: "https://arxiv.org/abs/2310.13289" },
+  toyer2024: { a: "Toyer, S., et al.", y: 2024, t: "Tensor Trust: Interpretable prompt injection attacks from an online game", v: "ICLR", u: "https://arxiv.org/abs/2311.01011" },
+  wallace2024: { a: "Wallace, B., et al.", y: 2024, t: "Diffusion model alignment using direct preference optimization", v: "CVPR", u: "https://arxiv.org/abs/2311.12908" },
+  wallace2024a: { a: "Wallace, E., et al.", y: 2024, t: "The instruction hierarchy: Training LLMs to prioritize privileged instructions", v: "arXiv:2404.13208", u: "https://arxiv.org/abs/2404.13208" },
+  wang2024: { a: "Wang, P., et al.", y: 2024, t: "Qwen2-VL: Enhancing vision-language model's perception of the world at any resolution", v: "arXiv:2409.12191", u: "https://arxiv.org/abs/2409.12191" },
+  wu2024: { a: "Wu, S., et al.", y: 2024, t: "NExT-GPT: Any-to-any multimodal LLM", v: "ICML", u: "https://arxiv.org/abs/2309.05519" },
+  zhang2024a: { a: "Zhang, Z., et al.", y: 2024, t: "Multimodal chain-of-thought reasoning in language models", v: "Transactions on Machine Learning Research", u: "https://arxiv.org/abs/2302.00923" },
+  zheng2024: { a: "Zheng, B., et al.", y: 2024, t: "GPT-4V(ision) is a generalist web agent, if grounded", v: "ICML", u: "https://arxiv.org/abs/2401.01614" },
+  gong2025: { a: "Gong, Y., et al.", y: 2025, t: "FigStep: Jailbreaking large vision-language models via typographic visual prompts", v: "AAAI", u: "https://arxiv.org/abs/2311.05608" },
+  guo2025: { a: "Guo, D., et al.", y: 2025, t: "DeepSeek-R1 incentivizes reasoning in LLMs through reinforcement learning", v: "Nature", u: "https://doi.org/10.1038/s41586-025-09422-z" },
+  huggingface2025: { a: "Hugging Face", y: 2025, t: "Chat template playground", v: "Hugging Face Spaces", u: "https://huggingface.co/spaces/huggingfacejs/chat-template-playground", software: true },
+  huggingface2025b: { a: "Hugging Face", y: 2025, t: "Transformers.js (Version 3.8.1)", v: "GitHub", u: "https://github.com/huggingface/transformers.js", software: true },
+  lambert2025: { a: "Lambert, N., et al.", y: 2025, t: "Tulu 3: Pushing frontiers in open language model post-training", v: "COLM", u: "https://arxiv.org/abs/2411.15124" },
+  liu2025: { a: "Liu, Z., et al.", y: 2025, t: "Understanding R1-Zero-like training: A critical perspective", v: "COLM", u: "https://arxiv.org/abs/2503.20783" },
+  qi2025: { a: "Qi, X., et al.", y: 2025, t: "Safety alignment should be made more than just a few tokens deep", v: "ICLR", u: "https://arxiv.org/abs/2406.05946" },
+  simeoni2025: { a: "Siméoni, O., et al.", y: 2025, t: "DINOv3", v: "arXiv:2508.10104", u: "https://arxiv.org/abs/2508.10104" },
+  sprague2025: { a: "Sprague, Z., et al.", y: 2025, t: "To CoT or not to CoT? Chain-of-thought helps mainly on math and symbolic reasoning", v: "ICLR", u: "https://arxiv.org/abs/2409.12183" },
+  tazi2025: { a: "Tazi, N., et al.", y: 2025, t: "The Ultra-Scale Playbook: Training LLMs on GPU clusters", v: "Hugging Face", u: "https://huggingface.co/spaces/nanotron/ultrascale-playbook" },
+  yue2025: { a: "Yue, Y., et al.", y: 2025, t: "Does reinforcement learning really incentivize reasoning capacity in LLMs beyond the base model?", v: "NeurIPS", u: "https://arxiv.org/abs/2504.13837" },
+  epochai2026: { a: "Epoch AI", y: 2026, t: "Data on AI models", v: "epoch.ai (CC BY 4.0), retrieved 29 Sep 2026", u: "https://epoch.ai/data/ai-models" },
+  cho2026: { a: "Cho, A., et al.", y: 2026, t: "Transformer Explainer: Learning LLM Transformers with interactive visual explanation and experimentation", v: "CHI", u: "https://arxiv.org/abs/2408.04619" },
+};
+
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+// one APA reference as HTML; the title links to the paper
+export function apa(key, newTab = false) {
+  const r = BIB[key];
+  if (!r) return `<span class="missing">missing reference: ${esc(key)}</span>`;
+  const tgt = newTab ? ` target="_blank" rel="noopener"` : "";
+  const title = `<a href="${r.u}"${tgt}>${esc(r.t)}</a>`;
+  return r.software
+    ? `${esc(r.a)} (${r.y}). <i>${title}</i> [Computer software]. ${esc(r.v)}.`
+    : `${esc(r.a)} (${r.y}). ${title}${/[.?!]$/.test(r.t) ? "" : "."} <i>${esc(r.v)}</i>.`; // APA: no period after a title ending in ? or !
+}
+
+// APA orders a reference list by first author, then year
+// (an unknown key sorts by its own name and renders as "missing reference")
+export const sortRefs = keys => [...new Set(keys)]
+  .sort((p, q) => (BIB[p]?.a ?? p).localeCompare(BIB[q]?.a ?? q) || (BIB[p]?.y ?? 0) - (BIB[q]?.y ?? 0));
+
+// give every <a data-ref> its link and the full reference as a tooltip
+export function linkCites(root = document, newTab = false) {
+  root.querySelectorAll("a[data-ref]").forEach(a => {
+    const r = BIB[a.dataset.ref];
+    if (!r) { a.classList.add("missing"); console.warn("missing reference", a.dataset.ref); return; }
+    a.href = r.u;
+    a.title = `${r.a} (${r.y}). ${r.t}.`;
+    if (newTab) { a.target = "_blank"; a.rel = "noopener"; }
+  });
+}

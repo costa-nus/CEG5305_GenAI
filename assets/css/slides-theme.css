@@ -1,0 +1,289 @@
+/* Deck theme for every Part 2 slide deck (assets/js/slides.js).
+   Taken from Junyuan Hong's styling of the P2-L1 session 01 deck, 27 Sep 2026.
+   Canvas units: 1280 × 720. Prose stays at least 27px (body text 29px); eyebrows,
+   tags, table heads, sources and references use a quieter supporting tier (17–20px).
+   Per-deck sizes for individual visualizations go in the deck's own polish.css. */
+:root {
+  --blue: #18364e;
+  --blue-2: #466a88;
+  --deep: #18364e;
+  --text: #253647;
+  --muted: #61707e;
+  --orange: #b67930;
+  --orange-2: #8b5b25;
+  --bg: #fcfcfa;
+  --panel: #f0f3f5;
+  --panel-2: #e1e8ed;
+  --line: #d7dfe4;
+  --tint: #f7f1e7;
+  --code: #f1f4f6;
+  --good: #52736c;
+  --bad: #a64d42;
+  --radius: 4px;
+}
+
+.slide {
+  padding: 34px 64px 42px;
+  background: var(--bg);
+  font-size: 29px;
+  line-height: 1.4;
+}
+.slide > .eb {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: .11em;
+  line-height: 1.3;
+}
+.slide > h2 {
+  max-width: none;
+  margin: 0 0 28px;
+  font-size: 42px;
+  line-height: 1.16;
+  letter-spacing: -.025em;
+  font-weight: 720;
+}
+.slide-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.slide-body > .fit { width: 100%; flex-shrink: 0; }
+.slide:not(:has([data-viz], .demo)) .slide-body > .fit {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.slide p, .slide li { margin: 0 0 18px; }
+.slide .fit > p, .slide .fit > ol, .slide .fit > table { margin: 0; }
+.slide .fit > :last-child { margin-bottom: 0; }
+.slide h4 { font-size: 32px; line-height: 1.2; letter-spacing: -.015em; }
+.slide .big { font-size: 52px; line-height: 1.18; letter-spacing: -.025em; }
+.slide .lede { font-size: 30px; line-height: 1.4; }
+.slide .note { font-size: 27px; }
+.slide .katex-display { margin: 20px 0; }
+.slide a[data-ref] { text-decoration-thickness: 1px; }
+.slide .slide-body p code, .slide .slide-body li code { font-size: max(27px, .9em); }
+
+/* Flat, aligned columns keep comparisons readable without a wall of boxes. */
+.slide .fit > .grid, .slide.blue > .grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px 48px;
+}
+.slide .fit > .grid > .card, .slide.blue > .grid > .card {
+  padding: 22px 0 0;
+  border: 0;
+  border-top: 2px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.slide .fit > .grid > .card.accent { border-top-color: var(--blue); }
+.slide .card .tag {
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: .07em;
+}
+.slide .card h4 { margin: 0 0 14px; font-size: 32px; }
+.slide .card p { margin: 0 0 16px; font-size: 29px; line-height: 1.4; }
+.slide .card p:last-child { margin-bottom: 0; }
+.slide .callout, .slide .callout.warn {
+  padding: 18px 24px;
+  margin: 0;
+  border: 0;
+  border-left: 3px solid var(--blue-2);
+  border-radius: 0;
+  background: var(--panel);
+  font-size: 29px;
+  line-height: 1.4;
+}
+.slide .verdict { margin: 0; gap: 0; }
+.slide .verdict > div {
+  position: relative;
+  padding: 25px 0 25px 188px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  font-size: 32px;
+  line-height: 1.4;
+}
+.slide .verdict b {
+  position: absolute;
+  left: 0;
+  top: 32px;
+  margin: 0;
+  color: var(--blue);
+  font-size: 19px;
+  letter-spacing: .075em;
+}
+.slide .verdict .not { color: var(--muted); }
+.slide .verdict .not b { color: var(--muted); }
+.slide.takeaway .fit { gap: 40px; }
+.slide.takeaway .fit > p { font-size: 32px; max-width: 1060px; }
+
+/* Sources remain complete and visible, below the teaching content. */
+.slide .src {
+  flex: none;
+  margin: 16px 0 0;
+  padding-top: 12px;
+  font-size: 20px;
+  font-style: normal;
+  line-height: 1.35;
+}
+.slide .refs {
+  flex: none;
+  margin: 16px 0 0;
+  padding-top: 10px;
+  font-size: 17px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+.slide .slide-body + .refs { margin-top: 16px; }
+.slide .src + .refs { margin-top: 7px; }
+.slide .refs > span + span::before { color: var(--muted); }
+.slide .refs.live { height: calc(3 * 1.35em + 11px); }
+.slide .num { right: 28px; bottom: 14px; font-size: 16px; }
+.chrome { height: 3px; }
+.chrome i { background: var(--blue-2); }
+
+/* Tables share the same row rhythm and column baselines throughout. */
+.slide .fit > table { font-size: 28px; }
+.slide .fit > table th {
+  padding: 14px 18px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 17px;
+  letter-spacing: .075em;
+}
+.slide .fit > table td { padding: 17px 18px; line-height: 1.28; }
+.slide .fit > table td:first-child { color: var(--deep); }
+.slide .fit > table tr.hl td { background: #e7edf2; }
+.slide.comparison-table .fit > table td { font-size: 27px; padding-top: 13px; padding-bottom: 13px; }
+
+/* Stable chapter layouts provide pauses and continuity through the lecture. */
+.slide.blue { background: #18364e; padding-top: 76px; }
+.slide.blue::after { left: 64px; right: 64px; bottom: 42px; height: 1px; background: #567082; }
+.slide.blue > .eb { color: #b9cbd8; }
+.slide.blue h1 { margin: 20px 0 24px; font-size: 60px; line-height: 1.12; letter-spacing: -.03em; }
+.slide.blue p { font-size: 30px; color: #d5e0e8; }
+.slide.blue .seg {
+  grid-template-columns: 46px minmax(0, 1fr) 110px;
+  gap: 24px;
+  margin: 0;
+  padding: 18px 0;
+  border-top: 1px solid #456174;
+  font-size: 30px;
+}
+.slide.blue .seg b {
+  height: auto;
+  background: transparent;
+  color: #b9cbd8;
+  justify-items: start;
+  font-size: 25px;
+  font-weight: 500;
+}
+.slide.blue .seg span:last-child { color: #b9cbd8; font-size: 24px; text-align: right; font-weight: 500; }
+.slide.section-open > p:not(.eb) { margin-bottom: 42px; }
+.slide.section-divider { justify-content: center; padding-bottom: 140px; }
+.slide.section-divider h1 { max-width: 1110px; }
+.slide.section-summary { justify-content: center; padding-bottom: 130px; }
+.slide.section-summary h1 { max-width: 1100px; font-size: 56px; margin-bottom: 34px; }
+.slide.cover { padding-top: 90px; }
+.slide.cover .badge { background: transparent; color: #bed0de; padding: 0; border: 0; font-size: 20px; letter-spacing: .08em; }
+.slide.cover h1 { margin-top: 34px; font-size: 70px; line-height: 1.07; }
+.slide.cover > p:first-of-type { font-size: 30px; }
+.slide.cover > p:first-of-type span { color: #a5bccd; }
+.slide.cover > p:last-of-type { margin-top: 42px; font-size: 27px; line-height: 1.5; }
+.slide.blue .refs { margin-top: auto; margin-bottom: 18px; color: #b9cbd8; }
+.slide.blue > .grid > .card { border-color: #587185; }
+.slide.blue .card .tag { color: #b9cbd8; }
+.slide.blue .card h4 { color: #fff; }
+.slide.blue .card p { color: #e4ebf0; }
+.slide.blue code { background: #2d495f; color: #fff; }
+.slide.method-bridge { padding-top: 105px; }
+.slide.method-bridge > .grid { margin-top: 38px; }
+.slide.method-bridge > p:last-of-type { margin-top: 44px; }
+.slide.closing { padding-top: 54px; }
+.slide.closing h1 { font-size: 54px; }
+.slide.closing > .grid { margin-top: 18px; }
+.slide.closing > p:last-of-type { margin-top: 34px; }
+.slide.closing > p:last-of-type b { color: #fff; }
+.slide.break-slide { justify-content: center; padding-bottom: 130px; }
+.slide.break-slide .brk { margin: 0 0 48px; gap: 56px; }
+.slide.break-slide .pill { padding: 0 48px 0 0; border-right: 1px solid #587185; border-radius: 0; background: transparent; font-size: 60px; }
+.slide.break-slide .when { font-size: 42px; }
+.slide.break-slide .when small { font-size: 28px; }
+.slide.break-slide > p { max-width: 1050px; }
+
+/* Agenda and prompt: a stronger first read, aligned supporting items. */
+.slide.agenda .slide-body > .fit { gap: 20px; }
+.slide.agenda .fit > .card { padding: 0; background: transparent; border: 0; border-radius: 0; }
+.slide.agenda .fit > .card + .card { border-top: 1px solid var(--line); padding-top: 18px; }
+.slide.agenda .card .tag { margin-bottom: 8px; }
+.slide.agenda .card h4 { margin-bottom: 10px; }
+.slide.agenda .seg { grid-template-columns: 38px minmax(0, 1fr) 100px; gap: 20px; font-size: 28px; margin: 6px 0; }
+.slide.agenda .seg b { height: 34px; border-radius: 0; background: transparent; color: var(--blue); font-size: 24px; }
+.slide.agenda .seg span:last-child { font-size: 24px; text-align: right; color: var(--muted); font-weight: 500; }
+.slide.agenda .seg:nth-of-type(3), .slide.agenda .seg:nth-of-type(5) { color: var(--muted); font-size: 27px; }
+.slide.agenda .card:last-child p { font-size: 27px; }
+.slide.opening-question .fit { gap: 32px; padding-bottom: 46px; }
+.slide.opening-question .big { max-width: 1030px; font-size: 60px; }
+.slide.opening-question .big span { color: var(--blue); text-decoration: underline; text-decoration-color: #bacbd6; text-decoration-thickness: 3px; text-underline-offset: 10px; }
+.slide.opening-question .fit > p:last-child { margin-top: 26px; color: var(--muted); }
+/* Example input beside a ✋ prompt (engagement slides). Same values as P2-L1's prompt card. */
+.slide .card.example p { font-size: 30px; font-weight: 650; color: var(--deep); }
+.slide.discussion .callout { font-size: 32px; }
+.slide.discussion .fit > p:last-child { color: var(--muted); }
+.slide.experiment .grid { gap: 18px 48px; }
+.slide.experiment .grid > .card { padding-top: 14px; border-top-width: 1px; }
+.slide.experiment .grid > .card p { font-size: 28px; }
+.slide.method .big { font-size: 36px; }
+.slide.next-session .grid { row-gap: 42px; }
+
+/* Numbered explanations use an aligned gutter, never inline badge clutter. */
+.slide.board { background: var(--bg); }
+.slide.board > .eb { color: var(--muted); }
+.slide .board-steps { padding: 0; }
+.slide .board-steps li { font-size: 31px; line-height: 1.45; padding-left: 66px; margin: 0 0 30px; }
+.slide .board-steps li:last-child { margin-bottom: 0; }
+.slide .board-steps li::before { background: transparent; color: var(--blue-2); border-radius: 0; font-size: 23px; top: 2px; font-weight: 500; }
+.slide.derivation .board-steps li { font-size: 29px; margin-bottom: 22px; }
+.slide.reading .board-steps li { padding-top: 14px; padding-bottom: 14px; border-top: 1px solid var(--line); margin-bottom: 12px; }
+.slide.reading .board-steps li::before { top: 16px; }
+
+/* Live visuals: controls, evidence, then readout. Same alignment on each slide. */
+.slide .controls { gap: 12px 24px; margin-bottom: 14px; }
+.slide .controls label { font-size: 20px; }
+.slide .controls output { font-size: 19px; }
+.slide .controls button, .slide .controls select { font-size: 20px; }
+.slide button[aria-pressed=true] { background: var(--blue); border-color: var(--blue); color: #fff; }
+.slide .readout { margin-top: 14px; padding: 12px 18px; font-size: 21px; line-height: 1.35; border-radius: 3px; }
+.slide .viz .card { border-radius: 3px; }
+.slide .viz .card .tag { margin-bottom: 10px; }
+.slide .side .viz-body { column-gap: 42px; row-gap: 0; }
+.slide .side .viz-body > svg { grid-row: 1 / 3; }
+.slide .side .viz-body > .controls { grid-row: 1; }
+.slide .side .viz-body > .readout { grid-row: 2; }
+
+/* Embedded demos keep generous space, with attribution subordinate to the demo. */
+.slide .demo { border: 1px solid var(--line); border-radius: 4px; }
+.slide .demo-head { padding: 14px 18px; background: transparent; gap: 8px 18px; }
+.slide .demo-head .t { font-size: 25px; }
+.slide .demo-head .by { font-size: 18px; }
+.slide .demo-head .btn { font-size: 17px; }
+.slide .demo-stage { background: var(--panel); }
+.slide .demo-foot { padding: 12px 18px; font-size: 23px; background: transparent; }
+.slide .gate p { font-size: 20px; }
+.slide .gate button { font-size: 24px; padding: 12px 24px; }
+
+/* The canvas scales as a unit; site breakpoints must not collapse its diagrams. */
+.slide .two { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+/* Diagram sizing must never stretch KaTeX's inline radical/fraction SVGs. */
+.slide .katex svg { width: 100% !important; height: inherit !important; }
+@media print {
+  .slide { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

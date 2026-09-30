@@ -1,0 +1,238 @@
+/* HTML slides for lectures. Loaded after site.css; reuses its visualization styles.
+   Canvas is 1280×720 and scaled to the window, so every size below is canvas px.
+   On a 13.33-inch-wide slide, 1pt = 1.333 canvas px: 20pt (the deck floor, D22) = 26.7px. */
+
+/* projectors: always the light palette */
+:root { color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --blue: #003d7c; --blue-2: #1f5aa6; --orange: #ef7c00; --orange-2: #b85f00; --deep: #17375e;
+    --bg: #fbfcfd; --panel: #eef2f7; --panel-2: #e3e9f1; --card: #ffffff; --text: #1b2430;
+    --muted: #5a6877; --line: #d4dce6; --tint: #fff3e5; --code: #f3f5f8;
+    --shadow: 0 1px 2px rgba(16, 32, 56, .06), 0 4px 16px rgba(16, 32, 56, .05);
+  }
+  button.primary, .btn.primary, .chip.new { color: #fff; }
+}
+
+html { font-size: 22px; }            /* rem inside visualizations scales from here */
+html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1520; }
+body { font-size: 28px; line-height: 1.4; }
+
+.deck { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: 0 0; }
+.slide {
+  position: absolute; inset: 0; display: none; flex-direction: column;
+  background: #fbfcfd; color: var(--text); padding: 24px 60px 22px; overflow: hidden;
+}
+.slide.active { display: flex; }
+.slide > .eb { font-size: 27px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--orange); margin: 0; }
+.slide > h2 {
+  font-size: 44px; line-height: 1.12; margin: 2px 0 14px; padding: 0; border: 0; color: var(--blue);
+  max-width: 1100px;
+}
+.slide-body { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+.fit { transform-origin: 0 0; }
+.slide p, .slide li { max-width: none; margin: 0 0 14px; }
+.slide ul, .slide ol { margin: 0; padding-left: 1.1em; }
+.slide li { margin-bottom: 12px; }
+.slide .src { font-size: 27px; font-style: italic; color: var(--muted); margin: 8px 0 0; border-top: 1px solid var(--line); padding-top: 6px; }
+.slide .note { font-size: 27px; }
+.slide .big { font-size: 46px; font-weight: 700; line-height: 1.2; color: var(--deep); }
+.slide .lede { font-size: 32px; color: var(--muted); max-width: none; }
+.slide h3, .slide h4 { color: var(--deep); margin: 0 0 8px; }
+.slide h4 { font-size: 32px; }
+.slide code { font-size: .9em; }
+.slide .src code { font-size: 1em; }
+.slide .katex { font-size: 1.08em; }
+.slide .katex-display { margin: 10px 0; }
+
+/* cards and verdicts at slide scale */
+.slide .grid { gap: 22px; }
+.slide .card { padding: 20px 24px; box-shadow: none; }
+.slide .card h4 { font-size: 32px; margin-bottom: 6px; }
+.slide .card p { font-size: 28px; }
+.slide .grid.tight .card { padding: 10px 22px; }
+.slide .card .tag { font-size: 27px; }
+.slide .verdict { gap: 14px; margin: 18px 0 0; }
+.slide .verdict div { padding: 14px 20px; font-size: 30px; }
+.slide .callout { font-size: 30px; padding: 18px 24px; margin: 14px 0; }
+.slide table { font-size: 28px; }
+.slide th { font-size: 27px; }
+.slide td, .slide th { padding: 10px 14px; }
+/* matrices keep their own compact cells */
+.slide .mat table { font-size: .72rem; }
+.slide .mat td, .slide .mat th { padding: 0; }
+.slide .mat th { font-size: .72rem; padding: 0 .25em; }
+.slide .timeline li { padding: 2px 0 10px 28px; font-size: 29px; }
+.slide .timeline li::before { top: 14px; }
+
+/* references: APA, at the foot of every slide that mentions prior work (filled by slides.js) */
+/* entries run on, one after another, so short references share a line */
+.slide .refs { margin: auto 0 0; padding: 4px 0 0; border-top: 1px solid var(--line); font-size: 27px; line-height: 1.18; color: var(--muted); }
+.slide .slide-body + .refs { margin-top: 8px; }
+.slide .src + .refs { margin-top: 0; border-top: 0; padding-top: 0; }
+.slide .refs > span + span::before { content: "·"; margin: 0 .45em 0 .25em; color: var(--orange); font-weight: 700; }
+.slide .refs a { color: inherit; text-decoration: none; }
+.slide a[data-ref] { color: inherit; text-decoration: underline dotted 2px; text-decoration-color: var(--line); text-underline-offset: 5px; }
+.slide .refs a:hover, .slide a[data-ref]:hover { color: var(--orange-2); }
+.slide.blue .refs { color: #b9cde6; border-color: rgba(255, 255, 255, .25); margin-bottom: 66px; }
+.slide .missing { color: var(--bad); }
+
+/* the history reel (Timeline slide): sketches, the rolling list, and the current step's papers */
+.slide .reel-stage { height: 322px; }
+.slide .reel-frame { width: 460px; }
+.slide .reel-frame figcaption { font-size: 27px; line-height: 1.1; margin-top: -8px; }
+.slide .reel-badge { font-size: 20px; }
+.slide .reel-list li { padding: 4px 0 4px 28px; margin: 0; }
+.slide .reel-list li::before { top: 16px; }
+.slide-body:has(> .fit > .reel) > .fit, .slide .reel { height: 100%; }
+.slide .refs.live { flex: none; height: calc(3 * 1.18em + 5px); overflow: hidden; }
+
+/* visualizations on a slide: the slide title replaces the viz header, the slide
+   source line replaces its footer */
+.slide .viz { margin: 0; border: 0; box-shadow: none; background: transparent; overflow: visible; }
+.slide .viz-head, .slide .viz-foot { display: none; }
+.slide .viz-body { padding: 0; }
+.slide .controls { margin: 0 0 10px; gap: 10px 22px; }
+.slide .controls input[type=range] { width: 190px; }
+.slide .card[style*="sticky"] { position: static !important; }
+.slide .readout { font-size: 22px; }
+.slide .viz h4 { font-size: 24px; margin: 8px 0 4px; }
+
+/* per-visualization sizing: diagrams are sized by height so their text stays legible */
+
+/* diagram text one step larger than on the web page */
+.slide .s-text { font-size: 15px; }
+.slide .s-text.m { font-size: 13.5px; }
+.slide .s-text.mono { font-size: 14px; }
+/* ConvNeXt: the paper's stage groups crowd the step names at this size */
+.slide [data-viz=convnext] text.s-text.m[text-anchor="start"] { display: none; }
+
+/* side layout: the diagram at full height on the left, controls and readout on the right */
+.slide .side .viz-body { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 26px; align-items: start; }
+.slide .side .viz-body > svg { grid-column: 1; grid-row: 1 / span 8; height: 540px; width: auto; }
+.slide [data-viz=convnext].side .viz-body > svg { height: 440px; }
+.slide .side .viz-body > :not(svg) { grid-column: 2; }
+.slide .side .controls { flex-direction: column; align-items: flex-start; }
+.slide .side .controls input[type=range] { width: 130px; }
+.slide .side .readout { font-size: 19px; }
+.slide [data-viz=mlp].side .viz-body > svg { height: 430px; }
+
+/* the architecture: diagram left at full height, controls and component card right */
+.slide [data-viz=architecture] .viz-body { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 26px; align-items: start; }
+.slide [data-viz=architecture] .viz-body > .controls { grid-column: 2; grid-row: 1; }
+.slide [data-viz=architecture] .viz-body > .two { display: contents; }
+.slide [data-viz=architecture] .two > div:first-child { grid-column: 1; grid-row: 1 / span 2; }
+.slide [data-viz=architecture] .two > div:last-child { grid-column: 2; grid-row: 2; }
+.slide [data-viz=architecture] svg { height: 505px; width: auto; }
+.slide [data-viz=architecture] .s-text.b { font-size: 15.5px; }
+.slide [data-viz=architecture] .card, .slide [data-viz=architecture] .card p { font-size: 25px; }
+
+.slide [data-viz=longRange] svg { height: 280px; }
+.slide [data-viz=seq2seq] svg { height: 290px; width: auto; }
+.slide [data-viz=tableSize] svg { height: 310px; width: auto; }
+.slide [data-viz=chainFan] svg { height: 320px; }
+.slide [data-viz=residual] svg { height: 300px; }
+.slide [data-viz=params] svg { height: 260px; }
+.slide [data-viz=layerNorm] svg:nth-of-type(1) { height: 160px; }
+.slide [data-viz=layerNorm] svg:nth-of-type(2) { height: 140px; }
+.slide [data-viz=mlpBlock] .two svg { height: 320px; width: auto; }
+.slide [data-viz=rnn] svg:nth-of-type(1) { height: 205px; }
+.slide [data-viz=rnn] svg:nth-of-type(2) { height: 140px; }
+
+/* LSTM over two slides: the cell, then what survives many steps */
+.slide [data-viz=lstm][data-show=cell] .viz-body > h4,
+.slide [data-viz=lstm][data-show=cell] .viz-body > svg:nth-of-type(2) { display: none; }
+.slide [data-viz=lstm][data-show=cell] .viz-body > svg:nth-of-type(1) { height: 255px; }
+.slide [data-viz=lstm][data-show=curve] .viz-body > svg:nth-of-type(1),
+.slide [data-viz=lstm][data-show=curve] .viz-body > .readout,
+.slide [data-viz=lstm][data-show=curve] .viz-body > h4,
+.slide [data-viz=lstm][data-show=curve] .controls label:not(:first-child) { display: none; }
+.slide [data-viz=lstm][data-show=curve] .viz-body > svg:nth-of-type(2) { height: 412px; }
+
+/* attention over two slides: computing the scores, then weights and output */
+.slide [data-viz=attention] .mats { gap: 14px 26px; }
+.slide [data-viz=attention] .mat table { font-size: .8rem; }
+.slide [data-viz=attention] .mat td { width: 2.6em; height: 1.75em; }
+.slide [data-viz=attention] .chips .chip { font-size: .85rem; padding: .1rem .45rem; }
+.slide [data-viz=attention][data-show=compute] .mats > .mat:nth-child(n+6),
+.slide [data-viz=attention][data-show=compute] .viz-body > svg,
+.slide [data-viz=attention][data-show=compute] .viz-body > .readout,
+.slide [data-viz=attention][data-show=compute] .steps button:nth-child(n+4) { display: none; }
+.slide [data-viz=attention][data-show=weights] .mats > .mat:nth-child(-n+5),
+.slide [data-viz=attention][data-show=weights] .steps button:nth-child(-n+3) { display: none; }
+.slide [data-viz=attention][data-show=weights] .viz-body > svg { height: 130px; }
+.slide [data-viz=embeddings] .mat td { width: 2.4em; height: 1.6em; }
+
+/* embedded demos fill the slide */
+.slide .demo { margin: 0; box-shadow: none; }
+/* the stage takes whatever height the head, foot and reference footer leave */
+.slide-body:has(> .fit > .demo) > .fit { height: 100%; display: flex; flex-direction: column; }
+.slide .demo { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.slide .demo-stage { aspect-ratio: auto; flex: 1; height: auto; min-height: 0; max-height: none; }
+.slide .demo-head .t { font-size: 28px; }
+.slide .demo-head .by { font-size: 27px; }
+.slide .demo-foot { font-size: 27px; }
+
+/* full-bleed blue slides: title, dividers, breaks, close */
+.slide.blue { background: var(--blue); color: #fff; }
+.slide.blue::after { content: ""; position: absolute; left: 0; right: 0; bottom: 56px; height: 6px; background: linear-gradient(90deg, var(--blue) 0 6%, var(--orange) 6% 100%); }
+.slide.blue h1, .slide.blue h2 { color: #fff; }
+.slide.blue .eb { color: var(--orange); }
+.slide.blue p { color: #d7e3f2; }
+.slide.blue .badge { font-size: 27px; padding: 6px 16px; }
+.slide.blue h1 { font-size: 64px; line-height: 1.08; margin: 22px 0 18px; }
+.seg { display: grid; grid-template-columns: 56px 1fr auto; gap: 16px; align-items: center; margin: 12px 0; font-size: 32px; }
+.seg b { background: var(--orange); color: #fff; display: grid; place-items: center; height: 48px; border-radius: 6px; }
+.seg span:last-child { color: var(--orange); font-weight: 700; font-size: 28px; }
+.brk { display: flex; gap: 48px; align-items: center; margin-top: 120px; }
+.brk .pill { background: var(--orange); color: #fff; font-size: 64px; font-weight: 800; padding: 26px 52px; border-radius: 18px; }
+.brk .when { font-size: 44px; font-weight: 700; }
+.brk .when small { display: block; font-size: 32px; font-weight: 400; color: #d7e3f2; margin-top: 10px; }
+
+/* board slides: deliberately sparse */
+.slide.board { background: #fffdf8; }
+.slide.board > .eb { color: var(--orange-2); }
+.board-steps { counter-reset: s; list-style: none; padding: 0; }
+.board-steps li { counter-increment: s; position: relative; padding-left: 62px; margin: 0 0 20px; font-size: 32px; min-height: 42px; }
+.board-steps li::before { content: counter(s); position: absolute; left: 0; top: 2px; color: #fff; background: var(--orange); border-radius: 50%; width: 42px; height: 42px; display: grid; place-items: center; font-size: 24px; font-weight: 700; }
+
+/* deck chrome */
+.chrome { position: fixed; inset: auto 0 0 0; height: 5px; background: rgba(255, 255, 255, .08); z-index: 10; }
+.chrome i { display: block; height: 100%; width: 0; background: var(--orange); transition: width .2s; }
+.slide .num { position: absolute; right: 26px; bottom: 16px; font-size: 20px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.slide.blue .num { color: #9fb6d3; }
+.navbtn { position: fixed; bottom: 14px; z-index: 11; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .35); color: #fff; font-size: 22px; opacity: 0; transition: opacity .2s; }
+body:hover .navbtn { opacity: .7; }
+.navbtn.prev { left: 14px; } .navbtn.next { right: 14px; }
+.feedback { position: fixed; right: 18px; bottom: 70px; z-index: 11; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-2); color: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .25); opacity: .22; transition: opacity .2s, transform .2s, background .2s; }
+.feedback:hover, .feedback:focus-visible { opacity: 1; transform: scale(1.1); background: var(--orange); }
+.help { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 11; background: rgba(0,0,0,.72); color: #fff; font: 15px/1.4 var(--font); padding: 8px 14px; border-radius: 8px; opacity: 0; transition: opacity .4s; pointer-events: none; }
+.help.show { opacity: 1; }
+.blackout { position: fixed; inset: 0; background: #000; z-index: 30; display: none; }
+.blackout.on { display: block; }
+.overview { position: fixed; inset: 0; z-index: 40; background: rgba(8, 14, 22, .96); overflow: auto; padding: 32px; display: none; font-family: var(--font); }
+.overview.on { display: block; }
+.overview ol { list-style: none; margin: 0 auto; padding: 0; max-width: 1400px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.overview button { width: 100%; text-align: left; font-size: 15px; background: #16222f; color: #dfe8f1; border: 1px solid #2a3a4c; padding: 10px 12px; border-radius: 8px; }
+.overview button b { color: var(--orange); margin-right: 8px; }
+.overview button.cur { border-color: var(--orange); }
+.overview .ov-part { max-width: 1400px; margin: 0 auto 26px; padding: 14px 16px 16px; border-radius: 10px; border: 1px solid transparent; }
+.overview .ov-part.here { border-color: #3a4d63; background: rgba(255, 255, 255, .03); }
+.overview .ov-part h3 { margin: 0 0 10px; font-size: 20px; font-weight: 700; color: #fff; letter-spacing: .01em; }
+.overview .ov-part.here h3::after { content: "you are here"; margin-left: 12px; font-size: 13px; font-weight: 600; color: var(--orange); text-transform: uppercase; letter-spacing: .06em; }
+.overview .ov-part h4 { margin: 14px 0 8px; font-size: 14px; font-weight: 600; color: #9fb3c8; text-transform: uppercase; letter-spacing: .06em; }
+.overview .ov-part h4.here { color: var(--orange); }
+.overview button.cur { background: #2a2416; color: #fff; }
+
+/* print / save as PDF: one slide per page */
+@page { size: 1280px 720px; margin: 0; }
+@media print {
+  html, body { overflow: visible; height: auto; background: #fff; }
+  .deck { position: static; transform: none !important; width: 1280px; height: auto; }
+  .slide { display: flex !important; position: relative; width: 1280px; height: 720px; break-after: page; }
+  .chrome, .navbtn, .feedback, .help, .overview, .blackout { display: none !important; }
+  .slide .reel-stage { display: none; }
+  .slide .reel-list { -webkit-mask-image: none; mask-image: none; }
+  .slide .reel-list > ol { transform: none !important; }
+  .slide .reel-list li { opacity: 1; }
+}

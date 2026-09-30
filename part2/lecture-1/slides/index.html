@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slides — Part 2 · Lecture 1 · CEG5305</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../../../assets/css/site.css">
+<link rel="stylesheet" href="../../../assets/css/slides.css">
+<link rel="stylesheet" href="../../../assets/css/slides-theme.css">
+<link rel="stylesheet" href="./polish.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.querySelector('.deck'),{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],ignoredClasses:['viz'],throwOnError:false})"></script>
+<script type="module" src="../../../assets/js/main.js"></script>
+<script type="module" src="../../../assets/js/slides.js"></script>
+</head>
+<body data-deck="CEG5305 P2-L1">
+<div class="deck">
+
+<!-- ═════════════════════════════ OPENING ═════════════════════════════ -->
+<section class="slide blue cover" data-title="Title">
+  <div><span class="badge">Part 2 - Lecture 1</span></div>
+  <h1>Architecture of Large<br>Language Models</h1>
+  <p>Session 01 of 2 · Architecture <span>(session 02: Training)</span></p>
+  <p>CEG5305 Introduction to Generative AI with Foundation Models<br>Junyuan Hong · AY2026/27 Semester 1</p>
+  <div class="copyright">© 2026 Junyuan Hong. All rights reserved.</div>
+  <div class="version">2026.09.30v1</div>
+</section>
+
+<section class="slide part1-recap" data-title="Recap: Part 1">
+  <p class="eb">Recap · Part 1, with Liu Xingyu</p>
+  <h2>Where we are: what Part 1 covered</h2>
+  <div class="slide-body">
+    <table>
+      <tr><th>Lecture</th><th>Topic</th><th>Key message</th></tr>
+      <tr><td>01</td><td>Generative and autoregressive models</td><td>A generative model learns p(x); the chain rule turns it into next-token predictions, and a Transformer with a causal mask computes them</td></tr>
+      <tr><td>02</td><td>Learning by maximum likelihood</td><td>Training minimises the KL divergence to the data, which means minimising the cross-entropy of each true next token</td></tr>
+      <tr><td>03</td><td>Latent variable models, the VAE</td><td>Explain data with hidden variables z; the ELBO makes training possible</td></tr>
+      <tr><td>04</td><td>Diffusion models</td><td>Add noise step by step, then learn to remove it: DDPM, and DiT and Stable Diffusion in practice</td></tr>
+      <tr><td>05</td><td>Normalizing flows, flow matching</td><td>Invertible maps give an exact likelihood; flow matching learns the path from noise to data directly</td></tr>
+    </table>
+    <p class="key">Today builds on 01 and 02: the chain rule, the causal mask and the cross-entropy loss all come back.</p>
+  </div>
+</section>
+
+<section class="slide part1-recap part2-ahead" data-title="Looking ahead: Part 2">
+  <p class="eb">Looking ahead · Part 2, with Junyuan Hong</p>
+  <h2>Where we are going: Part 2</h2>
+  <div class="slide-body">
+    <table>
+      <tr><th>Lecture</th><th>Topic</th><th>Key message</th></tr>
+      <tr class="today"><td>1 · 01</td><td>Architecture of LLMs <span class="now">today</span></td><td>What a GPT is made of, and how to find out which parts matter</td></tr>
+      <tr><td>1 · 02</td><td>Training, scaling laws, LoRA</td><td>A fixed compute budget: how much data, how big a model; then adapting a trained model cheaply</td></tr>
+      <tr><td>2 · 01</td><td>Post-training: instruction tuning, RLHF</td><td>A base model continues text; post-training teaches it to answer</td></tr>
+      <tr><td>2 · 02</td><td>Prompting, in-context learning, chain of thought</td><td>Changing what a model does without changing a single weight, and where that stops working</td></tr>
+      <tr><td>3</td><td>Self-supervised foundation models</td><td>Learning from unlabelled data by predicting one part from another, beyond text</td></tr>
+      <tr><td>4</td><td>Large multi-modal models</td><td>Connecting a vision encoder to an LLM so that it can see</td></tr>
+    </table>
+    <p class="key">From what the model is, to how it is trained, aligned, prompted, and extended beyond text.</p>
+  </div>
+</section>
+
+<section class="slide agenda" data-title="Outline — two sessions">
+  <p class="eb">Outline · Lecture 1 = Topic 4, six hours</p>
+  <h2>Two sessions: architecture, then training</h2>
+  <div class="slide-body">
+    <div class="card accent">
+      <div class="tag">Session 01 · today · 3 h</div>
+      <h4>Architecture — what an LLM is made of</h4>
+      <div class="seg"><b>A</b><span><a data-goto="Part A">History of Language Models</a></span><span>50 min</span></div>
+      <div class="seg"><b>☕</b><span>Break</span><span>10 min</span></div>
+      <div class="seg"><b>B</b><span><a data-goto="Part B">What makes Transformers great?</a></span><span>50 min</span></div>
+      <div class="seg"><b>☕</b><span>Break</span><span>10 min</span></div>
+      <div class="seg"><b>C</b><span><a data-goto="Part C">Break a GPT: remove components, then try it yourself</a></span><span>50 min</span></div>
+    </div>
+    <div class="card">
+      <div class="tag"><a href="../session-2/slides/">Session 02</a> · next · 3 h</div>
+      <h4>Training — how the model is actually trained</h4>
+      <p>Training on large datasets · pre-training data · <a data-ref="kaplan2020">scaling laws</a> · <a data-ref="hu2022">LoRA</a> fine-tuning</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide opening-question" data-title="Today's question">
+  <p class="eb">Today's question</p>
+  <h2>Why do LLMs work so well?</h2>
+  <div class="slide-body">
+    <p class="lede">And the part of that question we can test today:</p>
+    <p class="big">Is it the <span>architecture</span>, or the <span>scale</span>?</p>
+    <div data-viz="archVsScale"></div>
+    <p>Today we test model design. Session 02 examines model size, data and compute.</p>
+  </div>
+</section>
+
+<section class="slide scale-arch" data-title="Architecture or scale? The record" data-refs="vaswani2017 devlin2019 hendrycks2021 touvron2023a touvron2023b openai2023 deepseekai2024 epochai2026">
+  <p class="eb">Today's question · the record so far</p>
+  <h2>Larger models improve performance. Better designs reduce compute.</h2>
+  <div class="slide-body">
+    <div data-viz="scaleArch"></div>
+    <div class="grid">
+      <div class="callout"><b>Still open:</b> each new design arrived with more compute and data. For 2012–2023 language models, <a data-ref="ho2024">Ho et al. (2024)</a> credit 60–95% of the gains to compute, 5–40% to algorithms.</div>
+      <div class="callout warn"><b>Why it matters:</b> using 1/7 or 1/11 of the compute means less computation for the same score.</div>
+    </div>
+  </div>
+  <p class="src">Scores from the papers' tables (Vaswani T2, Devlin T1, Touvron 2023a T9 and 2023b T19, DeepSeek-AI T3, OpenAI T2); compute of the MMLU models from Epoch AI, mostly estimates. *GPT-4: estimated compute (bar: 90% interval), post-trained score. Logos: Simple Icons.</p>
+</section>
+
+<!-- ═════════════════════════════ PART A ═════════════════════════════ -->
+<section class="slide blue section-open" data-title="Part A">
+  <p class="eb">Part A</p>
+  <h1>History of Language Models</h1>
+  <p>Compare the models’ outputs, then see how their designs changed.</p>
+  <div class="seg"><b>1</b><span><a data-goto="Three models, side by side">Three models, side by side</a></span><span>17 min</span></div>
+  <div class="seg"><b>2</b><span><a data-goto="History of generative models">History of generative models</a></span><span>25 min</span></div>
+</section>
+
+<section class="slide model-comparison" data-title="Three models, side by side" data-refs="shannon1948 hochreiter1997 radford2019">
+  <p class="eb">1 · Show</p>
+  <h2>Arch makes generation different</h2>
+  <div class="slide-body">
+    <div class="grid">
+      <div class="card"><div class="tag">1 · Counting</div><h4>An n-gram model (<a data-ref="shannon1948">1948</a>)</h4><p>Counts from <i>Alice in Wonderland</i>.</p><p class="use">Used in: <a data-ref="brants2007">Google's translator</a> in 2007.</p></div>
+      <div class="card"><div class="tag">2 · Recurrent</div><h4>An LSTM (<a data-ref="hochreiter1997">1997</a>)</h4><p>Learned from the same book.</p><p class="use">Used in: <a data-ref="wu2016">Google Translate</a> from 2016.</p></div>
+      <div class="card"><div class="tag">3 · Transformer</div><h4>GPT-2 small (<a data-ref="radford2019">2019</a>)</h4><p>124M parameters, web text.</p><p class="use">Used in: larger GPT models run <a data-ref="openai2022">ChatGPT</a>.</p></div>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="tag">Example prompt</div>
+        <p>“The Eiffel Tower is”</p>
+      </div>
+      <div class="card accent">
+        <div class="tag">✋ Your turn</div>
+        <p>Suggest a prompt for all three.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Demo — an n-gram model" data-refs="shannon1948">
+  <p class="eb">1 · Show · demo 1</p>
+  <h2>An n-gram model <span class="age">(1948 · 78 years ago)</span></h2>
+  <div class="slide-body">
+    <div class="demo" data-src="https://ngramflows.netlify.app/" data-title="N-Gram Language Model Demo" data-by="ngramflows" data-minh="520">Word or character n-grams, with the top-5 next-token probabilities.</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Demo — an LSTM" data-refs="hochreiter1997">
+  <p class="eb">1 · Show · demo 2</p>
+  <h2>An LSTM <span class="age">(1997 · 29 years ago)</span></h2>
+  <div class="slide-body">
+    <div class="demo" data-src="../demos/lstm/" data-title="A character-level LSTM" data-by="This course · trained on Alice" data-cost="about 2 MB">Reads and writes one character at a time. Trained on <i>Alice in Wonderland</i> only.</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Demo — GPT-2" data-refs="radford2019 huggingface2025b">
+  <p class="eb">1 · Show · demo 3</p>
+  <h2>A Transformer: GPT-2 small <span class="age">(2019 · 7 years ago)</span></h2>
+  <div class="slide-body">
+    <div class="demo" data-src="../demos/gpt2/" data-title="GPT-2 small, next-token completion" data-by="This course · Transformers.js" data-cost="about 130 MB, cached afterwards">Runs on this laptop. Nothing is sent to a server.</div>
+  </div>
+</section>
+
+<section class="slide discussion gen3" data-title="What actually differs?">
+  <p class="eb">1 · Show</p>
+  <h2>What actually differs?</h2>
+  <div class="slide-body">
+    <div class="grid outputs">
+      <div class="card"><div class="tag">n-gram · counts from <i>Alice</i></div><pre class="gen"><code><span class="pr">the eiffel tower is</span> such a large letters it mouse to think about this morning i could the garden and beg your pardon cried alice not</code></pre></div>
+      <div class="card"><div class="tag">LSTM · learned from <i>Alice</i></div><pre class="gen"><code><span class="pr">The Eiffel Tower is</span>self cats court of the side, who was going to the arch-arching of tell, which handed the trembled on ord her. "That's are the beginnous way and she co</code></pre></div>
+      <div class="card"><div class="tag">GPT-2 small · web text</div><pre class="gen"><code><span class="pr">The Eiffel Tower is</span> now an international landmark on the Eiffel Tower estate, where it has been restored to its historic glory. It was originally built in 1923 by the British builder, Sir Winston Churchill. …</code></pre></div>
+    </div>
+    <div class="callout warn">✋ What are the differences? Style?</div>
+  </div>
+  <p class="src">Pre-run on 29 Sep 2026 with the prompt “The Eiffel Tower is”, the first run of each, not chosen for quality. n-gram: word bigram, 22 words. LSTM: temperature 0.7, 150 characters. GPT-2 small: temperature 0.8, top-k 40, the first two sentences of 50 tokens. All three from the demos on the previous slides.</p>
+</section>
+
+<section class="slide discussion" data-title="Two hypotheses">
+  <p class="eb">1 · Show</p>
+  <h2>Two hypotheses</h2>
+  <div class="slide-body">
+    <div class="grid">
+      <div class="card accent"><div class="tag">Hypothesis 1 · today</div><h4>Architecture</h4><p>The <a data-ref="vaswani2017">Transformer</a> can directly connect distant tokens and process positions in parallel during training.</p></div>
+      <div class="card"><div class="tag">Hypothesis 2 · session 02</div><h4>Scale</h4><p>More training data and more computation.</p></div>
+    </div>
+    <p>Both contribute. How much does each explain the differences we observed?</p>
+  </div>
+</section>
+
+<section class="slide blue section-divider" data-title="History of generative models">
+  <p class="eb">Segment 2 · 25 min</p>
+  <h1>History of generative models<br>from n-grams to the Transformer</h1>
+  <p>n-gram → NPLM → RNN → LSTM → Transformer</p>
+</section>
+
+<section class="slide markov" data-title="The principle: predict the next token" data-refs="markov1913 shannon1948">
+  <p class="eb">2 · History of generative models · the common principle</p>
+  <h2>The task of LM is to generate a sequence of tokens</h2>
+  <div class="slide-body">
+    <p class="key">Our goal is to generate a sentence \([x_1, \dots, x_T]\), one token at a time.</p>
+    <div class="grid">
+      <div class="rules">
+        <p><b>Chain rule: exact for any sequence.</b></p>
+        \[ p(x_1,\dots,x_T) = \prod_{t=1}^{T} p(x_t \mid x_1,\dots,x_{t-1}) \]
+        <p>For text, code, DNA or music, these next-token probabilities determine the probability of a complete sequence. Generate a sequence by sampling one token at a time.</p>
+        <p><b>Markov chain: keep only the last \(k\) tokens.</b></p>
+        \[ p(x_t \mid x_1,\dots,x_{t-1}) \approx p(x_t \mid x_{t-k},\dots,x_{t-1}) \]
+        <p>With \(k\) as long as the sequence, it is exact again, but there are \(V^k\) contexts to learn.</p>
+      </div>
+      <div data-viz="markovWindow"></div>
+    </div>
+  </div>
+  <p class="src"><a data-ref="markov1913">Markov (1913)</a> counted vowel–consonant pairs in Pushkin's <i>Eugene Onegin</i>; <a data-ref="shannon1948">Shannon (1948)</a> used such chains to generate English.</p>
+</section>
+
+<section class="slide" data-title="Timeline" data-refs="live">
+  <p class="eb">2 · History of generative models</p>
+  <h2>Seventy years in eight steps</h2>
+  <div class="slide-body">
+    <div data-viz="historyReel">
+    <ol class="timeline">
+      <li data-arch="ngram"><span class="yr">1948</span>n-gram: <a data-ref="shannon1948">Shannon</a> approximates English by counting</li>
+      <li data-arch="srn"><span class="yr">1990</span>RNN: the simple recurrent network (<a data-ref="elman1990">Elman</a>)</li>
+      <li data-arch="lstm"><span class="yr">1997</span>LSTM: gates on a cell state (<a data-ref="hochreiter1997">Hochreiter &amp; Schmidhuber</a>)</li>
+      <li class="key" data-arch="nplm"><span class="yr">2003</span>NPLM: word vectors + an MLP (<a data-ref="bengio2003">Bengio et al.</a>)</li>
+      <li data-arch="rnnlm"><span class="yr">2010</span>RNN language model (<a data-ref="mikolov2010">Mikolov et al.</a>)</li>
+      <li data-arch="seq2seq"><span class="yr">2014</span>RNN encoder–decoder (<a data-ref="sutskever2014">Sutskever et al.</a>), plus attention (<a data-ref="bahdanau2015">Bahdanau et al.</a>): still an RNN</li>
+      <li class="key" data-arch="transformer"><span class="yr">2017</span>Transformer: attention replaces the RNN (<a data-ref="vaswani2017">Vaswani et al.</a>)</li>
+      <li data-arch="gpt"><span class="yr">2018–20</span><a data-ref="radford2018">GPT</a>, <a data-ref="radford2019">GPT-2</a>, <a data-ref="brown2020">GPT-3</a>: the Transformer’s decoder only, next-token prediction, scaled up</li>
+    </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide counting" data-title="n-grams: counting" data-refs="shannon1948">
+  <p class="eb">2 · History of generative models</p>
+  <h2>n-gram models predict from counts</h2>
+  <div class="slide-body">
+    <p>Keep only the last \(n-1\) tokens, then count:</p>
+    \[ p(x_t \mid x_{1},\dots,x_{t-1}) \approx \frac{\mathrm{count}(x_{t-n+1},\dots,x_{t-1},\textcolor{#ef7c00}{x_t})}{\mathrm{count}(x_{t-n+1},\dots,x_{t-1})} \]
+    <p>The model stores counts from the training text rather than learned neural-network weights.</p>
+    <div class="verdict">
+      <div class="fixed"><b>WORKED</b>Fast, with predictions explained by counts. Used in speech and translation for decades: Google’s 2007 translation system counted 5-grams in 2 trillion tokens (<a data-ref="brants2007">Brants et al., 2007</a>).</div>
+      <div class="not"><b>BROKE</b>Cannot share patterns between similar contexts. Most contexts never appear in the data.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="n-gram table, live" data-refs="shannon1948">
+  <p class="eb">2 · History of generative models</p>
+  <h2>An n-gram model is a table of counts</h2>
+  <div class="slide-body"><div data-viz="ngram"></div></div>
+  <p class="src">Counted live from the seven sentences shown. Try the trigram model, then click “dog”, “mat”.</p>
+</section>
+
+<section class="slide board" data-title="Board 1 — why n-gram tables cannot scale" data-refs="bengio2003">
+  <p class="eb">Board · derivation 1 · ~5 min</p>
+  <h2>Why n-gram tables cannot scale</h2>
+  <div class="slide-body"><div data-viz="tableSize"></div></div>
+  <p class="src">✋ “the cat sat on the ___” and “the dog sat on the ___”: does the table know these are related?</p>
+</section>
+
+<section class="slide nplm" data-title="NPLM (2003)">
+  <p class="eb">2 · History of generative models</p>
+  <h2>NPLM (2003): learn word vectors instead of counting</h2>
+  <div class="slide-body">
+    <div class="eqs">
+      <p><b>Word vector:</b> \(C\) is a \(|V| \times m\) table of learned numbers; the vector of word \(w\) is its row, \(C(w)\).</p>
+      <p>\( x = \big(C(w_{t-n+1}), \dots, C(w_{t-1})\big) \qquad h = \tanh(Hx + d) \qquad P(w_t = i \mid \text{context}) = \mathrm{softmax}(Uh + b)_i \)</p>
+    </div>
+    <div data-viz="mlp"></div>
+  </div>
+  <p class="src">Eq. 1 of <a data-ref="bengio2003">Bengio et al. (2003)</a>, with its optional direct connections \(Wx\) left out. \(C, H, d, U, b\) are trained together by gradient descent. Random, untrained weights here.</p>
+</section>
+
+<section class="slide takeaway" data-title="NPLM — verdict" data-refs="bengio2003">
+  <p class="eb">2 · History of generative models</p>
+  <h2>What NPLM fixed</h2>
+  <div class="slide-body">
+    <p>A feed-forward network (MLP) reads a fixed window of learned word vectors. Similar words get similar vectors.</p>
+    <div class="verdict">
+      <div class="fixed"><b>FIXED</b>Similar word vectors let patterns learned for “cat” also help predict after “dog”.</div>
+      <div class="not"><b>DID NOT</b>The window is fixed: H has weights for each position, and earlier words are ignored.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide rnn-slide" data-title="RNN" data-refs="elman1990 bengio1994 bengio2003">
+  <p class="eb">2 · History of generative models</p>
+  <h2>RNN: update a memory vector at each step</h2>
+  <div class="slide-body">
+    <p class="formula">\( h_t = \tanh(W\,h_{t-1} + U\,x_t), \qquad y_t = \mathrm{softmax}(V\,h_t) \) <span class="d">\(x_t\): the word vector of token \(t\). \(h_t\): the memory, the same size at every step.</span></p>
+    <div class="rnn-cmp">
+      <div><div class="tag">NPLM (2003): a fixed window of word vectors</div><div data-viz="wordWindow"></div></div>
+      <div><div class="tag">RNN: one word vector at a time, into the memory \(h\)</div><div data-viz="rnn"></div></div>
+    </div>
+  </div>
+  <p class="src">Left: the NPLM sees only its window. Right: a 6-unit tanh RNN with random weights; the bars show ‖∂hₜ/∂x₁‖, how much the first input can still change the memory.</p>
+</section>
+
+<section class="slide takeaway" data-title="RNN — verdict" data-refs="elman1990 bengio1994">
+  <p class="eb">2 · History of generative models</p>
+  <h2>What the RNN fixed</h2>
+  <div class="slide-body">
+    <p>\( h_t = \tanh(W h_{t-1} + U x_t) \): one state, the same weights at every step.</p>
+    <div class="verdict">
+      <div class="fixed"><b>FIXED</b>The memory vector can, in principle, retain information from any earlier input.</div>
+      <div class="not"><b>DID NOT</b>Gradients from early inputs shrink or grow too large. Training still processes steps in order.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide lstm-slide" data-title="LSTM" data-refs="hochreiter1997 gers2000">
+  <p class="eb">2 · History of generative models</p>
+  <h2>LSTM: gates control what memory keeps</h2>
+  <div class="slide-body">
+    <p class="formula">\( c_t = f_t \odot c_{t-1} + i_t \odot g_t, \qquad h_t = o_t \odot \tanh(c_t) \) <span class="d">gates \(f_t, i_t, o_t = \sigma(\cdot)\), between 0 and 1; new content \(g_t = \tanh(\cdot)\); each computed from \(h_{t-1}\) and \(x_t\).</span></p>
+    <div class="lstm-cmp">
+      <div><div class="tag">RNN: \(h_t = \tanh(W h_{t-1} + U x_t)\)</div><div data-viz="rnnCell"></div></div>
+      <div><div class="tag">LSTM: the cell state \(c\) is changed only by \(\times f\) and \(+\)</div><div data-viz="lstm" data-show="cell"></div></div>
+    </div>
+  </div>
+  <p class="src">After <a data-ref="graves2013">Graves (2013)</a>, Fig. 2. Scalar version of one cell.</p>
+</section>
+
+<section class="slide" data-title="LSTM — what survives" data-refs="hochreiter1997 gers2000">
+  <p class="eb">2 · History of generative models</p>
+  <h2>LSTM: what is left of the cell state after T steps</h2>
+  <div class="slide-body"><div data-viz="lstm" data-show="curve"></div></div>
+  <p class="src">Forget gate f held fixed, nothing added. Dashed: an RNN shrinking by 0.6 per step (stylised).</p>
+</section>
+
+<section class="slide calligrapher" data-title="Demo — an LSTM writing" data-refs="graves2013">
+  <p class="eb">2 · History of generative models · demo</p>
+  <h2>An LSTM, writing by hand</h2>
+  <div class="slide-body">
+    <p class="lede">What it generates: the next <b>pen move</b>. At each step the LSTM outputs a probability distribution over how far the pen moves in x and y, and whether it lifts off the page. It samples one move, draws it, and reads it back in.</p>
+    <div class="pen-row">
+      <div><div class="tag">One move at a time (illustration)</div><div data-viz="penSteps"></div></div>
+      <div class="demo" data-src="https://www.calligrapher.ai/" data-title="Calligrapher.ai" data-by="Sean Vasquez · based on Graves (2013)">The real model: type a phrase, then press Write.</div>
+    </div>
+  </div>
+  <p class="src"><a data-ref="graves2013">Graves (2013)</a>, §4: pen offsets from a mixture of 2-D Gaussians plus an end-of-stroke probability; §5: a soft window over the text tells it which letter it is writing. Left: the pen path is the Hershey script font, not a model sample; the orange ellipses show the kind of distribution output at each step.</p>
+</section>
+
+<section class="slide lstm-verdict" data-title="LSTM — verdict" data-refs="hochreiter1997 gers2000 vaswani2017 bahdanau2015">
+  <p class="eb">2 · History of generative models</p>
+  <h2>What the LSTM fixed, and what it did not</h2>
+  <div class="slide-body">
+    <div class="verdict">
+      <div class="fixed"><b>FIXED</b>Memory over hundreds of steps: the cell state is updated by addition, so while the forget gate stays near 1, information and gradients pass through.</div>
+    </div>
+    <table class="bottleneck">
+      <tr><th>Still a bottleneck</th><th>Consequence</th></tr>
+      <tr><td>① Step \(t\) waits for step \(t-1\): \(n\) steps in a row, in training too.</td>
+          <td><b>Slow training.</b> The \(n\) positions cannot be computed at the same time, so training time grows with sequence length however many GPU cores are free. It is not more arithmetic: per layer, recurrence costs \(O(n \cdot d^2)\) and attention \(O(n^2 \cdot d)\). The difference is \(O(n)\) sequential steps against \(O(1)\).</td></tr>
+      <tr><td>② Everything about the past must fit in one fixed-size state.</td>
+          <td><b>Limited capacity.</b> A long input is squeezed into the same \(d\) numbers, so detail is lost, and a word \(n\) steps back reaches the output only through \(n\) updates. A plain encoder–decoder translated worse as sentences got longer.</td></tr>
+    </table>
+  </div>
+  <p class="src">Costs per layer and sequential steps: Vaswani et al. (2017), Table 1. Longer sentences, lower BLEU: Bahdanau et al. (2015), Fig. 2.</p>
+</section>
+
+<section class="slide seq2seq" data-title="Seq2seq: a sentence in one vector" data-refs="sutskever2014 bahdanau2015">
+  <p class="eb">2 · History of generative models</p>
+  <h2>Seq2seq (2014): a whole sentence in one vector</h2>
+  <div class="slide-body">
+    <p class="lede">Bottleneck ②: the encoder’s last state \(c\) is all the decoder gets (<a data-ref="sutskever2014">Sutskever et al., 2014</a>). Attention (<a data-ref="bahdanau2015">Bahdanau et al., 2015</a>) lets each decoder step look back at every encoder state.</p>
+    <p class="formula">\( \alpha_{ij} = \mathrm{softmax}_j\big(a(s_{i-1}, h_j)\big), \qquad c_i = \sum_j \alpha_{ij}\, h_j, \qquad s_i = f(s_{i-1}, y_{i-1}, \textcolor{#ef7c00}{c_i}) \) <span class="d">Score each \(h_j\) against \(s_{i-1}\), turn the scores into weights \(\alpha_{ij}\), feed their weighted average \(c_i\) to step \(i\).</span></p>
+    <div data-viz="seq2seq"></div>
+  </div>
+  <p class="src">Formulas: <a data-ref="bahdanau2015">Bahdanau et al. (2015)</a>, §3.1, Eqs. 4–6; \(a\) is a small learned network. Alignment weights in the diagram are hand-set for illustration, not from a trained model.</p>
+</section>
+
+<section class="slide" data-title="RNN vs attention: one hop" data-refs="vaswani2017">
+  <p class="eb">2 · History of generative models</p>
+  <h2>RNN vs attention: recurrent update vs a direct connection</h2>
+  <div class="slide-body"><div data-viz="longRange"></div></div>
+  <p class="src">Simplified RNN: each update retains a fraction g, as in the LSTM example. Attention weights are set by hand.</p>
+</section>
+
+<section class="slide encdec" data-title="Transformer (2017): encoder–decoder" data-refs="vaswani2017">
+  <p class="eb">2 · History of generative models</p>
+  <h2>Transformer (2017): attention is all you need</h2>
+  <div class="slide-body">
+    <p class="key">(1) seq2seq → encoder–decoder &nbsp; (2) recurrence → self-attention</p>
+    <div data-viz="encDec"></div>
+    <div class="grid">
+      <p><b>Encoder:</b> reads the whole source at once; every word attends to every other. Word order comes from a position vector added to each word, not from reading left to right.</p>
+      <p><b>Decoder:</b> writes the target. Cross-attention reads the encoder, the seq2seq attention without the RNN. Its own self-attention is masked: why, on the next slide.</p>
+    </div>
+  </div>
+  <p class="src">After Fig. 1 and §3.1 of <a data-ref="vaswani2017">Vaswani et al. (2017)</a>, simplified.</p>
+</section>
+
+<section class="slide" data-title="Self-attention and the causal mask" data-refs="vaswani2017">
+  <p class="eb">2 · History of generative models</p>
+  <h2>Self-attention in one matrix product, and the causal mask</h2>
+  <div class="slide-body"><div data-viz="attnMatrix"></div></div>
+  <p class="src">\( \mathrm{softmax}(QK^\top/\sqrt{d} + M)\,V \), with \(M_{ij} = -\infty\) for \(j > i\), else 0: <a data-ref="vaswani2017">Vaswani et al. (2017)</a>, §3.2.3. Weights hand-set; Part B computes it with real numbers.</p>
+</section>
+
+<section class="slide board" data-title="Board 2 — RNN chain vs attention fan" data-refs="vaswani2017">
+  <p class="eb">Board · derivation 2 · ~6 min</p>
+  <h2>RNN vs attention: path length and training steps</h2>
+  <div class="slide-body">
+    <div class="board-video">
+      <div data-viz="chainFan"></div>
+      <figure class="clip"><div data-viz="youtube" data-id="2AD1yV7jtZ0" data-vertical data-title="CPU vs GPU: painting one dot at a time, or all at once"></div><figcaption>One at a time, or all at once: an RNN is the first robot, attention the second. Video: YouTube, LEARN &amp; FUN.</figcaption></figure>
+    </div>
+  </div>
+  <p class="src">Attention compares O(n²) token pairs, but computes those comparisons in parallel. An RNN must process n steps in order.</p>
+</section>
+
+<section class="slide deconly" data-title="Decoder-only (GPT)" data-refs="radford2018 radford2019 brown2020">
+  <p class="eb">2 · History of generative models</p>
+  <h2>Decoder-only (GPT, 2018): drop the encoder, keep the mask</h2>
+  <div class="slide-body">
+    <div class="grid">
+      <div class="card"><div class="tag">Encoder–decoder · 2017</div><h4>Trains on paired data</h4><p>From a French sentence, predict its English translation.</p></div>
+      <div class="card accent"><div class="tag">Decoder-only · GPT</div><h4>Trains on any text</h4><p>Predict the next token, at every position.</p></div>
+    </div>
+    <ul class="why">
+      <li><b>Simple architecture:</b> one module, the decoder.</li>
+      <li><b>A simple causal mask</b> gives the order that recurrence gave the RNN: position \(i\) sees only positions \(\le i\).</li>
+    </ul>
+  </div>
+  <p class="src">GPT-1: a “12-layer decoder-only transformer with masked self-attention heads” (<a data-ref="radford2018">Radford et al., 2018</a>). Translation by prompt, “english sentence = french sentence”: GPT-2 5 BLEU on WMT-14 En→Fr (<a data-ref="radford2019">Radford et al., 2019</a>, §3.7); GPT-3 few-shot 32.6 (<a data-ref="brown2020">Brown et al., 2020</a>, Table 3.4).</p>
+</section>
+
+<section class="slide" data-title="The complete Transformer">
+  <p class="eb">2 · History of generative models</p>
+  <h2>The complete Transformer: N identical blocks</h2>
+  <div class="slide-body"><div data-viz="architecture"></div></div>
+  <p class="src">Decoder-only: <a data-ref="karpathy2022">nanoGPT</a> <code>model.py</code>. Encoder–decoder: after Fig. 1 of <a data-ref="vaswani2017">Vaswani et al. (2017)</a>.</p>
+</section>
+
+<section class="slide takeaway" data-title="Transformer — verdict" data-refs="vaswani2017">
+  <p class="eb">2 · History of generative models</p>
+  <h2>What the Transformer fixed</h2>
+  <div class="slide-body">
+    <p>Each block combines attention and a feed-forward network (MLP). Position vectors encode token order.</p>
+    <div class="verdict">
+      <div class="fixed"><b>FIXED</b>Direct connections between tokens, with all positions processed in parallel during training.</div>
+      <div class="not"><b>DID NOT</b>Attention compares every pair: time and memory grow as \(n^2\).</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Demo — Transformer Explainer" data-refs="cho2026 radford2019">
+  <p class="eb">2 · History of generative models · demo</p>
+  <h2>A real GPT-2, animated</h2>
+  <div class="slide-body">
+    <div class="demo" data-src="https://poloclub.github.io/transformer-explainer/" data-title="Transformer Explainer" data-by="Polo Club of Data Science, Georgia Tech" data-cost="about 600 MB — load it before class">Type a prompt, press Generate.</div>
+  </div>
+</section>
+
+<section class="slide" data-title="Demo — LLM Visualization" data-refs="bycroft2023 radford2019 brown2020">
+  <p class="eb">2 · History of generative models · demo</p>
+  <h2>nano-gpt, GPT-2 and GPT-3 in 3D</h2>
+  <div class="slide-body">
+    <div class="demo" data-src="https://bbycroft.net/llm" data-title="LLM Visualization" data-by="Brendan Bycroft">nano-gpt, GPT-2 and GPT-3 side by side. Use full screen.</div>
+  </div>
+</section>
+
+<section class="slide comparison-table" data-title="Comparison table" data-refs="shannon1948 bengio2003 elman1990 hochreiter1997 vaswani2017">
+  <p class="eb">2 · History of generative models</p>
+  <h2>Five architectures, four questions</h2>
+  <div class="slide-body">
+    <table>
+      <tr><th>Model</th><th>Context</th><th>Path length</th><th>Parallel training</th><th>Main strength or limit</th></tr>
+      <tr><td><b>n-gram</b></td><td>n−1 tokens</td><td>—</td><td>n/a</td><td>Cannot share similar contexts</td></tr>
+      <tr><td><b>NPLM</b></td><td>fixed window</td><td>1, in window</td><td>yes</td><td>Window cannot grow</td></tr>
+      <tr><td><b>RNN</b></td><td>unbounded*</td><td>O(n)</td><td>no</td><td>Forgets; sequential</td></tr>
+      <tr><td><b>LSTM</b></td><td>long</td><td>O(n)</td><td>no</td><td>Longer memory; still sequential</td></tr>
+      <tr class="hl"><td>Transformer</td><td>full window</td><td>O(1)</td><td>yes</td><td>Direct access; O(n²) comparisons</td></tr>
+    </table>
+    <p class="note">* In principle. Shrinking gradients make learning from distant tokens difficult.</p>
+  </div>
+</section>
+
+<section class="slide beyond" data-title="Transformers beyond language">
+  <p class="eb">2 · History of generative models</p>
+  <h2>Transformers beyond language</h2>
+  <div class="slide-body">
+    <p class="key">Transformers also process non-text tokens. Each task uses its own input encoding and output layer.</p>
+    <div class="beyond-grid">
+      <div class="b-card"><div class="tag">Images</div><h4><b>ViT</b> · <a data-ref="dosovitskiy2021">Dosovitskiy et al. (2021)</a></h4><div data-viz="beyondArch" data-kind="vit"></div></div>
+      <div class="b-card"><div class="tag">Image generation</div><h4><b>DiT</b> · <a data-ref="peebles2023">Peebles &amp; Xie (2023)</a></h4><div data-viz="beyondArch" data-kind="dit"></div></div>
+      <div class="b-card"><div class="tag">Video</div><h4><b>ViViT</b> · <a data-ref="arnab2021">Arnab et al. (2021)</a></h4><div data-viz="beyondArch" data-kind="vivit"></div></div>
+      <div class="b-card"><div class="tag">Speech</div><h4><b>Whisper</b> · <a data-ref="radford2023">Radford et al. (2023)</a></h4><div data-viz="beyondArch" data-kind="whisper"></div></div>
+      <div class="b-card"><div class="tag">Time series</div><h4><b>PatchTST</b> · <a data-ref="nie2023">Nie et al. (2023)</a></h4><div data-viz="beyondArch" data-kind="patchtst"></div></div>
+      <div class="b-card"><div class="tag">Proteins</div><h4><b>ESM-2</b> · <a data-ref="lin2023">Lin et al. (2023)</a></h4><div data-viz="beyondArch" data-kind="esm"></div></div>
+    </div>
+  </div>
+  <p class="src">Examples: eagle, USFWS; Armstrong, Apollo 11, NASA; Muybridge (1878); all public domain. DiT sample, <a href="https://github.com/facebookresearch/DiT">facebookresearch/DiT</a> (CC BY-NC 4.0). Ubiquitin, <a href="https://www.rcsb.org/structure/1UBQ">PDB 1UBQ</a>.</p>
+</section>
+
+<section class="slide blue section-summary" data-title="Part A close">
+  <p class="eb">Part A — what attention changes</p>
+  <h1>Each token reads earlier tokens directly. Training processes all positions at once.</h1>
+  <p>These explain advantages over RNNs. Part B tests <b>how other design choices improve performance</b>.</p>
+</section>
+
+<section class="slide blue break-slide" data-title="Break 1">
+  <div class="brk"><div class="pill">BREAK 1</div><div class="when">10 minutes<small>Back at 19:00</small></div></div>
+  <p>Coming up in Part B: an experiment that changes one thing at a time, then nanoGPT’s six components.</p>
+</section>
+
+<!-- ═════════════════════════════ PART B ═════════════════════════════ -->
+<section class="slide blue section-open with-recap" data-title="Part B">
+  <p class="eb">Part B</p>
+  <h1>What makes Transformers great?</h1>
+  <p>Test one design change at a time, then examine nanoGPT’s components.</p>
+  <div class="seg"><b>3</b><span><a data-goto="The comparison was not controlled">The ConvNeXt experiment</a></span><span>22 min</span></div>
+  <div class="seg"><b>4</b><span><a data-goto="The components, in nanoGPT">The components, in nanoGPT</a></span><span>28 min</span></div>
+  <aside class="recap">
+    <div class="t">So far, in Part A</div>
+    <ul>
+      <li>Every language model predicts the next token from the tokens before it.</li>
+      <li>n-grams and the NPLM see a fixed window; the RNN and LSTM carry one state, one step at a time.</li>
+      <li>Attention reaches any earlier token in one step; the causal mask hides the future.</li>
+      <li>More scale improves performance. Better designs reduce the compute needed.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="slide experiment" data-title="The comparison was not controlled" data-refs="dosovitskiy2021 liu2021 liu2022">
+  <p class="eb">3 · The ConvNeXt experiment</p>
+  <h2>The comparison we just made was not controlled</h2>
+  <div class="slide-body">
+    <p>A Transformer differs from a ConvNet in many ways at once:</p>
+    <div data-viz="convVsVit"></div>
+    <ol class="diffs">
+      <li><b>1</b><span>self-attention instead of convolution</span></li>
+      <li><b>2</b><span>LayerNorm (LN) instead of BatchNorm (BN)</span></li>
+      <li><b>3</b><span>GELU instead of ReLU</span></li>
+      <li><b>4</b><span>AdamW, longer training, more varied images <i>(not drawn)</i></span></li>
+      <li><b>5</b><span>an input layer that cuts the image into patches</span></li>
+      <li><b>6</b><span>different numbers of blocks in each stage</span></li>
+    </ol>
+    <p class="callout">If two models differ in many ways, a higher score does not tell us which change helped.</p>
+  </div>
+</section>
+
+<section class="slide method" data-title="ConvNeXt — the method" data-refs="he2016">
+  <p class="eb">3 · The ConvNeXt experiment</p>
+  <h2>How to investigate which component is important?</h2>
+  <div class="slide-body">
+    <div class="grid tight">
+      <div class="card"><div class="tag">1</div><p>Start with ResNet-50: 76.1% ImageNet accuracy.</p></div>
+      <div class="card"><div class="tag">2</div><p>Add one design or training change at a time.</p></div>
+      <div class="card"><div class="tag">3</div><p>Measure accuracy after each change, using similar amounts of computation.</p></div>
+    </div>
+    <div data-viz="controlled" class="side"></div>
+  </div>
+  <p class="src"><a data-ref="liu2022">Liu et al. (2022)</a>, <em>A ConvNet for the 2020s</em>. Diagram schematic: effect sizes made up; the measured ones are on the next slide.</p>
+</section>
+
+<section class="slide" data-title="ConvNeXt staircase" data-refs="he2016 liu2021">
+  <p class="eb">3 · The ConvNeXt experiment</p>
+  <h2>ConvNeXt: one change at a time, measured</h2>
+  <div class="slide-body"><div data-viz="convnext" class="side"></div></div>
+  <p class="src"><a data-ref="liu2022">Liu et al. (2022)</a>, Fig. 2 and §2. ImageNet-1K top-1, ResNet-50 → ConvNeXt-T; Swin-T as the target.</p>
+</section>
+
+<section class="slide evidence" data-title="What ConvNeXt shows" data-refs="liu2022">
+  <p class="eb">3 · The ConvNeXt experiment</p>
+  <h2>What ConvNeXt does, and does not, show</h2>
+  <div class="slide-body">
+    <div class="claims-row">
+      <div>
+        <div class="card accent"><div class="tag">It shows (click one)</div><p data-claim="attn">Some gains came from changes besides attention.</p><p data-claim="train">Training changes alone: +2.7 percentage points in accuracy.</p><p data-claim="design">Twelve design changes together: +3.2 more.</p></div>
+        <div class="card"><div class="tag">It does not show</div><p>That attention is useless.</p><p>Whether the same gains apply to language: this experiment tests image classification.</p></div>
+      </div>
+      <div data-viz="convnextClaims"></div>
+    </div>
+    <p class="callout"><b>We can use the same experimental method.</b> Change one thing, hold the rest fixed, measure. Part C does it to a GPT.</p>
+  </div>
+</section>
+
+<section class="slide blue section-divider" data-title="The components, in nanoGPT">
+  <p class="eb">Segment 4 · 28 min</p>
+  <h1>The components, in <a href="https://github.com/karpathy/nanoGPT">nanoGPT</a></h1>
+  <p>From the paper to about 300 lines of <a href="https://github.com/karpathy/nanoGPT/blob/3adf61e154c3fe3fca428ad6bc3818b27a3b8291/model.py"><code>model.py</code></a></p>
+</section>
+
+
+<section class="slide nano-map" data-title="nanoGPT in one diagram" data-refs="karpathy2022">
+  <p class="eb">4 · The components</p>
+  <h2>nanoGPT in one diagram: six components</h2>
+  <div class="slide-body">
+    <p class="key">Tokens become vectors (C1), pass through n_layer blocks with the same structure (C2–C5), then become next-token probabilities (C6). We examine each component next.</p>
+    <div data-viz="nanoMap"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="C1 embeddings" data-refs="vaswani2017">
+  <p class="eb">4 · The components</p>
+  <div data-viz="nanoMap" data-mini="c1"></div>
+  <h2>C1 · Token and position embeddings</h2>
+  <div class="slide-body">
+    <p class="key">The same word gets a different vector at a different position, because a position vector is added.</p>
+    <p class="formula">\( x_t = E[\mathrm{idx}_t] + P[t] \) <span class="d">\(E\): \(V \times d\) token table. \(P\): \(T \times d\) position table.</span></p>
+    <div data-viz="embeddings"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="C2 attention — scores" data-refs="vaswani2017">
+  <p class="eb">4 · The components</p>
+  <div data-viz="nanoMap" data-mini="c2"></div>
+  <h2>C2 · Causal self-attention: queries, keys, scores</h2>
+  <div class="slide-body">
+    <p class="key">A score compares one token’s query vector with another’s key vector. Higher scores give that token more attention.</p>
+    <p class="formula">\( Q = XW_Q,\; K = XW_K,\; V = XW_V, \qquad S = QK^\top/\sqrt{d_k} \) <span class="d">\(X\): one row per token. \(S_{ij}\): query \(i\) against key \(j\).</span></p>
+    <div data-viz="attention" data-show="compute"></div>
+  </div>
+  <p class="src">Five tokens, d = 4, random weights.</p>
+</section>
+
+<section class="slide" data-title="C2 attention — weights" data-refs="vaswani2017">
+  <p class="eb">4 · The components</p>
+  <div data-viz="nanoMap" data-mini="c2"></div>
+  <h2>C2 · Mask, softmax, weighted sum</h2>
+  <div class="slide-body">
+    <p class="key">Each output averages its own and earlier tokens’ value vectors, using attention weights. This is where information passes between tokens.</p>
+    <p class="formula">\( A = \mathrm{softmax}(S + M), \qquad \mathrm{out} = A\,V \) <span class="d">\(M_{ij} = -\infty\) for \(j > i\), else 0. Each row of \(A\) sums to 1.</span></p>
+    <div data-viz="attention" data-show="weights"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="C3 MLP">
+  <p class="eb">4 · The components</p>
+  <div data-viz="nanoMap" data-mini="c3"></div>
+  <h2>C3 · The MLP, with <a data-ref="hendrycks2016">GELU</a></h2>
+  <div class="slide-body">
+    <p class="key">Attention combines information from different tokens. The feed-forward network (MLP) then updates each token separately.</p>
+    <p class="formula">\( \mathrm{MLP}(x) = W_2\,\mathrm{GELU}(W_1 x) \) <span class="d">\(W_1\): \(4d \times d\), \(W_2\): \(d \times 4d\). Where are most of the parameters?</span></p>
+    <div data-viz="mlpBlock"></div>
+  </div>
+</section>
+
+<section class="slide" data-title="C4 residuals" data-refs="he2016">
+  <p class="eb">4 · The components</p>
+  <div data-viz="nanoMap" data-mini="c4"></div>
+  <h2>C4 · Residual connections</h2>
+  <div class="slide-body">
+    <p class="key">Each sub-layer adds its result to the input x. This preserves a direct route for information and gradients.</p>
+    <p class="formula">\( x \leftarrow x + \mathrm{Attn}(\mathrm{LN}_1(x)), \qquad x \leftarrow x + \mathrm{MLP}(\mathrm{LN}_2(x)) \) <span class="d">one nanoGPT block, as in <code>Block.forward</code>.</span></p>
+    <div data-viz="residual"></div>
+  </div>
+  <p class="src">Random 32×32 linear layers, computed now. Not a trained model.</p>
+</section>
+
+<section class="slide" data-title="C5 LayerNorm" data-refs="ba2016 vaswani2017 radford2019">
+  <p class="eb">4 · The components</p>
+  <div data-viz="nanoMap" data-mini="c5"></div>
+  <h2>C5 · LayerNorm, and where you put it</h2>
+  <div class="slide-body">
+    <p class="key">LayerNorm puts each token's vector on a standard scale; nanoGPT applies it before each sub-layer.</p>
+    <p class="formula">\( \mathrm{LN}(x) = \gamma \odot \dfrac{x-\mu}{\sqrt{\sigma^2+\epsilon}} + \beta \) <span class="d">for one token's vector \(x\) of \(d\) numbers: \(\mu\), \(\sigma^2\) are their mean and variance; \(\gamma\), \(\beta\) are learned.</span></p>
+    <div data-viz="layerNorm"></div>
+  </div>
+  <p class="src">Post-LN: the 2017 Transformer. Pre-LN: GPT-2 and nanoGPT.</p>
+</section>
+
+<section class="slide" data-title="C6 output head" data-refs="press2017">
+  <p class="eb">4 · The components</p>
+  <div data-viz="nanoMap" data-mini="c6"></div>
+  <h2>C6 · Output scores and shared embedding weights</h2>
+  <div class="slide-body">
+    <p class="key">The last vector at each position becomes one score per vocabulary token, reusing the token table E.</p>
+    <p class="formula">\( p(x_{t+1} \mid x_{\le t}) = \mathrm{softmax}\big(\mathrm{LN}_f(h_t)\,E^\top\big) \) <span class="d">\(h_t\): the last block's output at position \(t\). \(E\): the token table from C1, reused.</span></p>
+    <div data-viz="params"></div>
+  </div>
+  <p class="src">Counts follow <a data-ref="karpathy2022">nanoGPT</a>'s <code>model.py</code>. GPT-2 small: 124,439,808.</p>
+</section>
+
+<section class="slide board derivation" data-title="Board 3 — the objective">
+  <p class="eb">Board · derivation 3 · ~7 min</p>
+  <h2>What is it actually trained to do?</h2>
+  <div class="slide-body">
+    <ol class="board-steps">
+      <li>Start from maximum likelihood: \( \theta^* = \arg\max_\theta \sum_i \log p_\theta(x^{(i)}) \)</li>
+      <li>Expand the sequence probability into next-token probabilities. Taking logs turns their product into a sum.</li>
+      <li>\( \mathcal{L} = -\frac{1}{T}\sum_t \log p_\theta(x_t \mid x_{&lt;t}) \): token-level cross-entropy.</li>
+      <li>\( \mathrm{PPL} = e^{\mathcal{L}} \). ✋ What does that number mean?</li>
+    </ol>
+    <p class="callout">All these models learn to predict the next token. Their designs change how they compute \(p_\theta\).</p>
+  </div>
+</section>
+
+<section class="slide" data-title="The next-token loss">
+  <p class="eb">4 · The components</p>
+  <h2>The loss: predict every next token</h2>
+  <div class="slide-body">
+    <p class="key">Every position predicts the token after it; the loss averages −log p of the true next token.</p>
+    <div class="derive">
+      <span class="lab">At position t</span><span>\( H_t = -\sum_{v \in V} y_{t,v} \log p_\theta(v \mid x_{\le t}) = -\log p_\theta(x_{t+1} \mid x_{\le t}) \) <span class="d">\(y_t\): 1 for the true next token, 0 for all others.</span></span>
+      <span class="lab">Over the sequence</span><span>\( \mathcal{L} = \frac{1}{T}\sum_{t=1}^{T} H_t = -\frac{1}{T}\sum_{t=1}^{T} \log p_\theta(x_{t+1} \mid x_{\le t}) \) <span class="d">the average cross-entropy over positions.</span></span>
+    </div>
+    <div data-viz="nextTokenLoss"></div>
+  </div>
+</section>
+
+<section class="slide gpt-summary" data-title="What makes GPT great">
+  <p class="eb">4 · The components, in nanoGPT · summary</p>
+  <h2>What makes Transformers (GPT) great?</h2>
+  <div class="slide-body">
+    <p class="key">A compound system built on 70 years of work: six simple parts, each with one job.</p>
+    <div data-viz="nanoMap" data-summary>
+      <table class="parts">
+        <tr class="head"><th></th><th>Component</th><th>What it gives the model</th><th>Where it comes from</th></tr>
+        <tr data-id="c1"><td class="id">C1</td><td><a data-goto="C1 embeddings"><b>Embeddings</b></a><span>A vector per token, plus one per position</span></td><td>Words become numbers; order is kept</td><td class="origin">Word vectors, <a data-ref="bengio2003">NPLM (2003)</a></td></tr>
+        <tr data-id="c2"><td class="id">C2</td><td><a data-goto="C2 attention — scores"><b>Causal attention</b></a><span>Each token looks at every earlier token in one step</span></td><td>Long-range context; all positions train at once</td><td class="origin">Attention (<a data-ref="bahdanau2015">2015</a>); self-attention (<a data-ref="vaswani2017">2017</a>)</td></tr>
+        <tr data-id="c3"><td class="id">C3</td><td><a data-goto="C3 MLP"><b>MLP</b></a><span>Works on each token on its own</span></td><td>Most of the parameters, to store what it learns</td><td class="origin">Multilayer perceptron, <a data-ref="rumelhart1986">backprop (1986)</a></td></tr>
+        <tr data-id="c4"><td class="id">C4</td><td><a data-goto="C4 residuals"><b>Residuals</b></a><span>Adds each layer’s result to its input</span></td><td>Deep stacks still train</td><td class="origin"><a data-ref="he2016">ResNet (2016)</a></td></tr>
+        <tr data-id="c5"><td class="id">C5</td><td><a data-goto="C5 LayerNorm"><b>LayerNorm</b></a><span>Puts every token’s vector on a standard scale</span></td><td>Steadier training as the stack gets deep</td><td class="origin"><a data-ref="ba2016">Layer normalization (2016)</a></td></tr>
+        <tr data-id="c6"><td class="id">C6</td><td><a data-goto="C6 output head"><b>Output head</b></a><span>Last vector → a score per vocabulary token</span></td><td>A probability for the next token</td><td class="origin">Softmax, <a data-ref="bengio2003">NPLM (2003)</a></td></tr>
+        <tr class="obj"><td class="id">+</td><td><a data-goto="The next-token loss"><b>Next-token loss</b></a><span>Predict the token after every position</span></td><td>Any text is training data</td><td class="origin"><a data-ref="shannon1948">Shannon (1948)</a></td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide extensions" data-title="What nanoGPT does not have">
+  <p class="eb">4 · The components</p>
+  <h2>What nanoGPT does not have — yet</h2>
+  <div class="slide-body">
+    <p class="key">LLaMA and DeepSeek-V3 keep nanoGPT's layout and change these parts.</p>
+    <table>
+      <tr><th></th><th>What changes</th><th>Why it matters</th><th>Used in</th></tr>
+      <tr><td><b><a data-ref="su2024">RoPE</a></b> <span class="c">C1</span></td><td>rotates queries and keys by position</td><td>scores depend on relative distance</td><td><a data-ref="touvron2023a">LLaMA</a>, <a data-ref="deepseekai2024">DeepSeek-V3</a></td></tr>
+      <tr><td><b><a data-ref="zhang2019">RMSNorm</a></b> <span class="c">C5</span></td><td>rescales the vector without subtracting its mean</td><td>similar performance, 7–64% faster in its paper</td><td>LLaMA, DeepSeek-V3</td></tr>
+      <tr><td><b><a data-ref="shazeer2020">SwiGLU</a></b> <span class="c">C3</span></td><td>a gated MLP, width 8/3·d</td><td>beats ReLU and GELU at equal size</td><td>LLaMA</td></tr>
+      <tr><td><b><a data-ref="ainslie2023">GQA</a></b> <span class="c">C2</span></td><td>query heads share key/value heads</td><td>less memory for stored keys and values</td><td><a data-ref="touvron2023b">Llama 2</a> 34B, 70B</td></tr>
+      <tr><td><b><a data-ref="shazeer2017">MoE</a></b> <span class="c">C3</span></td><td>many MLPs; a few run per token</td><td>more parameters, same compute</td><td>DeepSeek-V3: 671B, 37B active</td></tr>
+    </table>
+    <p class="note">Know what each name refers to for now. We revisit these in Session 02.</p>
+  </div>
+</section>
+
+<section class="slide blue break-slide" data-title="Break 2">
+  <div class="brk"><div class="pill">BREAK 2</div><div class="when">10 minutes<small>Back at 20:00</small></div></div>
+  <p>Coming up in Part C: we remove these components from a small GPT, one at a time, and you predict what breaks.</p>
+</section>
+
+<!-- ═════════════════════════════ PART C ═════════════════════════════ -->
+<section class="slide blue section-open with-recap" data-title="Part C">
+  <p class="eb">Part C</p>
+  <h1>Break a GPT</h1>
+  <p>ConvNeXt added Transformer ideas to a ConvNet, one at a time. Now we take parts out of a small GPT, one at a time. Then you do it.</p>
+  <div class="seg"><b>5</b><span><a data-goto="What we will break">Removing GPT components, live</a></span><span>28 min</span></div>
+  <div class="seg"><b>6</b><span><a data-goto="Homework: the task">Your homework</a></span><span>12 min</span></div>
+  <div class="seg"><b>7</b><span><a data-goto="Session 02">What comes next</a></span><span>10 min</span></div>
+  <aside class="recap">
+    <div class="t">So far, in Part B</div>
+    <ul>
+      <li>ConvNeXt, one change at a time: training changes alone added 2.7 percentage points of ImageNet accuracy.</li>
+      <li>nanoGPT: embeddings (C1), n_layer blocks of attention and MLP, each with LayerNorm and a residual (C2–C5), then the output head (C6).</li>
+      <li>Attention passes information between tokens. The MLP holds two thirds of a block’s parameters.</li>
+      <li>The loss: the average −log p of each true next token.</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="slide small-gpt" data-title="What we will break">
+  <p class="eb">5 · Ablating a small GPT</p>
+  <h2>What we will break: a small GPT with nanoGPT’s structure</h2>
+  <div class="slide-body">
+    <p class="key"><a data-ref="karpathy2022">nanoGPT</a> is a minimal GPT: a model file of about 300 lines with the six parts from Part B. Ours is a one-file copy, with the model and the data made small enough that one run takes about a minute on a laptop.</p>
+    <p class="parts">The six parts: <b>C1</b> embeddings · <b>C2</b> causal self-attention · <b>C3</b> MLP with GELU · <b>C4</b> residuals · <b>C5</b> LayerNorm · <b>C6</b> output head</p>
+    <div class="ex-row">
+      <div class="ex"><div class="tag">Data · TinyShakespeare (<a data-ref="karpathy2015b">char-rnn</a>)</div>
+        <pre class="sample">First Citizen:
+Before we proceed any further, hear me speak.
+
+All:
+Speak, speak.</pre>
+        <p>1,115,394 characters (1.1 MB), one token each. 65 distinct: A–Z, a–z, space, newline and <code>!$&amp;',-.3:;?</code>. First 90% to train, last 10% to validate.</p></div>
+      <div class="ex"><div class="tag">Model</div>
+        <div class="big">3.3 MB</div>
+        <p class="sub">818,241 parameters × 4 bytes (float32)</p>
+        <p>For scale: <a data-ref="brown2020">GPT-3</a> has 175 billion parameters, 350 GB at 2 bytes each.</p>
+        <p>4 blocks, 4 heads, width 128, context 64 characters.</p></div>
+      <div class="ex"><div class="tag">Training · our runs</div>
+        <div data-viz="smallGptCurve"></div>
+        <p>3,000 steps of 32 sequences; AdamW, learning rate 3 × 10⁻⁴; gradients clipped at 1.0. Curve: mean of 3 seeds, laptop CPU.</p></div>
+    </div>
+  </div>
+  <p class="src">All of this is held fixed for every run. Curve from our runs of <a href="../code/ablation_base.py"><code>ablation_base.py</code></a>, 29 Sep 2026: training loss every 10 steps.</p>
+</section>
+
+<section class="slide setup" data-title="The setup">
+  <p class="eb">5 · Ablating a small GPT</p>
+  <h2>The setup</h2>
+  <div class="slide-body">
+    <div class="grid">
+      <div class="card fixed"><div class="tag">Held fixed, for every run</div>
+        <p><b>Everything</b><span>the data, model and training on the previous slide</span></p>
+        <p><b>Seeds</b><span>1337, 1338, 1339</span></p>
+        <p><b>Measure</b><span>validation loss, averaged over 20 batches</span></p></div>
+      <div class="card accent"><div class="tag">Changed, one at a time</div><p>Remove LayerNorm</p><p>Remove residual connections</p><p>Remove position embeddings</p><p>Four heads → one head</p></div>
+    </div>
+    <pre class="run"><code>python -m venv gpt &amp;&amp; source gpt/bin/activate   <span class="c"># optional: a clean environment</span>
+pip install torch                               <span class="c"># Python 3.9+; no GPU needed</span>
+curl -O https://costa-nus.github.io/CEG5305_GenAI/part2/lecture-1/code/ablation_base.py
+python ablation_base.py --out baseline.json     <span class="c"># 3 seeds; downloads the data</span>
+<span class="c"># your change: add one entry to VARIANTS in ablation_base.py, e.g. "deeper": {"n_layer": 12}</span>
+python ablation_base.py --variant deeper --out mine.json</code></pre>
+    <p class="base run"><a href="../code/ablation_base.py">ablation_base.py</a> · or <a href="https://colab.research.google.com/github/costa-nus/CEG5305_GenAI/blob/main/part2/lecture-1/code/ablation_base.ipynb">in Colab</a>, T4 GPU, about 35 s per run · on a laptop CPU, under 0.5 GB of RAM, about 75 s per run</p>
+    <p class="callout">If anything else differs between two runs, you cannot tell which change caused the difference.</p>
+  </div>
+</section>
+
+<section class="slide" data-title="Predict before you look">
+  <p class="eb">5 · Ablating a small GPT</p>
+  <h2>Predict before you look</h2>
+  <div class="slide-body">
+    <p>Rank the four changes from most damaging to least. Record your prediction before viewing the results.</p>
+    <div data-viz="predict"></div>
+  </div>
+</section>
+
+<section class="slide results" data-title="Results">
+  <p class="eb">5 · Ablating a small GPT</p>
+  <h2>All five, side by side</h2>
+  <div class="slide-body">
+    <table>
+      <tr><th>Variant</th><th>Val loss</th><th>Δ vs baseline</th><th>Range, 3 seeds</th></tr>
+      <tr><td>baseline</td><td>1.759</td><td>—</td><td>1.744–1.768</td></tr>
+      <tr><td>− LayerNorm</td><td>1.732</td><td class="d-good">−0.027</td><td>1.724–1.738</td></tr>
+      <tr><td>− residual connections</td><td>2.709</td><td class="d-bad">+0.950</td><td>2.387–3.337</td></tr>
+      <tr><td>− positional embeddings</td><td>1.840</td><td class="d-bad">+0.081</td><td>1.798–1.874</td></tr>
+      <tr><td>single head</td><td>1.750</td><td class="d-good">−0.009</td><td>1.736–1.765</td></tr>
+    </table>
+    <p class="callout">Mean of 3 seeds, 4 layers, 3,000 steps. Lower is better: <span class="d-good">green, loss down</span>; <span class="d-bad">red, loss up</span>.</p>
+  </div>
+  <p class="src">Our runs, 27 Sep 2026, Colab T4 GPU: the model in <a href="../code/ablation_base.py"><code>ablation_base.py</code></a>. Rerun on a laptop CPU on 29 Sep: the same to within 0.002, except − residual (2.27–2.37). Data: TinyShakespeare (<a data-ref="karpathy2015b">char-rnn</a>).</p>
+</section>
+
+<section class="slide reading" data-title="Reading an ablation honestly">
+  <p class="eb">5 · Ablating a small GPT</p>
+  <h2>How to read an ablation honestly</h2>
+  <div class="slide-body">
+    <ol class="board-steps">
+      <li><b>Train each version more than once.</b>&nbsp;Use a different random seed each time. One run can be lucky or unlucky, so report the average and the range.</li>
+      <li><b>Train every version the same way.</b>&nbsp;Same number of steps, same data. Otherwise a difference may come from the training, not from the change.</li>
+      <li><b>Say what else the change removed.</b>&nbsp;Taking out a part can also take out parameters, so the model is smaller as well as different.</li>
+      <li><b>Report changes that made no difference.</b>&nbsp;“One attention head instead of four: no measurable change” is a real finding.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="slide task" data-title="Homework: the task">
+  <p class="eb">6 · Homework · for practice</p>
+  <h2>Homework: test one component of the small GPT</h2>
+  <div class="slide-body">
+    <p class="key">An ablation tests what a component contributes by comparing models trained with and without it.</p>
+    <div class="task-row">
+      <ol class="board-steps">
+        <li><b>Run the baseline.</b> <a href="../code/ablation_base.py">ablation_base.py</a> as given, 3 seeds.</li>
+        <li><b>Change one component, nothing else.</b> Remove it or replace it. Same data, steps and seeds.</li>
+        <li><b>Compare and explain.</b> Is the change in validation loss larger than the spread across seeds? What does the component do that explains it?</li>
+      </ol>
+      <div class="card deliver"><div class="tag">What you produce</div>
+        <p>Your code change: a diff against <code>ablation_base.py</code></p>
+        <p>A table: validation loss, mean and range over 3 seeds, for the baseline and your version</p>
+        <p>One plot: the training-loss curves of both</p>
+        <p>A few sentences: what the component does, why the loss changed or did not, and whether you predicted it</p>
+      </div>
+    </div>
+    <p class="same">This is how <a data-ref="liu2022">Liu et al. (2022)</a> built ConvNeXt, and how we made tonight's table: one change at a time.</p>
+  </div>
+</section>
+
+<section class="slide homework" data-title="Homework: choices">
+  <p class="eb">6 · Homework · for practice</p>
+  <h2>Which component to change</h2>
+  <div class="slide-body">
+    <div class="grid">
+      <div class="card"><div class="tag">Choose one</div><p>One of tonight's four, in more depth: does removing LayerNorm still help at 12 layers?</p><p>Another: MLP width, depth, GELU → ReLU, tied vs untied embeddings</p><p>Or add one nanoGPT lacks: <a data-ref="zhang2019">RMSNorm</a>, <a data-ref="su2024">RoPE</a></p></div>
+      <div class="card"><div class="tag">Check before you conclude</div><p>Same data, steps and seeds as the baseline</p><p>Say what else changed, such as the parameter count</p><p>No difference is a result: report it</p><p>Loss at step 0 near ln 65 = 4.17; if not, fix that first</p></div>
+    </div>
+    <p class="callout warn">This homework is optional practice and carries no course credit.</p>
+  </div>
+</section>
+
+<section class="slide next-session" data-title="Session 02">
+  <p class="eb">7 · What comes next</p>
+  <h2>Session 02 — how the model is actually trained</h2>
+  <div class="slide-body">
+    <div class="grid">
+      <div class="card"><h4>Training on large datasets</h4><p>Minimising the next-token prediction loss over trillions of tokens.</p></div>
+      <div class="card"><h4>Pre-training data</h4><p>Where tokens come from, and why most are thrown away.</p></div>
+      <div class="card"><h4><a data-ref="kaplan2020">Scaling laws</a></h4><p>Predicting that loss from model size, data and compute, before spending the compute.</p></div>
+      <div class="card"><h4>Adapting with fewer trainable parameters</h4><p><a data-ref="hu2022">LoRA</a> and parameter-efficient fine-tuning.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide blue closing" data-title="Close">
+  <p class="eb">Where we got to</p>
+  <h1>Why do LLMs work so well?<br>Architecture, or scale?</h1>
+  <div class="grid">
+    <div class="card"><div class="tag">Answered today</div><svg class="close-art" viewBox="0 0 380 118" aria-label="Tokens joined in one hop; removing a part raises the loss">
+        <g class="arcs"><path d="M30,71 Q130.0,-13 230,71"/><path d="M80,71 Q155.0,8 230,71"/><path d="M130,71 Q180.0,29 230,71"/><path d="M180,71 Q205.0,50 230,71"/></g><g class="dots"><circle cx="30" cy="80" r="9"/><circle cx="80" cy="80" r="9"/><circle cx="130" cy="80" r="9"/><circle cx="180" cy="80" r="9"/><circle cx="230" cy="80" r="9"/></g>
+        <text x="130" y="112">one hop, all at once</text>
+        <rect class="bar" x="282" y="58" width="30" height="36"/><rect class="bar hot" x="326" y="22" width="30" height="72"/>
+        <line class="base" x1="274" x2="364" y1="94" y2="94"/>
+        <text x="297" y="112">base</text><text x="341" y="112">−part</text><text class="hot" x="341" y="16">loss ↑</text>
+      </svg><p>Direct connections between tokens and parallel training let Transformers handle larger workloads. Removing components reveals how each affects prediction loss.</p></div>
+    <div class="card"><div class="tag">Still open</div><svg class="close-art" viewBox="0 0 380 118" aria-label="Larger models, more data and compute: how much does the loss fall?">
+        <g class="grow"><circle cx="30" cy="84" r="10"/><circle cx="78" cy="76" r="18"/><circle cx="150" cy="64" r="30"/></g>
+        <text x="90" y="112">size · data · compute</text>
+        <path class="fall" d="M214,26 C250,40 290,70 356,88"/>
+        <text class="q" x="300" y="44">?</text>
+        <text x="286" y="112">loss ↓ by how much</text>
+      </svg><p>How much larger models, more data and more compute improve performance. We examine this in Session 02.</p></div>
+  </div>
+  <p><b>Questions.</b></p>
+</section>
+
+</div>
+
+<div class="chrome"><i></i></div>
+<button class="navbtn prev" aria-label="previous slide">‹</button>
+<button class="navbtn next" aria-label="next slide">›</button>
+<div class="blackout"></div>
+<div class="overview" aria-label="slide overview"></div>
+<div class="help">← → or PageUp/PageDown · F full screen · O overview · B black screen</div>
+</body>
+</html>

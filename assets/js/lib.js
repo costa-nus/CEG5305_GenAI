@@ -90,7 +90,7 @@ export function softmax(v) {
 }
 
 // diverging colour for a value in [-1, 1] and sequential for [0, 1]
-const dark = () => window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+const dark = () => document.documentElement.dataset.theme !== "light" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 export function divColor(v) {
   const t = Math.max(-1, Math.min(1, v));
   if (dark()) return t >= 0 ? `rgba(255,165,61,${0.12 + 0.75 * t})` : `rgba(127,178,255,${0.12 + 0.75 * -t})`;

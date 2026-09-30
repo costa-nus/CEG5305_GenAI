@@ -1,9 +1,10 @@
 import { demos } from "./demos.js";
+import { apa, sortRefs, linkCites } from "./bib.js";
 
 const registry = {};
 async function load() {
-  const [hist, tf] = await Promise.all([import("./p2l1/history.js"), import("./p2l1/transformer.js")]);
-  Object.assign(registry, hist, tf);
+  const [hist, tf, train, post] = await Promise.all([import("./p2l1/history.js"), import("./p2l1/transformer.js"), import("./p2l1/training.js"), import("./p2l2/posttraining.js")]);
+  Object.assign(registry, hist, tf, train, post);
 }
 
 function toc() {
@@ -22,9 +23,20 @@ function toc() {
   update();
 }
 
+// lecture page: link every citation, and list the cited works under References
+function cites() {
+  linkCites(document);
+  const list = document.querySelector("[data-refs-list]");
+  if (!list) return;
+  const keys = [...document.querySelectorAll("main a[data-ref]")].map(a => a.dataset.ref);
+  list.innerHTML = sortRefs(keys).map(k => `<li>${apa(k)}</li>`).join("");
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   demos();
   toc();
+  const page = !document.querySelector(".deck");
+  if (page) cites();
   const nodes = document.querySelectorAll("[data-viz]");
   if (!nodes.length) return;
   await load();
@@ -39,4 +51,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error(err);
     }
   });
+  if (page) cites(); // visualization footers cite too
+  document.dispatchEvent(new Event("viz:ready"));
 });

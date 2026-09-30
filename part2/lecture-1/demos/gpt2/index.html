@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPT-2 small in the browser — CEG5305</title>
+<link rel="stylesheet" href="../../../../assets/css/site.css">
+<style>
+  html, body { height: 100%; }
+  body { font-size: 17px; }
+  main { box-sizing: border-box; height: 100%; max-width: 1100px; margin: 0 auto; padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: .6rem; }
+  h1 { font-size: 1.3rem; margin: 0; }
+  .sub { margin: 0; color: var(--muted); font-size: .92rem; }
+  .bar { display: flex; gap: .6rem; align-items: stretch; }
+  textarea { flex: 1; font: 1.1rem/1.45 var(--font); padding: .45rem .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--text); resize: none; }
+  .bar button { min-width: 8.5em; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 1.2rem; }
+  .row label { display: flex; align-items: center; gap: .45rem; font-size: .9rem; color: var(--muted); }
+  .row output { min-width: 2.2em; font-family: var(--mono); font-size: .88rem; color: var(--text); }
+  #status { font-size: .9rem; color: var(--muted); }
+  #status.err { color: var(--bad); }
+  #out { flex: 1; min-height: 4em; overflow: auto; padding: .6rem .9rem; border: 1px solid var(--line); border-radius: 8px; background: var(--card); font-size: 1.3rem; line-height: 1.5; white-space: pre-wrap; }
+  #out .p { color: var(--muted); }
+  #out .g { color: var(--text); font-weight: 600; background: var(--tint); }
+  /* inside a slide the frame is about 1150 × 250: drop the header, keep the output large */
+  @media (max-height: 460px) {
+    main { padding: .5rem .8rem; gap: .4rem; }
+    header { display: none; }
+    #out { font-size: 1.35rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>GPT-2 small: continue a text</h1>
+    <p class="sub">124M parameters, trained only to predict the next token (Radford et al., 2019). It runs in this browser; the prompt never leaves the machine.</p>
+  </header>
+  <div class="bar">
+    <textarea id="prompt" rows="1" aria-label="Prompt">The Eiffel Tower is</textarea>
+    <button id="go" class="primary" disabled>Load the model</button>
+  </div>
+  <div class="row">
+    <label>Tokens to add <input id="len" type="range" min="10" max="120" step="10" value="50"><output id="lenv">50</output></label>
+    <label>Temperature <input id="temp" type="range" min="0" max="1.5" step="0.1" value="0.8"><output id="tempv">0.8</output></label>
+    <span id="status">Model not loaded. First load: about 130 MB, cached afterwards.</span>
+  </div>
+  <div id="out" aria-live="polite"></div>
+</main>
+<script type="module">
+// Transformers.js runs the ONNX export of GPT-2 small with WebAssembly. Pinned so the
+// demo does not change under the lecture; the 8-bit file is 128 MB against 500 MB in fp32.
+const LIB = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
+const MODEL = "Xenova/gpt2";
+const $ = id => document.getElementById(id);
+const go = $("go"), status = $("status"), out = $("out");
+let gen = null, TextStreamer = null;
+
+for (const [k, v] of [["len", "lenv"], ["temp", "tempv"]]) $(k).addEventListener("input", () => { $(v).value = $(k).value; });
+$("prompt").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!go.disabled) go.click(); } });
+
+function say(msg, err = false) { status.textContent = msg; status.classList.toggle("err", err); }
+
+async function load() {
+  go.disabled = true;
+  say("Loading the library…");
+  const T = await import(LIB);
+  TextStreamer = T.TextStreamer;
+  const files = {};
+  gen = await T.pipeline("text-generation", MODEL, {
+    dtype: "q8", model_file_name: "decoder_model_merged", device: "wasm",
+    progress_callback: p => {
+      if (p.status !== "progress" || !p.total) return;
+      files[p.file] = [p.loaded, p.total];
+      const [a, b] = Object.values(files).reduce(([x, y], [l, t]) => [x + l, y + t], [0, 0]);
+      say(`Downloading GPT-2 small: ${(a / 1e6).toFixed(0)} of ${(b / 1e6).toFixed(0)} MB`);
+    },
+  });
+  go.textContent = "Generate";
+  go.disabled = false;
+  say("Ready. Press Generate (or Enter); again for a different sample.");
+}
+
+async function generate() {
+  const prompt = $("prompt").value.replace(/\s+$/, "");
+  if (!prompt) return say("Type a prompt first.", true);
+  const n = +$("len").value, temp = +$("temp").value;
+  go.disabled = true;
+  out.innerHTML = "";
+  const p = document.createElement("span"), g = document.createElement("span");
+  p.className = "p"; g.className = "g"; p.textContent = prompt;
+  out.append(p, g);
+  say("Generating…");
+  const t0 = performance.now();
+  let count = 0;
+  const streamer = new TextStreamer(gen.tokenizer, {
+    skip_prompt: true, skip_special_tokens: true,
+    callback_function: t => { g.textContent += t; out.scrollTop = out.scrollHeight; },
+    token_callback_function: () => { count++; },
+  });
+  await gen(prompt, {
+    max_new_tokens: n,
+    ...(temp > 0 ? { do_sample: true, temperature: temp, top_k: 40 } : { do_sample: false }),
+    streamer,
+  });
+  const s = (performance.now() - t0) / 1000;
+  say(`${count} tokens in ${s.toFixed(1)} s. ${temp > 0 ? "Sampled, so each run differs." : "Temperature 0: always the most likely token."}`);
+  go.disabled = false;
+}
+
+go.addEventListener("click", () => (gen ? generate() : load()).catch(e => { say(`Error: ${e.message}`, true); go.disabled = false; }));
+go.disabled = false;
+</script>
+</body>
+</html>

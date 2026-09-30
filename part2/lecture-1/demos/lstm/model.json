@@ -1,0 +1,83 @@
+{
+ "vocab": "\n !\"'()*,-.03:;?ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz\u00f9\u2014",
+ "hidden": 256,
+ "layers": 2,
+ "dtype": "float16",
+ "gates": "i f g o",
+ "arrays": [
+  [
+   "W_ih0",
+   [
+    1024,
+    72
+   ]
+  ],
+  [
+   "W_hh0",
+   [
+    1024,
+    256
+   ]
+  ],
+  [
+   "b0",
+   [
+    1024
+   ]
+  ],
+  [
+   "W_ih1",
+   [
+    1024,
+    256
+   ]
+  ],
+  [
+   "W_hh1",
+   [
+    1024,
+    256
+   ]
+  ],
+  [
+   "b1",
+   [
+    1024
+   ]
+  ],
+  [
+   "W_out",
+   [
+    72,
+    256
+   ]
+  ],
+  [
+   "b_out",
+   [
+    72
+   ]
+  ]
+ ],
+ "trained": {
+  "corpus": "Alice's Adventures in Wonderland, Project Gutenberg #11 (public domain), paragraphs unwrapped",
+  "characters": 142688,
+  "split": "first 90% train, last 10% validation",
+  "parameters": 882760,
+  "val_nats_per_char": 1.4177,
+  "val_bits_per_char": 2.045,
+  "settings": {
+   "hidden": 256,
+   "layers": 2,
+   "dropout": 0.3,
+   "seq": 128,
+   "batch": 64,
+   "lr": 0.002,
+   "epochs": 250,
+   "patience": 8,
+   "seed": 1337
+  },
+  "torch": "2.8.0",
+  "date": "29 Sep 2026"
+ }
+}

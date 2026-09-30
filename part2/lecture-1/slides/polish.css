@@ -1,0 +1,508 @@
+/* Lecture 1 session 01 deck only: sizes for this deck's visualizations and tables.
+   The shared deck style is ../../../assets/css/slides-theme.css, loaded before this file. */
+.slide.comparison-table td:first-child { width: 19%; }
+.slide.comparison-table td:nth-child(2) { width: 20%; }
+.slide.extensions table { font-size: 20px; line-height: 1.3; width: 100%; }
+.slide.extensions .fit > table th { font-size: 16px; text-align: left; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 4px 10px; }
+.slide.extensions .fit > table td { padding: 7px 10px; vertical-align: top; }
+.slide.extensions .fit > table td:first-child { width: 13%; white-space: nowrap; }
+.slide.extensions .fit > table td:nth-child(2) { width: 30%; }
+.slide.extensions .fit > table td:nth-child(3) { width: 29%; }
+.slide.extensions td .c { font-size: 15px; font-weight: 700; color: var(--orange-2); margin-left: 4px; }
+.slide.extensions .note { font-size: 20px; margin-top: 10px; }
+.slide.results th:first-child { width: 36%; }
+.slide.results th:not(:first-child), .slide.results td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.slide.results td:last-child { color: var(--muted); }
+.slide.model-comparison .fit { gap: 28px; }
+.slide.model-comparison .fit > .grid:first-child { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
+.slide.model-comparison .card { padding-top: 18px; }
+.slide.model-comparison .card .tag { margin-bottom: 10px; }
+.slide.model-comparison .card h4 { font-size: 30px; margin-bottom: 12px; }
+.slide.model-comparison .card p { font-size: 28px; }
+.slide.model-comparison .fit > .grid:nth-child(2) .card:first-child p { font-size: 30px; font-weight: 650; color: var(--deep); }
+.slide.model-comparison .fit > p { font-size: 27px; color: var(--muted); }
+.slide.model-comparison .fit > .grid:nth-child(2) { grid-template-columns: 1.45fr 1fr; }
+
+.slide [data-viz=architecture] .viz-body { column-gap: 42px; }
+.slide [data-viz=architecture] .viz-body > .controls { grid-column: 1 / -1; grid-row: 1; gap: 12px 16px; }
+.slide [data-viz=architecture] .controls button { font-size: 18px; }
+.slide [data-viz=architecture] .controls input[type=range] { width: 140px; }
+.slide [data-viz=architecture] .two > div:first-child { grid-row: 2; }
+.slide [data-viz=architecture] .two > div:last-child { min-width: 0; }
+.slide [data-viz=architecture] svg { height: 380px; }
+.slide [data-viz=architecture] .card { border: 0; border-top: 1px solid var(--line); padding: 20px 0 0; background: transparent; }
+.slide [data-viz=architecture] .card p { font-size: 27px; line-height: 1.35; }
+.slide [data-viz=architecture] .card h4 { font-size: 30px; }
+.slide [data-viz=architecture] .card .katex-display { margin: 12px 0; }
+.slide [data-viz=mlp].side .viz-body > svg { height: 440px; }
+.slide [data-viz=convnext].side .viz-body > svg { height: 416px; }
+.slide [data-viz=convnext] .readout { font-size: 22px; }
+.slide [data-viz=attention] .mats { display: grid; grid-template-columns: repeat(3, max-content); gap: 14px 50px; }
+.slide [data-viz=attention] .mat table { font-size: 17px; }
+.slide [data-viz=attention] .mat td { width: 2.45em; height: 1.4em; line-height: 1.1; }
+.slide [data-viz=attention] .mat .cap { line-height: 1.25; }
+.slide [data-viz=attention] .steps { margin-bottom: 0; }
+.slide [data-viz=attention] .controls { margin-bottom: 8px; }
+.slide [data-viz=attention] .controls button { font-size: 18px; padding: 6px 12px; line-height: 1.3; }
+.slide [data-viz=attention] .readout { font-size: 20px; margin-top: 12px; line-height: 1.25; }
+.slide [data-viz=attention][data-show=weights] .viz-body > svg { height: 84px; margin-bottom: 6px; }
+.slide [data-viz=embeddings] .mats { display: grid; grid-template-columns: repeat(3, max-content); gap: 14px 32px; align-items: start; }
+.slide [data-viz=embeddings] .mats > :nth-child(3) { grid-column: 1; }
+.slide [data-viz=embeddings] .mat.cmp th { width: 7.6em; text-align: right; padding-right: .35em; white-space: nowrap; }
+.slide [data-viz=embeddings] .mat.cmp .verdict { font-size: 20px; }
+.slide [data-viz=embeddings] .readout { min-height: 2.6em; margin-top: 10px; }
+.slide [data-viz=embeddings] .mat table { font-size: 18px; }
+.slide [data-viz=embeddings] .mat td { width: 2.5em; }
+.slide [data-viz=layerNorm] .viz-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 48px; align-items: start; }
+.slide [data-viz=layerNorm] .viz-body > :nth-child(1) { grid-column: 1; grid-row: 1; }
+.slide [data-viz=layerNorm] .viz-body > :nth-child(2) { grid-column: 1; grid-row: 2; }
+.slide [data-viz=layerNorm] .viz-body > :nth-child(3) { grid-column: 1; grid-row: 3; }
+.slide [data-viz=layerNorm] .viz-body > :nth-child(4) { grid-column: 2; grid-row: 1; margin-top: 0 !important; }
+.slide [data-viz=layerNorm] .viz-body > :nth-child(5) { grid-column: 2; grid-row: 2; }
+.slide [data-viz=layerNorm] .viz-body > :nth-child(6) { grid-column: 2; grid-row: 3; }
+.slide [data-viz=layerNorm] .viz-body > svg { width: 100%; height: auto; }
+.slide [data-viz=layerNorm] .controls { flex-wrap: wrap; }
+.slide [data-viz=layerNorm] .ln-note { font-size: 19px; line-height: 1.35; text-align: left; margin-top: 12px; color: var(--text); }
+.slide [data-viz=layerNorm] .readout { font-size: 19px; }
+/* one formula line per component slide (47–52): the formula, then its symbols in grey */
+.slide p.formula { font-size: 26px; line-height: 1.35; margin: 0 0 8px; }
+.slide p.formula .d { font-size: 19px; color: var(--muted); margin-left: 14px; }
+.slide [data-viz=rnn] svg:nth-of-type(1) { height: 190px; }
+.slide [data-viz=rnn] svg:nth-of-type(2) { height: 125px; }
+.slide [data-viz=lstm][data-show=cell] .viz-body > svg:nth-of-type(1) { height: 205px; }
+.slide [data-viz=lstm][data-show=cell] .controls { margin-bottom: 10px; }
+.slide [data-viz=lstm][data-show=cell] .readout { font-size: 20px; }
+.slide [data-viz=lstm][data-show=curve] .viz-body > svg:nth-of-type(2) { height: 375px; }
+.slide [data-viz=chainFan] svg { height: 262px; }
+.slide [data-viz=chainFan] .readout { font-size: 18px; line-height: 1.2; }
+.slide [data-viz=residual] .res-row { grid-template-columns: auto minmax(0, 1fr); gap: 30px; }
+.slide [data-viz=residual] .res-row svg { height: 214px; width: auto; }
+.slide [data-viz=residual] .res-row svg + svg { width: 100%; height: auto; max-height: 226px; }
+.slide [data-viz=mlpBlock] .viz-body { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 26px; align-items: start; }
+.slide [data-viz=mlpBlock] .viz-body > .controls, .slide [data-viz=mlpBlock] .viz-body > .readout { grid-column: 1 / -1; }
+.slide [data-viz=mlpBlock] .two { display: contents; }
+.slide [data-viz=mlpBlock] .two svg { height: 222px; width: auto; }
+.slide [data-viz=mlpBlock] .two svg:first-child { grid-column: 1; grid-row: 2; }
+.slide [data-viz=mlpBlock] .two svg:last-child { grid-column: 3; grid-row: 2; }
+.slide [data-viz=mlpBlock] .why-gelu { grid-column: 2; grid-row: 2; font-size: 16.5px; line-height: 1.33; padding: 4px 0 0 16px; border-left: 1px solid var(--line); }
+.slide [data-viz=mlpBlock] .why-gelu p { margin: 0 0 7px; }
+.slide [data-viz=mlpBlock] .why-gelu p.f { font-size: 19px; margin: 2px 0 9px; }
+.slide [data-viz=mlpBlock] .readout { margin-top: 10px; }
+.slide [data-viz=params] svg { height: 156px; }
+.slide [data-viz=perplexity] .controls { margin-bottom: 28px; }
+.slide [data-viz=predict] .viz-body > .grid { gap: 26px; margin-top: 24px; }
+.slide [data-viz=predict] .card { padding: 24px 18px; }
+.slide [data-viz=predict] .card .tag { font-size: 17px; }
+.slide [data-viz=predict] .card h4 { font-size: 26px; line-height: 1.3; }
+.slide .reel-stage { height: 320px; }
+.slide .reel-frame { width: 450px; }
+.slide .reel-frame figcaption { font-size: 25px; }
+.slide .r-node.emb { fill: var(--blue-2); stroke: var(--blue-2); }
+@media print {
+  .slide .reel-list li { font-size: 27px; padding-bottom: 12px; }
+}
+
+/* Part A attention sequence (28 Sep 2026): one hop, the matrix view, Board 2's race; slide 36's controlled-experiment diagram */
+.slide [data-viz=longRange] svg { height: 322px; }
+.slide [data-viz=longRange] .readout { font-size: 19px; line-height: 1.3; }
+.slide [data-viz=attnMatrix] svg { height: 252px; }
+.slide [data-viz=attnMatrix] .controls { margin-bottom: 6px; }
+.slide [data-viz=attnMatrix] .readout { font-size: 17px; line-height: 1.3; }
+.slide [data-viz=controlled].side .viz-body > svg { height: 290px; }
+.slide [data-viz=controlled] .controls button { font-size: 18px; }
+.slide [data-viz=controlled] .readout { font-size: 18px; line-height: 1.3; }
+.slide [data-viz=controlled] .controls { gap: 8px; margin-bottom: 10px; }
+.slide [data-viz=controlled] .controls button { padding: 4px 12px; }
+.slide.method .grid.tight { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 36px; margin-bottom: 18px; }
+.slide.method .grid.tight .card { padding-top: 6px; padding-bottom: 6px; }
+.slide.method .grid.tight .card p { font-size: 25px; line-height: 1.25; }
+.slide.method .grid.tight .card .tag { margin-bottom: 2px; }
+.slide.model-comparison .card p.use { font-size: 21px; line-height: 1.35; color: var(--muted); margin-top: 12px; }
+.slide .nw { white-space: nowrap; }
+/* slide 9: the three pre-run outputs above the question */
+.slide.gen3 .fit { gap: 26px; }
+.slide.gen3 .grid.outputs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.slide.gen3 .grid.outputs .card { padding: 14px 18px; }
+.slide.gen3 .grid.outputs .tag { margin-bottom: 6px; }
+.slide.gen3 p.gen { font-size: 23px; line-height: 1.45; margin: 0; }
+.slide.gen3 p.gen .pr { color: var(--muted); }
+.slide h2 .age { color: var(--muted); font-weight: 500; font-size: .7em; white-space: nowrap; }
+/* slide 4: the scale-versus-architecture chart */
+.slide.scale-arch .fit { gap: 10px; }
+.slide.scale-arch [data-viz="scaleArch"] svg { display: block; width: 100%; height: 292px; }
+.slide.scale-arch .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.slide.scale-arch .callout { font-size: 18px; line-height: 1.35; padding: 8px 14px; margin: 0; }
+.slide.scale-arch .src { font-size: 15px; margin-top: 8px; padding-top: 6px; }
+.slide.scale-arch .refs { font-size: 14px; line-height: 1.3; }
+.slide [data-viz="scaleArch"] .s-text { font-size: 15px; }
+.slide [data-viz="scaleArch"] .s-text.m { font-size: 13.5px; }
+/* the Markov-chain slide: rules on the left, the context picture on the right */
+.slide.markov .fit > .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: start; }
+.slide.markov .rules p { font-size: 21px; line-height: 1.38; margin: 0 0 4px; }
+.slide.markov .rules .katex-display { margin: 4px 0 10px; font-size: 22px; }
+.slide.markov [data-viz="markovWindow"] svg { height: 262px; }
+.slide.markov .readout { font-size: 16px; padding: 6px 10px; }
+.slide.markov .fit > p { font-size: 24px; color: var(--deep); }
+/* NPLM: the equations over a full-width left-to-right diagram */
+.slide.nplm .eqs p { font-size: 22px; line-height: 1.35; margin: 0 0 4px; }
+.slide.nplm .eqs .katex { font-size: 1.05em; }
+.slide.nplm [data-viz="mlp"] svg { display: block; width: 100%; height: 246px; }
+.slide.nplm [data-viz="mlp"] .readout { font-size: 17px; padding: 6px 12px; }
+.slide.nplm [data-viz="mlp"] .controls { margin: 4px 0; }
+.slide [data-viz=lstm][data-show=cell] .viz-body > svg:nth-of-type(1) { height: 262px; }
+.slide [data-viz=lstm][data-show=cell] .readout { font-size: 16px; padding: 5px 12px; line-height: 1.4; }
+.slide [data-viz=lstm][data-show=cell] .controls { gap: 2px 26px; margin-bottom: 0; }
+.slide [data-viz=lstm][data-show=cell] svg .s-text { font-size: 18px; }
+.slide [data-viz=lstm][data-show=cell] svg .s-text.m { font-size: 15.5px; }
+.slide.calligrapher .lede, .slide.seq2seq .lede { font-size: 22px; line-height: 1.4; margin: 0 0 10px; color: var(--text); }
+/* slide 25: each bottleneck with its consequence */
+.slide.lstm-verdict .verdict .fixed { font-size: 22px; }
+.slide.lstm-verdict table.bottleneck { width: 100%; border-collapse: collapse; font-size: 20px; line-height: 1.4; margin-top: 14px; }
+.slide.lstm-verdict table.bottleneck th { text-align: left; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 6px 12px; border-bottom: 1px solid var(--line); }
+.slide.lstm-verdict table.bottleneck td { vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.slide.lstm-verdict table.bottleneck td:first-child { width: 34%; color: var(--deep); font-weight: 600; }
+.slide.lstm-verdict table.bottleneck td b { color: var(--orange-2); }
+.slide.lstm-verdict .fit { gap: 6px; }
+.slide.lstm-verdict .verdict { margin: 0; }
+.slide.lstm-verdict .verdict > div { padding-top: 6px; padding-bottom: 10px; }
+.slide.lstm-verdict table.bottleneck { margin-top: 0; }
+/* the 2017 encoder–decoder with its mask */
+.slide.encdec [data-viz="encDec"] svg { display: block; width: 100%; height: 330px; }
+.slide.encdec [data-viz="encDec"] .s-text { font-size: 15px; }
+.slide.encdec [data-viz="encDec"] .s-text.m { font-size: 13.5px; }
+.slide.encdec .fit > .grid { grid-template-columns: 1.15fr 1fr; gap: 24px; }
+.slide.encdec .fit > .grid p { font-size: 19px; line-height: 1.4; margin: 0; }
+.slide .ask { color: var(--orange-2); font-weight: 600; }
+/* decoder-only */
+.slide.deconly .card h4 { font-size: 26px; }
+.slide.deconly .card p { font-size: 22px; }
+.slide.deconly ul.why { margin: 14px 0 0; padding-left: 1.1em; font-size: 22px; line-height: 1.45; }
+.slide.deconly ul.why li { margin: 4px 0; }
+/* slide 57: the exact settings, and the base code */
+.slide.setup .fit > .grid { grid-template-columns: 1.7fr 1fr; }
+.slide.setup .card.fixed p { font-size: 19px; line-height: 1.35; margin: 0 0 6px; display: grid; grid-template-columns: 5.6em 1fr; }
+.slide.setup .card.fixed p b { color: var(--deep); }
+.slide.setup p.base { font-size: 20px; margin: 0; }
+
+/* Segment 4: a one-line key message, the nanoGPT overview, and its small copy in the top-right corner */
+.slide p.key { font-size: 22px; line-height: 1.3; margin: 0 0 6px; padding: 1px 0 1px 14px; border-left: 4px solid var(--orange); color: var(--text); }
+.slide .minimap { position: absolute; top: 14px; right: 26px; display: flex; align-items: center; gap: 10px; z-index: 2; }
+.slide .minimap svg { width: 66px; height: auto; display: block; }
+.slide .minimap .cap { font-size: 14px; line-height: 1.3; }
+.slide [data-viz=nanoMap] .two { grid-template-columns: auto minmax(0, 1fr); gap: 48px; align-items: center; }
+.slide [data-viz=nanoMap] .two svg { height: 400px; width: auto; }
+.slide [data-viz=nanoMap] .s-text.b { font-size: 15.5px; }
+.slide [data-viz=nanoMap] table.parts { font-size: 19px; line-height: 1.3; }
+.slide [data-viz=nanoMap] table.parts td { padding: 5px 8px; }
+.slide [data-viz=nanoMap] table.parts td span { font-size: 17px; }
+.slide [data-viz=nanoMap] table.parts td.code { font-size: 16px; }
+/* attention: steps and query on one row; slide 47 (scores) needs no head or mask control */
+.slide [data-viz=attention] .viz-body { display: flex; flex-wrap: wrap; column-gap: 22px; align-items: center; }
+.slide [data-viz=attention] .viz-body > :not(.controls) { flex-basis: 100%; }
+.slide [data-viz=attention] .controls .note { font-size: 19px; }
+.slide [data-viz=attention][data-show=compute] .controls > label,
+.slide [data-viz=attention][data-show=compute] .controls > button { display: none; }
+.slide [data-viz=attention][data-show=compute] .mats { row-gap: 3px; }
+.slide [data-viz=attention][data-show=compute] .mat td { height: 1.2em; }
+.slide [data-viz=attention][data-show=weights] .mat td { height: 1.3em; }
+.slide.section-divider a { color: inherit; text-decoration: underline; text-decoration-color: var(--orange); text-decoration-thickness: .06em; text-underline-offset: .14em; }
+.slide [data-viz=embeddings] .mat td { height: 1.42em; }
+.slide [data-viz=attention] .controls { margin-bottom: 4px; }
+.slide [data-viz=attention][data-show=compute] .mat table { font-size: 16px; }
+.slide [data-viz=attention][data-show=weights] .viz-body > svg { height: 76px; }
+.slide [data-viz=params] .controls { margin-bottom: 6px; }
+.slide [data-viz=params] .controls label, .slide [data-viz=params] .controls select, .slide [data-viz=params] .controls input, .slide [data-viz=params] .controls button { font-size: 19px; }
+.slide [data-viz=params] .controls button { padding: 5px 12px; }
+.slide [data-viz=attention] .chips { margin: 0; }
+.slide [data-viz=nextTokenLoss] svg { width: 100%; height: auto; max-height: 262px; display: block; touch-action: none; }
+.slide [data-viz=nextTokenLoss] .controls { margin-bottom: 4px; }
+.slide [data-viz=nextTokenLoss] .controls button { font-size: 18px; padding: 5px 12px; }
+.slide [data-viz=nextTokenLoss] .s-text { font-size: 15px; }
+.slide [data-viz=nextTokenLoss] .s-text.b { font-size: 16px; }
+.slide [data-viz=nextTokenLoss] .readout { font-size: 19px; margin-top: 6px; }
+.slide [data-viz=params] .s-text { font-size: 18px; }
+.slide.extensions .refs { font-size: 14px; line-height: 1.3; }
+/* part openers after a break: the plan on the left, a short recap of the previous part on the right */
+.slide.section-open.with-recap > h1, .slide.section-open.with-recap > p, .slide.section-open.with-recap > .seg { max-width: 660px; }
+.slide.section-open.with-recap > h1 { font-size: 54px; }
+.slide.section-open.with-recap .recap { position: absolute; top: 118px; right: 60px; width: 440px; padding: 18px 22px; border-radius: 10px; background: rgba(255, 255, 255, .07); border-left: 4px solid var(--orange); }
+.slide.section-open.with-recap .recap .t { font-size: 16px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #b9cbd8; margin-bottom: 10px; }
+.slide.section-open.with-recap .recap ul { margin: 0; padding-left: 1.1em; }
+.slide.section-open.with-recap .recap li { font-size: 20px; line-height: 1.35; color: #fff; margin: 0 0 10px; }
+.slide.results .fit > table td, .slide.results .fit > table th { padding-top: 9px; padding-bottom: 9px; }
+.slide .derive { display: grid; grid-template-columns: max-content 1fr; column-gap: 16px; row-gap: 2px; align-items: baseline; margin: 0 0 6px; font-size: 24px; line-height: 1.5; }
+.slide .derive .lab { font-size: 19px; font-weight: 600; color: var(--muted); }
+.slide .derive .d { font-size: 18px; color: var(--muted); margin-left: 12px; }
+.slide.section-open.with-recap > p:not(.eb) { font-size: 26px; line-height: 1.4; margin-bottom: 30px; }
+.slide.setup p.base.run { margin-top: 4px; }
+.slide.setup .callout { font-size: 24px; padding: 10px 18px; margin: 12px 0 0; }
+
+/* Jump links: outline (slide 2) and the part openers */
+.slide .seg a[data-goto] { color: inherit; text-decoration: underline; text-decoration-color: var(--orange); text-decoration-thickness: .06em; text-underline-offset: .16em; }
+.slide .seg a[data-goto]:hover { text-decoration-thickness: .1em; }
+.slide.agenda .card .tag a { color: inherit; }
+
+/* Homework task (slide 62) */
+.slide.task .task-row { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 36px; align-items: start; margin-top: 18px; }
+.slide.task .board-steps li { font-size: 25px; line-height: 1.4; margin-bottom: 20px; padding-left: 52px; }
+.slide.task .card.deliver { border-top: 3px solid var(--orange); padding: 16px 22px; }
+.slide.task .card.deliver p { font-size: 22px; line-height: 1.35; margin-bottom: 10px; padding-left: 18px; position: relative; }
+.slide.task .card.deliver p::before { content: "•"; position: absolute; left: 0; color: var(--orange-2); }
+.slide.task .card.deliver code { font-size: .9em; }
+.slide.task p.same { font-size: 21px; color: var(--muted); margin-top: 16px; }
+
+/* Transformers beyond language (slide 37) */
+.slide.beyond .beyond-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 26px; margin-top: 12px; }
+.slide.beyond .b-card { border-top: 1px solid var(--line); padding-top: 8px; }
+.slide.beyond .b-card .tag { font-size: 14px; margin: 0 0 2px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+.slide.beyond .b-card h4 { font-size: 20px; margin: 0 0 4px; font-weight: 500; }
+.slide.beyond .b-card h4 b { color: var(--deep); font-weight: 700; }
+.slide.beyond [data-viz=beyondArch] svg { width: 100%; height: auto; display: block; }
+.slide.beyond [data-viz=beyondArch] .s-text.cap { font-size: 14px; }
+.slide.beyond [data-viz=beyondArch] .s-text.core { fill: #fff; font-size: 17px; font-weight: 700; }
+.slide.beyond [data-viz=beyondArch] .s-text.core-sub { fill: #dbe7f3; font-size: 13px; }
+.slide.beyond [data-viz=beyondArch] .s-text.out { font-size: 16px; font-weight: 700; }
+.slide.beyond [data-viz=beyondArch] .s-text.tok-t { font-size: 14px; }
+.slide.beyond [data-viz=beyondArch] .s-text.aa { font-size: 10.5px; font-weight: 700; }
+.slide.beyond [data-viz=beyondArch] .series { stroke: var(--blue-2); }
+.slide.beyond [data-viz=beyondArch] .series.fut { stroke: var(--orange); }
+.slide.beyond .refs { font-size: 13px; line-height: 1.3; }
+.slide.beyond .src { font-size: 14px; font-style: normal; margin-top: 6px; padding-top: 5px; }
+.slide.beyond [data-viz=beyondArch] .s-text.loop, [data-viz=beyondArch] .s-text.loop { font-size: 12.5px; font-style: italic; }
+/* fit at 1.00 (30 Sep): slides 63–64 */
+.slide.task .task-row { margin-top: 10px; }
+.slide.task .board-steps li { margin-bottom: 12px; }
+.slide.task .card.deliver p { margin-bottom: 6px; }
+.slide.task p.same { margin-top: 8px; }
+.slide.homework .fit > .grid > .card p { margin-bottom: 9px; }
+.slide.homework .callout { margin-top: 12px; }
+.slide.homework .fit > .grid > .card p { font-size: 27px; line-height: 1.35; }
+.slide.homework .callout { padding-top: 12px; padding-bottom: 12px; }
+.slide.beyond [data-viz=beyondArch] .wave, [data-viz=beyondArch] .wave { fill: var(--blue-2); stroke: var(--blue-2); stroke-width: .6; }
+.slide.beyond [data-viz=beyondArch] .cut, [data-viz=beyondArch] .cut { stroke: #fff; stroke-width: 1.4; }
+.slide.beyond [data-viz=beyondArch] .s-text.tok-t.sm, [data-viz=beyondArch] .s-text.tok-t.sm { font-size: 12.5px; }
+
+/* What we will break (slide 59) and the setup's run block (slide 60) */
+.slide.small-gpt .fit > .grid { grid-template-columns: 1fr 1.45fr; gap: 30px; margin-top: 14px; }
+.slide.small-gpt .card.parts p { font-size: 24px; margin: 0 0 8px; }
+.slide.small-gpt .card.parts p b { display: inline-block; width: 2.2em; color: var(--orange-2); font-size: .8em; }
+.slide.small-gpt .card.fixed p { font-size: 22px; line-height: 1.38; margin: 0 0 12px; display: grid; grid-template-columns: 5.2em 1fr; }
+.slide.small-gpt .card.fixed p b { color: var(--deep); }
+.slide.setup .card.fixed p span, .slide.small-gpt .card.fixed p span { display: block; }
+.slide.setup pre.run { margin: 12px 0 0; padding: 12px 16px; background: var(--code, #f3f5f8); border-radius: 6px; font-size: 16px; line-height: 1.5; white-space: pre; overflow: hidden; }
+.slide.setup pre.run code { font-family: var(--mono); font-size: 1em; background: none; padding: 0; }
+.slide.setup pre.run .c { color: var(--muted); }
+.slide.setup .fit > .grid { grid-template-columns: 1.25fr 1fr; gap: 26px; }
+.slide.setup .fit > .grid > .card { padding-top: 10px; padding-bottom: 8px; }
+.slide.setup .card .tag { margin-bottom: 6px; }
+.slide.setup .card.accent { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; align-content: start; }
+.slide.setup .card.accent .tag { grid-column: 1 / -1; }
+.slide.setup .card.accent p { font-size: 20px; line-height: 1.3; margin: 0 0 6px; }
+.slide.setup pre.run { font-size: 15px; line-height: 1.45; padding: 10px 14px; margin-top: 10px; }
+.slide.setup p.base.run { font-size: 19px; margin-top: 6px; }
+.slide.setup .callout { font-size: 22px; padding: 8px 16px; margin-top: 10px; }
+.slide.setup pre.run { font-size: 16.5px; }
+.slide.setup .card.accent p { font-size: 21px; }
+
+/* slide 59: three examples in a row (data sample, model size, training curve) */
+.slide.small-gpt p.parts { font-size: 20px; margin: 10px 0 0; color: var(--muted); }
+.slide.small-gpt p.parts b { color: var(--orange-2); font-size: .85em; }
+.slide.small-gpt .ex-row { display: grid; grid-template-columns: 1.05fr .85fr 1.1fr; gap: 24px; margin-top: 12px; align-items: start; }
+.slide.small-gpt .ex { border-top: 2px solid var(--line); padding-top: 8px; }
+.slide.small-gpt .ex .tag { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+.slide.small-gpt .ex p { font-size: 18px; line-height: 1.38; margin: 8px 0 0; }
+.slide.small-gpt .ex code { font-size: .9em; }
+.slide.small-gpt pre.sample { font-family: var(--mono); font-size: 15px; line-height: 1.4; background: var(--code, #f3f5f8); border-radius: 6px; padding: 8px 12px; margin: 0; white-space: pre; overflow: hidden; }
+.slide.small-gpt .ex .big { font-size: 60px; font-weight: 800; color: var(--deep); line-height: 1; margin-top: 6px; }
+.slide.small-gpt .ex p.sub { margin-top: 4px; color: var(--muted); }
+.slide.small-gpt [data-viz=smallGptCurve] svg { width: 100%; height: auto; display: block; }
+.slide.small-gpt [data-viz=smallGptCurve] .s-text.ax { font-size: 12.5px; }
+.slide.small-gpt [data-viz=smallGptCurve] .s-text.val { fill: var(--orange-2); font-weight: 600; }
+.slide.small-gpt [data-viz=smallGptCurve] .s-text.tr { fill: var(--blue-2); font-weight: 600; }
+.slide.small-gpt .src { font-size: 14px; font-style: normal; }
+
+/* slide 3: architecture vs scale, two small pictures under the question */
+.slide.opening-question .fit { gap: 18px; padding-bottom: 20px; }
+.slide.opening-question [data-viz=archVsScale] svg { width: 100%; height: auto; display: block; }
+.slide.opening-question [data-viz=archVsScale] .s-text.ttl { font-size: 21px; font-weight: 700; fill: var(--deep); }
+.slide.opening-question [data-viz=archVsScale] .s-text.cap { font-size: 17px; }
+.slide.opening-question [data-viz=archVsScale] .s-text.cap.m { fill: var(--muted); font-size: 15px; }
+.slide.opening-question [data-viz=archVsScale] .s-edge.thin { stroke-width: .8; opacity: .55; }
+/* slide 10: model outputs as code blocks, prompt dimmed */
+.slide.gen3 pre.gen { margin: 0; padding: 10px 12px; background: var(--code, #f3f5f8); border-radius: 6px; white-space: pre-wrap; word-break: break-word; font-family: var(--mono); font-size: 18px; line-height: 1.45; color: var(--text); }
+.slide.gen3 pre.gen code { font: inherit; background: none; padding: 0; }
+.slide.gen3 pre.gen .pr { color: var(--muted); opacity: .5; }
+/* slide 13: room for the goal line (30 Sep) */
+.slide.markov [data-viz="markovWindow"] svg { height: 236px; }
+.slide.markov .rules .katex-display { margin: 2px 0 6px; }
+.slide.markov p.key { margin-bottom: 4px; }
+/* slide 14: the step buttons sit under the rolling list */
+.slide .reel-stage { height: 300px; }
+.slide .reel-controls { margin: 6px 0 0; }
+
+/* slide 20: RNN formula, then the NPLM window (left) beside the RNN (right) */
+.slide.rnn-slide .rnn-cmp { display: grid; grid-template-columns: 0.72fr 1fr; gap: 20px; margin-top: 8px; align-items: start; }
+.slide.rnn-slide .rnn-cmp .tag { font-size: 15px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.slide.rnn-slide [data-viz=wordWindow] svg { width: 100%; height: auto; display: block; }
+.slide.rnn-slide [data-viz=wordWindow] .s-text.cap { font-size: 15px; }
+.slide.rnn-slide [data-viz=rnn] .controls { margin-bottom: 2px; }
+.slide.rnn-slide [data-viz=rnn] .controls button { padding: 6px 14px; font-size: 18px; }
+.slide.rnn-slide [data-viz=rnn] svg:nth-of-type(1) { height: auto; width: 100%; }
+.slide.rnn-slide [data-viz=rnn] svg:nth-of-type(2) { height: 92px; width: 100%; }
+.slide.rnn-slide [data-viz=rnn] h4 { font-size: 17px; margin: 2px 0 0; }
+.slide.rnn-slide [data-viz=rnn] svg:nth-of-type(1) { height: 168px; width: auto; max-width: 100%; display: block; margin: 0 auto; }
+.slide.rnn-slide [data-viz=rnn] svg:nth-of-type(2) { height: 78px; width: auto; max-width: 100%; display: block; margin: 0 auto; }
+.slide.rnn-slide [data-viz=wordWindow] svg { height: 290px; width: auto; max-width: 100%; margin: 0 auto; }
+.slide.rnn-slide p.formula { margin-bottom: 2px; }
+.slide.rnn-slide .src { font-size: 15px; font-style: normal; }
+.slide.rnn-slide [data-viz=rnn] svg:nth-of-type(1) { height: 160px; }
+.slide.rnn-slide .rnn-cmp .tag { text-transform: none; letter-spacing: 0; font-size: 17px; }
+
+/* slide 22: LSTM formula; a plain RNN cell (left) beside the LSTM cell (right); no worked numbers */
+.slide.lstm-slide .lstm-cmp { display: grid; grid-template-columns: 0.36fr 1fr; gap: 18px; margin-top: 6px; align-items: start; }
+.slide.lstm-slide .lstm-cmp .tag { font-size: 17px; color: var(--muted); font-weight: 600; margin-bottom: 4px; text-transform: none; letter-spacing: 0; }
+.slide.lstm-slide [data-viz=rnnCell] svg { width: 100%; height: auto; display: block; }
+.slide.lstm-slide [data-viz=lstm] .readout { display: none; }
+.slide.lstm-slide [data-viz=lstm][data-show=cell] .viz-body > svg:nth-of-type(1) { height: auto; width: 100%; }
+.slide.lstm-slide [data-viz=lstm] .controls { gap: 4px 18px; margin-bottom: 2px; }
+.slide.lstm-slide [data-viz=lstm] .controls label { font-size: 17px; }
+.slide.lstm-slide p.formula { margin-bottom: 2px; }
+.slide.lstm-slide [data-viz=lstm] .controls label:nth-child(5) { display: none; }
+.slide.lstm-slide [data-viz=lstm] .controls label input[type=range] { width: 120px; }
+.slide.lstm-slide [data-viz=lstm][data-show=cell] .viz-body > svg:nth-of-type(1) { height: 244px; width: auto; max-width: 100%; display: block; margin: 0 auto; }
+.slide.lstm-slide [data-viz=rnnCell] svg { height: 244px; width: auto; max-width: 100%; margin-top: 54px; }
+
+/* slide 24: the pen-move stepper beside the live demo */
+.slide.calligrapher .pen-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 8px; align-items: start; }
+.slide.calligrapher .pen-row .tag { font-size: 16px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.slide.calligrapher [data-viz=penSteps] .controls { margin-bottom: 6px; }
+.slide.calligrapher [data-viz=penSteps] .controls button { font-size: 18px; padding: 6px 14px; }
+.slide.calligrapher .pen-read { font-size: 16px; margin-top: 6px; white-space: pre-wrap; }
+.slide.calligrapher .lede { font-size: 22px; }
+.slide.calligrapher .src { font-size: 15px; font-style: normal; }
+.slide.calligrapher .slide-body > .fit { height: 100%; display: flex; flex-direction: column; }
+.slide.calligrapher .pen-row { flex: 1; min-height: 0; }
+.slide.calligrapher .pen-row > .demo { height: 100%; }
+.slide.calligrapher [data-viz=penSteps] svg { height: 236px; width: auto; max-width: 100%; margin: 0 auto; }
+.slide.calligrapher [data-viz=penSteps] svg { height: 196px; }
+.slide.calligrapher .demo-foot { font-size: 17px; padding: 8px 14px; }
+.slide.calligrapher .demo-head { padding: 10px 14px; }
+.slide.calligrapher .lede { margin-bottom: 0; }
+.slide.seq2seq p.formula { font-size: 23px; margin: 0 0 4px; }
+.slide.seq2seq p.formula .d { font-size: 18px; }
+.slide.seq2seq [data-viz=seq2seq] svg { height: 218px; }
+.slide.seq2seq .src { font-size: 15px; font-style: normal; }
+.slide.seq2seq .lede { margin-bottom: 4px; }
+
+/* slide 30: the chain-vs-fan board with a click-to-play clip on the right */
+.slide .board-video { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 20px; align-items: start; }
+.slide .board-video figure.clip { margin: 0; }
+.slide .board-video figcaption { font-size: 15px; line-height: 1.3; color: var(--muted); margin-top: 4px; }
+.slide .board-video .yt .yt-link { font-size: 14px; }
+.slide .board-video [data-viz=chainFan] svg { height: 248px; }
+.slide .board-video { grid-template-columns: minmax(0, 1fr) 178px; }
+.slide .board-video figcaption { font-size: 14px; }
+.slide.seq2seq [data-viz=seq2seq] svg { height: 236px; }
+.slide.seq2seq [data-viz=seq2seq] .s-text { font-size: 16px; }
+.slide.seq2seq [data-viz=seq2seq] .s-text.m { font-size: 14.5px; }
+.slide.seq2seq [data-viz=seq2seq] svg { height: 262px; }
+.slide.seq2seq [data-viz=seq2seq] svg { height: 244px; }
+.slide.seq2seq [data-viz=seq2seq] svg { height: 236px; }
+.slide.seq2seq [data-viz=seq2seq] svg { height: 230px; }
+.slide [data-viz=attnMatrix] svg { height: 268px; }
+.slide [data-viz=attnMatrix] svg { height: 256px; }
+.slide [data-viz=attnMatrix] svg { height: 252px; }
+
+/* slide 44: claims (left) drive the recoloured staircase (right) */
+.slide.evidence .claims-row { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 22px; align-items: start; }
+.slide.evidence .claims-row .card { padding: 10px 16px; margin-bottom: 10px; }
+.slide.evidence .claims-row .card p { font-size: 21px; line-height: 1.35; margin: 0 0 6px; }
+.slide.evidence .callout { font-size: 21px; margin-top: 6px; }
+.slide.evidence .claims-row .card p { margin-bottom: 4px; }
+.slide.evidence .claims-row .card { margin-bottom: 8px; }
+
+/* slide 41: two sketches, then the six numbered differences */
+.slide.experiment .fit > p:first-child { margin: 0 0 4px; }
+.slide.experiment ol.diffs { list-style: none; padding: 0; margin: 8px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 22px; }
+.slide.experiment ol.diffs li { font-size: 19px; line-height: 1.3; display: flex; gap: 8px; align-items: baseline; }
+.slide.experiment ol.diffs li b { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--orange); color: #fff; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; transform: translateY(3px); }
+.slide.experiment ol.diffs li i { color: var(--muted); font-style: normal; }
+.slide.experiment .callout { margin-top: 10px; }
+.slide.experiment .fit > p:first-child { font-size: 24px; }
+.slide.experiment ol.diffs li { font-size: 18px; }
+.slide.experiment .callout { font-size: 22px; padding: 10px 18px; }
+.slide.experiment [data-viz=convVsVit] svg { max-height: 200px; }
+.slide [data-viz=residual] .controls button { font-size: 18px; padding: 6px 14px; }
+.slide [data-viz=residual] .controls { margin-bottom: 2px; }
+.slide.results .d-good { color: var(--good); font-weight: 700; }
+.slide.results .d-bad { color: var(--bad); font-weight: 700; }
+.slide.results .d-good { color: #1e8e3e; }
+.slide.results .d-bad { color: #d93025; }
+
+/* slide 67: one abstract picture per column, light on the dark slide */
+.slide.closing svg.close-art { display: block; width: 100%; max-width: 380px; height: auto; margin: 4px 0 10px; }
+.slide.closing .close-art .dots circle { fill: #1c3a55; stroke: #d7e4ef; stroke-width: 2; }
+.slide.closing .close-art .arcs path { fill: none; stroke: var(--orange); stroke-width: 2.4; opacity: .9; }
+.slide.closing .close-art text { fill: #c9d7e3; font-size: 14px; text-anchor: middle; font-family: var(--font); }
+.slide.closing .close-art text.hot, .slide.closing .close-art text.q { fill: var(--orange); font-weight: 700; }
+.slide.closing .close-art text.q { font-size: 34px; }
+.slide.closing .close-art .bar { fill: #d7e4ef; opacity: .55; }
+.slide.closing .close-art .bar.hot { fill: var(--orange); opacity: 1; }
+.slide.closing .close-art .base { stroke: #d7e4ef; stroke-width: 1.5; }
+.slide.closing .close-art .grow circle { fill: rgba(215, 228, 239, .18); stroke: #d7e4ef; stroke-width: 2; }
+.slide.closing .close-art .fall { fill: none; stroke: var(--orange); stroke-width: 3; stroke-dasharray: 7 6; }
+.slide.closing svg.close-art { max-width: 330px; margin: 0 0 6px; }
+.slide.closing > p:last-of-type { margin-top: 22px; }
+
+/* slide 56: what makes GPT great — one row per component */
+.slide.gpt-summary .fit > table { width: 100%; font-size: 21px; line-height: 1.3; }
+.slide.gpt-summary .fit > table th { font-size: 15px; text-align: left; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 4px 10px; }
+.slide.gpt-summary .fit > table td { padding: 7px 10px; vertical-align: top; }
+.slide.gpt-summary .fit > table td:first-child { width: 20%; white-space: nowrap; font-weight: 600; }
+.slide.gpt-summary .fit > table td:first-child b { color: var(--orange-2); font-size: .8em; margin-right: 4px; }
+.slide.gpt-summary .fit > table td:nth-child(2) { width: 42%; }
+.slide.gpt-summary .fit > table tr.obj td { border-top: 2px solid var(--line); color: var(--deep); }
+.slide.gpt-summary td a[data-goto] { color: inherit; text-decoration: underline; text-decoration-color: var(--orange); text-decoration-thickness: .06em; text-underline-offset: .16em; }
+/* slide 56: a fourth column, where each part comes from */
+.slide.gpt-summary .fit > table { font-size: 18.5px; }
+.slide.gpt-summary .fit > table td { padding: 5px 8px; }
+.slide.gpt-summary .fit > table td:first-child { width: 17%; }
+.slide.gpt-summary .fit > table td:nth-child(2) { width: 33%; }
+.slide.gpt-summary .fit > table td:nth-child(3) { width: 29%; }
+.slide.gpt-summary .fit > table td:nth-child(4) { color: var(--muted); }
+.slide.gpt-summary .refs { font-size: 12.5px; line-height: 1.25; }
+
+/* slide 56: the nanoGPT diagram (left) beside the summary table in the style of slide 46 */
+.slide.gpt-summary [data-viz=nanoMap] .two { grid-template-columns: auto minmax(0, 1fr); gap: 26px; align-items: center; }
+.slide.gpt-summary [data-viz=nanoMap] .two svg { height: 392px; width: auto; }
+.slide.gpt-summary [data-viz=nanoMap] .s-text.b { font-size: 15.5px; }
+.slide.gpt-summary table.parts { font-size: 17px; line-height: 1.28; }
+.slide.gpt-summary table.parts th { font-size: 13px; text-align: left; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 2px 6px; }
+.slide.gpt-summary table.parts td { padding: 4px 6px; }
+.slide.gpt-summary table.parts td.id { width: 2.4em; }
+.slide.gpt-summary table.parts td:nth-child(2) { width: 38%; }
+.slide.gpt-summary table.parts td span { display: block; font-size: 15px; }
+.slide.gpt-summary table.parts td.origin { color: var(--muted); font-size: 15px; width: 25%; }
+.slide.gpt-summary table.parts tr.obj td { border-top: 2px solid var(--line); }
+.slide.gpt-summary table.parts tr.head { cursor: default; }
+.slide.gpt-summary table.parts a[data-goto] { color: inherit; text-decoration: underline; text-decoration-color: var(--orange); text-decoration-thickness: .06em; text-underline-offset: .16em; }
+
+/* slide 2: recap of Part 1 */
+.slide.part1-recap .fit > table { width: 100%; font-size: 21px; line-height: 1.32; }
+.slide.part1-recap .fit > table th { font-size: 15px; text-align: left; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 4px 10px; }
+.slide.part1-recap .fit > table td { padding: 8px 10px; vertical-align: top; }
+.slide.part1-recap .fit > table td:first-child { width: 8%; font-weight: 700; color: var(--orange-2); font-variant-numeric: tabular-nums; }
+.slide.part1-recap .fit > table td:nth-child(2) { width: 30%; font-weight: 600; }
+.slide.part1-recap p.key { margin-top: 14px; }
+/* slide 3: Part 2 ahead, same table as slide 2; today's row marked */
+.slide.part2-ahead .fit > table td:first-child { width: 10%; white-space: nowrap; }
+.slide.part2-ahead .fit > table td:nth-child(2) { width: 34%; }
+.slide.part2-ahead .fit > table tr.today td { background: var(--tint); }
+.slide.part2-ahead .now { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: var(--orange); color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; vertical-align: 2px; }
+.slide.part2-ahead .fit > table td { padding: 6px 10px; }
+
+/* slide 1: the deck version, bumped on every commit-and-push of the slides folder */
+.slide.cover .version { position: absolute; left: 64px; bottom: 36px; font-size: 16px; letter-spacing: .06em; color: #a5bccd; font-variant-numeric: tabular-nums; }
+.slide.cover .version { bottom: 72px; font-size: 17px; }
+.slide.cover .copyright { position: absolute; left: 64px; right: 64px; bottom: 100px; font-size: 15px; color: #a5bccd; }
+.slide.cover .copyright, .slide.cover .version { color: #7f96aa; opacity: .6; font-size: 14px; }

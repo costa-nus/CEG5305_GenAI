@@ -25,16 +25,16 @@
 <section class="hero" id="overview">
   <span class="badge">Part 2 - Lecture 1</span>
   <h1>Architecture of Large Language Models</h1>
-  <p class="lede">Topic 4, <em>Architecture and Training of LLMs</em>. Session 01 covers the architecture; session 02 covers training.</p>
-  <div class="meta"><span><b>Session 01</b> · 3 hours, three parts</span><span><b>Lecturer</b> · Junyuan Hong</span><span><b>Slides, homework, deadlines</b> · on Canvas</span></div>
+  <p class="lede">Topic 4, <em>Architecture and Training of LLMs</em>. Session 01 covers the architecture; <a href="session-2/">session 02</a> covers training.</p>
+  <div class="meta"><span><b>Session 01</b> · 3 hours, three parts</span><span><b>Lecturer</b> · Junyuan Hong</span><span><b>Slides</b> · <a href="slides/">open the slides</a></span><span><b>Next</b> · <a href="session-2/">Session 02</a></span><span><b>Homework</b> · for practice, no credits</span></div>
   <div class="question">
     <div class="q">Why do LLMs work so well?</div>
     <p>And the part of that question we can test today: is it the <b>architecture</b>, or the <b>scale</b>?</p>
   </div>
   <div class="grid">
-    <div class="card"><div class="tag">Part A</div><h4>Why do LLMs work so well?</h4><p>See three models side by side, then trace the history from counting to attention.</p></div>
-    <div class="card"><div class="tag">Part B</div><h4>What makes Transformers great?</h4><p>One controlled experiment (ConvNeXt), then the six components inside nanoGPT.</p></div>
-    <div class="card"><div class="tag">Part C</div><h4>Break it</h4><p>Remove components one at a time and measure. Then you do the same as homework.</p></div>
+    <div class="card"><div class="tag">Part A</div><h4><a href="#part-a">History of Language Models</a></h4><p>See three models side by side, then trace the history from counting to attention.</p></div>
+    <div class="card"><div class="tag">Part B</div><h4><a href="#part-b">What makes Transformers great?</a></h4><p>One controlled experiment (ConvNeXt), then the six components inside nanoGPT.</p></div>
+    <div class="card"><div class="tag">Part C</div><h4><a href="#part-c">Break a GPT</a></h4><p>Remove components from a small GPT one at a time and measure. Then you do the same as homework.</p></div>
   </div>
   <p class="note">Every diagram on this page is drawn in HTML and most are interactive. Where a diagram follows a paper's figure, the paper is named under it. Embedded demos belong to their authors and load only when you click.</p>
 </section>
@@ -42,17 +42,18 @@
 <div class="layout">
 <nav class="toc" aria-label="On this page"><ol>
   <li><a href="#overview">Overview</a></li>
-  <li><a href="#part-a">A · Why LLMs work</a></li>
-  <li class="sub"><a href="#show">Three models, one prompt</a></li>
+  <li><a href="#part-a">A · History of LMs</a></li>
+  <li class="sub"><a href="#show">Three models, side by side</a></li>
   <li class="sub"><a href="#history">History</a></li>
   <li class="sub"><a href="#ngram">n-grams</a></li>
-  <li class="sub"><a href="#mlp-2003">MLP (2003)</a></li>
+  <li class="sub"><a href="#mlp-2003">NPLM (2003)</a></li>
   <li class="sub"><a href="#rnn">RNN</a></li>
   <li class="sub"><a href="#lstm">LSTM</a></li>
-  <li class="sub"><a href="#seq2seq">Attention as a patch</a></li>
+  <li class="sub"><a href="#seq2seq">Seq2seq + attention</a></li>
   <li class="sub"><a href="#transformer">Transformer</a></li>
-  <li class="sub"><a href="#board2">Chain vs fan</a></li>
+  <li class="sub"><a href="#board2">RNN vs Transformer</a></li>
   <li class="sub"><a href="#compare">Comparison</a></li>
+  <li class="sub"><a href="#beyond">Beyond language</a></li>
   <li><a href="#part-b">B · Transformers</a></li>
   <li class="sub"><a href="#convnext">ConvNeXt</a></li>
   <li class="sub"><a href="#c1">C1 Embeddings</a></li>
@@ -62,29 +63,31 @@
   <li class="sub"><a href="#c5">C5 LayerNorm</a></li>
   <li class="sub"><a href="#c6">C6 Output head</a></li>
   <li class="sub"><a href="#board3">The objective</a></li>
-  <li><a href="#part-c">C · Break it</a></li>
+  <li><a href="#part-c">C · Break a GPT</a></li>
   <li class="sub"><a href="#ablation">Ablation</a></li>
   <li class="sub"><a href="#homework">Homework</a></li>
   <li><a href="#resources">Resources</a></li>
+  <li><a href="#references">References</a></li>
   <li><a href="#next">Next session</a></li>
 </ol></nav>
 
 <main>
 
 <!-- ═══════════════════════════════ PART A ═══════════════════════════════ -->
-<div class="part" id="part-a"><div class="label">PART A</div><h2>Why do LLMs work so well?</h2><p>See the gap first, then trace where it came from.</p></div>
+<div class="part" id="part-a"><div class="label">PART A</div><h2>History of Language Models</h2><p>See the gap first, then trace where it came from.</p></div>
 
-<h3 id="show">Three models, one prompt</h3>
-<p>Give the same prompt to three language models and compare what comes back. The difference is obvious before any theory. The rest of the lecture works out where it comes from.</p>
+<h3 id="show">Three models, side by side</h3>
+<p>Run three language models side by side and compare what comes back: a table of counts (1948), a small LSTM (1997), and GPT-2 small (2019), a Transformer with 124M parameters. All three take the same prompt. The n-gram model and the LSTM learn from the same book, <i>Alice's Adventures in Wonderland</i>; GPT-2 read about 8 million web pages (<a data-ref="radford2019">Radford et al., 2019</a>). The difference is obvious before any theory. The rest of the lecture works out where it comes from.</p>
+<p>All three designs have been used in products. In 2007 Google's machine translation used n-gram tables with up to 300 billion entries (<a data-ref="brants2007">Brants et al., 2007</a>). In 2016 Google Translate replaced its phrase-based statistical system with an LSTM network (<a data-ref="wu2016">Wu et al., 2016</a>). ChatGPT is fine-tuned from a much larger GPT model (<a data-ref="openai2022">OpenAI, 2022</a>).</p>
 
-<div class="demo" data-src="https://chat.webllm.ai/" data-title="A modern LLM — WebLLM Chat" data-by="MLC AI · Llama-3.2-1B running in your browser" data-cost="about 1 GB of model weights, cached afterwards">
-  The model runs on your own machine through WebGPU. Nothing is sent to a server. Needs a browser with WebGPU.
-</div>
-<div class="demo" data-src="https://cs.stanford.edu/people/karpathy/recurrentjs/" data-title="An LSTM — RecurrentJS character model" data-by="Andrej Karpathy">
-  Trains a character-level RNN/LSTM in the page and prints perplexity as it goes. Press <em>load pretrained</em> to jump to a trained LSTM and compare the samples.
-</div>
-<div class="demo" data-src="https://ngramflows.netlify.app/" data-title="A counting model — N-Gram Language Model Demo" data-by="ngramflows">
+<div class="demo" data-src="https://ngramflows.netlify.app/" data-title="A counting model — N-Gram Language Model Demo" data-by="ngramflows" data-minh="520">
   Build word or character n-grams from any text and generate one token at a time, with the top-5 next-token probabilities shown.
+</div>
+<div class="demo" data-src="demos/lstm/" data-title="An LSTM — a character-level model" data-by="This course · runs in your browser" data-cost="about 2 MB">
+  A two-layer LSTM (<a data-ref="hochreiter1997">Hochreiter &amp; Schmidhuber, 1997</a>) that reads and writes one character at a time. It was trained on <i>Alice's Adventures in Wonderland</i> only, so it has seen the book the n-gram model counts, and nothing else.
+</div>
+<div class="demo" data-src="demos/gpt2/" data-title="A Transformer — GPT-2 small" data-by="This course · runs in your browser" data-cost="about 130 MB of model weights, cached afterwards">
+  GPT-2 small (<a data-ref="radford2019">Radford et al., 2019</a>) runs on your own machine through <a data-ref="huggingface2025b">Transformers.js</a>. Nothing is sent to a server. It was trained only to predict the next token, so it continues your text rather than answering it.
 </div>
 
 <div class="grid">
@@ -95,49 +98,52 @@
 
 <h3 id="history">History of generative models: from n-grams to the Transformer</h3>
 <ol class="timeline">
-  <li><span class="yr">1948</span>Shannon approximates English with letter and word n-grams.</li>
-  <li><span class="yr">1990</span>Simple recurrent networks (Elman).</li>
-  <li><span class="yr">1997</span>LSTM (Hochreiter &amp; Schmidhuber).</li>
-  <li class="key"><span class="yr">2003</span>Neural language model: learned word vectors and an MLP (Bengio et al.).</li>
-  <li><span class="yr">2010</span>Recurrent neural network language models (Mikolov et al.).</li>
-  <li><span class="yr">2014</span>Sequence-to-sequence learning (Sutskever et al.) and attention for translation (Bahdanau et al.).</li>
-  <li class="key"><span class="yr">2017</span>The Transformer: keep attention, drop recurrence (Vaswani et al.).</li>
-  <li><span class="yr">2018–20</span>GPT, GPT-2, GPT-3: the same decoder-only architecture, much larger.</li>
+  <li><span class="yr">1948</span>n-gram: <a data-ref="shannon1948">Shannon</a> approximates English with letter and word n-grams.</li>
+  <li><span class="yr">1990</span>RNN: the simple recurrent network (<a data-ref="elman1990">Elman</a>).</li>
+  <li><span class="yr">1997</span>LSTM (<a data-ref="hochreiter1997">Hochreiter &amp; Schmidhuber</a>).</li>
+  <li class="key"><span class="yr">2003</span>NPLM, the neural probabilistic language model: learned word vectors and an MLP (<a data-ref="bengio2003">Bengio et al.</a>).</li>
+  <li><span class="yr">2010</span>RNN language model (<a data-ref="mikolov2010">Mikolov et al.</a>).</li>
+  <li><span class="yr">2014</span>RNN encoder–decoder (seq2seq, <a data-ref="sutskever2014">Sutskever et al.</a>), plus attention for translation (<a data-ref="bahdanau2015">Bahdanau et al.</a>): still built on an RNN.</li>
+  <li class="key"><span class="yr">2017</span>Transformer: attention replaces the RNN (<a data-ref="vaswani2017">Vaswani et al.</a>).</li>
+  <li><span class="yr">2018–20</span><a data-ref="radford2018">GPT</a>, <a data-ref="radford2019">GPT-2</a>, <a data-ref="brown2020">GPT-3</a>: the decoder alone, pre-trained to predict the next token, then scaled up.</li>
 </ol>
 <p>Each step below gets the same treatment: the structure, what it fixed, and what it left broken.</p>
 
 <h4 id="ngram">n-grams: counting</h4>
 <p>The Markov assumption keeps only the last \(n-1\) tokens:
-\[ p(x_t \mid x_1,\dots,x_{t-1}) \approx p(x_t \mid x_{t-n+1},\dots,x_{t-1}) = \frac{\mathrm{count}(x_{t-n+1},\dots,x_t)}{\mathrm{count}(x_{t-n+1},\dots,x_{t-1})} \]
+\[ p(x_t \mid x_1,\dots,x_{t-1}) \approx p(x_t \mid x_{t-n+1},\dots,x_{t-1}) = \frac{\mathrm{count}(x_{t-n+1},\dots,x_{t-1},\textcolor{#ef7c00}{x_t})}{\mathrm{count}(x_{t-n+1},\dots,x_{t-1})} \]
 There is nothing to learn. The table of counts is the whole model.</p>
 <div data-viz="ngram"></div>
 <div data-viz="tableSize"></div>
-<div class="verdict"><div class="fixed"><b>WORKED</b>Fast and interpretable; ran speech recognition and translation for decades.</div><div class="not"><b>BROKE</b>No generalisation: “the cat sat on the” and “the dog sat on the” are unrelated rows. Most contexts are never seen.</div></div>
+<div class="verdict"><div class="fixed"><b>WORKED</b>Fast and interpretable; ran speech recognition and translation for decades. Google’s 2007 translation system counted 5-grams in 2 trillion tokens of text (<a data-ref="brants2007">Brants et al., 2007</a>).</div><div class="not"><b>BROKE</b>No generalisation: “the cat sat on the” and “the dog sat on the” are unrelated rows. Most contexts are never seen.</div></div>
 
-<h4 id="mlp-2003">2003 — learn features instead of counting</h4>
-<p>Bengio et al. give every word a learned vector, look up the vectors for a fixed window of previous words, and feed them to an MLP. Similar words end up with similar vectors, so what is learned about “cat” carries over to “dog”.</p>
+<h4 id="mlp-2003">NPLM (2003): learn word vectors instead of counting</h4>
+<p>The neural probabilistic language model of <a data-ref="bengio2003">Bengio et al. (2003)</a> gives every word a learned vector, look up the vectors for a fixed window of previous words, and feed them to an MLP. Similar words end up with similar vectors, so what is learned about “cat” carries over to “dog”.</p>
+<p>The vector of word \(w\) is \(C(w)\), row \(w\) of a \(|V| \times m\) table \(C\) of learned numbers. For a window of \(n-1\) words the model computes (eq. 1 of the paper, without its optional direct connections)</p>
+<p>\[ x = \big(C(w_{t-n+1}), \dots, C(w_{t-1})\big), \qquad h = \tanh(Hx + d), \qquad P(w_t = i \mid \text{context}) = \mathrm{softmax}(Uh + b)_i . \]</p>
+<p>\(C, H, d, U, b\) are all trained together by gradient descent. \(H\) is \(h \times (n-1)m\): one block of columns for each position in the window. The window size is built into the weights, so a longer window is a different model, and a word outside the window has no way in.</p>
 <div data-viz="mlp"></div>
 <div class="verdict"><div class="fixed"><b>FIXED</b>Generalisation: words share structure through their vectors.</div><div class="not"><b>DID NOT</b>The window is still fixed in size, and each position has its own weights.</div></div>
 
-<h4 id="rnn">Recurrent networks — carry a state forward</h4>
-<p>One hidden state is updated at every step, \(h_t = \tanh(W h_{t-1} + U x_t)\), so context is no longer limited to a window. The same weights are used at every step.</p>
+<h4 id="rnn">RNN: carry a hidden state forward</h4>
+<p>A recurrent neural network (<a data-ref="elman1990">Elman, 1990</a>) updates one hidden state at every step, \(h_t = \tanh(W h_{t-1} + U x_t)\), so context is no longer limited to a window. The same weights are used at every step.</p>
 <div data-viz="rnn"></div>
-<div class="verdict"><div class="fixed"><b>FIXED</b>Unbounded context, in principle.</div><div class="not"><b>DID NOT</b>Early inputs fade (or blow up) as the state is rewritten, and training must run one step after another.</div></div>
+<div class="verdict"><div class="fixed"><b>FIXED</b>Unbounded context, in principle.</div><div class="not"><b>DID NOT</b>Early inputs fade (or blow up) as the state is rewritten (<a data-ref="bengio1994">Bengio et al., 1994</a>), and training must run one step after another.</div></div>
 
-<h4 id="lstm">LSTM — gates that let gradients survive</h4>
-<p>The LSTM adds a cell state that is updated by addition, with gates deciding what to forget, what to write and what to output. When the forget gate stays near 1, information and gradients pass through many steps.</p>
+<h4 id="lstm">LSTM: gates that let gradients survive</h4>
+<p>The LSTM (<a data-ref="hochreiter1997">Hochreiter &amp; Schmidhuber, 1997</a>) adds a cell state that is updated by addition, with gates deciding what to forget, what to write and what to output. When the forget gate (<a data-ref="gers2000">Gers et al., 2000</a>) stays near 1, information and gradients pass through many steps.</p>
 <div data-viz="lstm"></div>
 <div class="demo" data-src="https://www.calligrapher.ai/" data-title="An LSTM writing by hand — Calligrapher.ai" data-by="Sean Vasquez">
-  An in-browser recurrent network that generates handwriting stroke by stroke, based on Graves (2013) — the same paper the cell diagram above follows. Turn the <em>Speed</em> slider up; the default is slow.
+  An in-browser recurrent network that generates handwriting stroke by stroke, based on <a data-ref="graves2013">Graves (2013)</a> — the same paper the cell diagram above follows. Turn the <em>Speed</em> slider up; the default is slow.
 </div>
 <div class="verdict"><div class="fixed"><b>FIXED</b>Memory over hundreds of steps. LSTMs were the standard sequence model in NLP for years.</div><div class="not"><b>DID NOT</b>Nothing about the sequential bottleneck: step \(t\) still waits for step \(t-1\).</div></div>
 
-<h4 id="seq2seq">2014–15 — attention arrives as a patch</h4>
-<p>In sequence-to-sequence translation the encoder compresses the whole source sentence into one vector. Attention was introduced to let the decoder look back at every encoder state. It was a fix on top of the RNN, not a replacement.</p>
+<h4 id="seq2seq">Seq2seq + attention (2014–15): a patch</h4>
+<p>In seq2seq translation (<a data-ref="sutskever2014">Sutskever et al., 2014</a>) the encoder compresses the whole source sentence into one vector. Attention (<a data-ref="bahdanau2015">Bahdanau et al., 2015</a>) was introduced to let the decoder look back at every encoder state. It was a fix on top of the RNN, not a replacement.</p>
 <div data-viz="seq2seq"></div>
 
-<h4 id="transformer">2017 — keep the attention, drop the recurrence</h4>
-<p>The Transformer is attention and an MLP, stacked, with position added explicitly. GPT-style models use only the decoder half. Click through the diagram; each component has its own section in Part B.</p>
+<h4 id="transformer">Transformer (2017): keep attention, drop recurrence</h4>
+<p>The Transformer (<a data-ref="vaswani2017">Vaswani et al., 2017</a>) is attention and an MLP, stacked, with position added explicitly. GPT-style models use only the decoder half. Click through the diagram; each component has its own section in Part B.</p>
 <div data-viz="architecture"></div>
 <div class="verdict"><div class="fixed"><b>FIXED</b>Both problems at once: any token reaches any earlier token in one step, and all positions train in parallel.</div><div class="not"><b>DID NOT</b>Attention compares every pair of tokens, so time and memory grow as \(n^2\).</div></div>
 <div data-viz="longRange"></div>
@@ -148,18 +154,29 @@ There is nothing to learn. The table of counts is the whole model.</p>
   A guided 3D walk through a GPT: nano-gpt (85,584 parameters), GPT-2 and GPT-3 side by side. Use full screen: the view needs a wide window.
 </div>
 
-<h4 id="board2">Two numbers that explain the change</h4>
+<h4 id="board2">RNN vs Transformer: two numbers explain it</h4>
 <div data-viz="chainFan"></div>
 
 <h4 id="compare">Five architectures, four questions</h4>
 <div class="table-wrap"><table>
   <tr><th>Model</th><th>Context</th><th>Path between two tokens</th><th>Parallel training</th><th>Why it lost / won</th></tr>
   <tr><td><b>n-gram</b></td><td>last \(n-1\) tokens</td><td>—</td><td>n/a (counting)</td><td>No generalisation</td></tr>
-  <tr><td><b>MLP (2003)</b></td><td>fixed window</td><td>1 step, inside the window</td><td>yes</td><td>The window cannot grow</td></tr>
+  <tr><td><b>NPLM (2003)</b></td><td>fixed window</td><td>1 step, inside the window</td><td>yes</td><td>The window cannot grow</td></tr>
   <tr><td><b>RNN</b></td><td>unbounded in principle</td><td>\(O(n)\)</td><td>no</td><td>Forgets; sequential training</td></tr>
   <tr><td><b>LSTM</b></td><td>long</td><td>\(O(n)\)</td><td>no</td><td>Memory fixed; bottleneck not</td></tr>
   <tr class="hl"><td>Transformer</td><td>the full context window</td><td>\(O(1)\)</td><td>yes</td><td>Both at once, at \(O(n^2)\) cost</td></tr>
 </table></div>
+<h4 id="beyond">Transformers beyond language</h4>
+<p>The Transformer did not stay in language. Cut the input into tokens and the same Transformer applies; only the two ends change: how the input becomes tokens, and what comes out. One paper per domain:</p>
+<div class="beyond-grid">
+  <div class="b-card"><div class="tag">Images</div><h4><b>ViT</b> · <a data-ref="dosovitskiy2021">Dosovitskiy et al., 2021</a></h4><div data-viz="beyondArch" data-kind="vit"></div><p>One token per 16×16 image patch.</p></div>
+  <div class="b-card"><div class="tag">Image generation</div><h4><b>DiT</b> · <a data-ref="peebles2023">Peebles &amp; Xie, 2023</a></h4><div data-viz="beyondArch" data-kind="dit"></div><p>A diffusion model whose denoising network is a Transformer over latent patches, in place of the usual U-Net.</p></div>
+  <div class="b-card"><div class="tag">Video</div><h4><b>ViViT</b> · <a data-ref="arnab2021">Arnab et al., 2021</a></h4><div data-viz="beyondArch" data-kind="vivit"></div><p>One token per space-time tube of the video.</p></div>
+  <div class="b-card"><div class="tag">Speech</div><h4><b>Whisper</b> · <a data-ref="radford2023">Radford et al., 2023</a></h4><div data-viz="beyondArch" data-kind="whisper"></div><p>An encoder–decoder, like the 2017 Transformer, from spectrogram to text; trained on 680,000 hours of audio.</p></div>
+  <div class="b-card"><div class="tag">Time series</div><h4><b>PatchTST</b> · <a data-ref="nie2023">Nie et al., 2023</a></h4><div data-viz="beyondArch" data-kind="patchtst"></div><p>One token per window of the series; forecasts what comes next.</p></div>
+  <div class="b-card"><div class="tag">Proteins</div><h4><b>ESM-2</b> · <a data-ref="lin2023">Lin et al., 2023</a></h4><div data-viz="beyondArch" data-kind="esm"></div><p>One token per amino acid; a language model of up to 15 billion parameters, from which 3D structure is predicted.</p></div>
+</div>
+<p class="note">The sketches are simplified redrawings, not the papers' figures. Examples: a DiT-XL/2 sample from <a href="https://github.com/facebookresearch/DiT">facebookresearch/DiT</a> (CC BY-NC 4.0), shown in pixels although DiT works on a compressed latent; Eadweard Muybridge, <i>The Horse in Motion</i> (1878, public domain, via Wikimedia Commons); ubiquitin drawn from the coordinates of <a href="https://www.rcsb.org/structure/1UBQ">PDB 1UBQ</a>; the eagle is a U.S. Fish and Wildlife Service photo and the speech is Neil Armstrong’s “That’s one small step for man” (Apollo 11, NASA), both public domain, via Wikimedia Commons.</p>
 <div class="callout"><b>Where that leaves us.</b> Two structural changes: information travels in one hop, and training parallelises. That is a satisfying answer. Part B shows it is also incomplete.</div>
 
 <!-- ═══════════════════════════════ PART B ═══════════════════════════════ -->
@@ -167,16 +184,17 @@ There is nothing to learn. The table of counts is the whole model.</p>
 
 <h3 id="convnext">The comparison we just made was not controlled</h3>
 <p>A Transformer differs from a ConvNet or an RNN in many ways at once: attention, normalisation, activation, optimiser, training recipe, data augmentation, depth ratios. When one model beats another on a dozen axes, the result does not say which axis mattered.</p>
-<p>Liu et al., <em>A ConvNet for the 2020s</em> (CVPR 2022), ran the controlled version. Start from a ResNet-50, apply the design decisions that came with vision Transformers <b>one at a time</b>, and measure after every change.</p>
+<p><a data-ref="liu2022">Liu et al. (2022)</a>, <em>A ConvNet for the 2020s</em>, ran the controlled version. Start from a ResNet-50 (<a data-ref="he2016">He et al., 2016</a>), apply the design decisions that came with vision Transformers <b>one at a time</b>, and measure after every change.</p>
 <div data-viz="convnext"></div>
 <div class="grid">
-  <div class="card accent"><div class="tag">It shows</div><p>Credit for the ConvNet-vs-Transformer gap had gone partly to the wrong place. The training recipe alone was worth +2.7 points, and ten small design changes added up to a large one.</p></div>
+  <div class="card accent"><div class="tag">It shows</div><p>Credit for the ConvNet-vs-Transformer gap had gone partly to the wrong place. The training recipe alone was worth +2.7 points, and twelve design changes added up to a large one.</p></div>
   <div class="card"><div class="tag">It does not show</div><p>That attention is useless. This is ImageNet classification: fixed-size images, no long-range dependency across a sentence. Language is where one-hop paths pay off.</p></div>
 </div>
 <div class="callout"><b>The method outlasts the facts.</b> Ablation — change one thing, hold everything else fixed, measure — is how credit is assigned. Part C does it to a GPT, and the homework asks you to do it too.</div>
 
 <h3 id="components">The six components inside nanoGPT</h3>
-<p><a href="https://github.com/karpathy/nanoGPT">nanoGPT</a> implements a GPT-2-style model in about 300 lines of <code>model.py</code>. It has six kinds of component, C1–C6, marked on the architecture diagram above.</p>
+<p><a href="https://github.com/karpathy/nanoGPT">nanoGPT</a> implements a GPT-2-style model in about 300 lines of <a href="https://github.com/karpathy/nanoGPT/blob/3adf61e154c3fe3fca428ad6bc3818b27a3b8291/model.py"><code>model.py</code></a>. It has six kinds of component, C1–C6. Tokens enter at the bottom, become vectors (C1), pass through <code>n_layer</code> identical blocks (C2–C5), and leave as next-token probabilities (C6). Each code link below opens that part of <code>model.py</code>.</p>
+<div data-viz="nanoMap"></div>
 
 <h4 id="c1">C1 · Token and position embeddings</h4>
 <p>\( x = E[\text{idx}] + P[0,\dots,T-1] \). The token table is the 2003 idea unchanged. The position table is needed because attention has no built-in notion of order.</p>
@@ -188,19 +206,20 @@ This is the only place in the model where tokens exchange information. Remove it
 <div data-viz="attention"></div>
 
 <h4 id="c3">C3 · The MLP, with GELU</h4>
-<p>\( \mathrm{MLP}(x) = W_2\,\mathrm{GELU}(W_1 x) \) with a hidden width of \(4d\). It works on each position separately. Most people guess attention holds most of the parameters; the MLP does.</p>
+<p>\( \mathrm{MLP}(x) = W_2\,\mathrm{GELU}(W_1 x) \) with a hidden width of \(4d\) and the GELU activation (<a data-ref="hendrycks2016">Hendrycks &amp; Gimpel, 2016</a>). It works on each position separately. Most people guess attention holds most of the parameters; the MLP does.</p>
+<p>Some nonlinearity is needed, or \(W_2 W_1 x\) collapses to one matrix. Which one is an empirical choice: the 2017 Transformer used ReLU, GPT-1 (<a data-ref="radford2018">Radford et al., 2018</a>) and BERT (<a data-ref="devlin2019">Devlin et al., 2019</a>) switched to GELU, and Llama (<a data-ref="touvron2023a">Touvron et al., 2023</a>) uses SwiGLU (<a data-ref="shazeer2020">Shazeer, 2020</a>). In ConvNeXt, swapping ReLU for GELU left accuracy unchanged at 80.6% (<a data-ref="liu2022">Liu et al., 2022</a>).</p>
 <div data-viz="mlpBlock"></div>
 
 <h4 id="c4">C4 · Residual connections</h4>
-<p>\( x \leftarrow x + \mathrm{Sublayer}(x) \). Unrolled, \( x_N = x_0 + \sum_n \mathrm{Sublayer}_n(x_n) \): there is a direct path from the input to the output. Residual connections came from ResNet (2015) and are still in every large model.</p>
+<p>\( x \leftarrow x + \mathrm{Sublayer}(x) \). Unrolled, \( x_N = x_0 + \sum_n \mathrm{Sublayer}_n(x_n) \): there is a direct path from the input to the output. Residual connections came from ResNet (<a data-ref="he2016">He et al., 2016</a>) and are still in every large model.</p>
 <div data-viz="residual"></div>
 
 <h4 id="c5">C5 · LayerNorm, and where to put it</h4>
-<p>\( \mathrm{LN}(x) = \gamma \odot \dfrac{x-\mu}{\sqrt{\sigma^2+\epsilon}} + \beta \). The 2017 model normalised after each residual addition; GPT-2 and nanoGPT normalise before each sub-layer, which leaves the residual path untouched and makes deep stacks easier to train.</p>
+<p>LayerNorm (<a data-ref="ba2016">Ba et al., 2016</a>): \( \mathrm{LN}(x) = \gamma \odot \dfrac{x-\mu}{\sqrt{\sigma^2+\epsilon}} + \beta \), where \(\mu\) and \(\sigma^2\) are the mean and variance of the \(d\) numbers in one token's vector, and \(\gamma\), \(\beta\) are learned. The 2017 Transformer (<a data-ref="vaswani2017">Vaswani et al., 2017</a>) normalised after each residual addition; GPT-2 (<a data-ref="radford2019">Radford et al., 2019</a>) and nanoGPT normalise before each sub-layer, which leaves the residual path untouched and makes deep stacks easier to train.</p>
 <div data-viz="layerNorm"></div>
 
 <h4 id="c6">C6 · The output head and weight tying</h4>
-<p>\( \text{logits} = \mathrm{LN}(x)\,E^\top \). nanoGPT uses the embedding matrix again as the output layer: the same space in, the same space out, and \(V\times d\) fewer parameters.</p>
+<p>\( \text{logits} = \mathrm{LN}(x)\,E^\top \). nanoGPT uses the embedding matrix again as the output layer (weight tying, <a data-ref="press2017">Press &amp; Wolf, 2017</a>): the same space in, the same space out, and \(V\times d\) fewer parameters.</p>
 <div data-viz="params"></div>
 
 <h4 id="board3">What is it actually trained to do?</h4>
@@ -209,46 +228,65 @@ This is the only place in the model where tokens exchange information. Remove it
 Negate and average over tokens to get the loss, and exponentiate to get perplexity:
 \[ \mathcal{L} = -\frac{1}{T}\sum_t \log p_\theta(x_t \mid x_{&lt;t}),\qquad \mathrm{PPL} = e^{\mathcal{L}} \]
 Nothing in this lecture changed the objective. Every architecture above is a different way to parameterise \(p_\theta\).</p>
+<p>In training, every position of a sequence predicts its next token at once, and the loss is the average of \(-\log p\) over those predictions: the cross-entropy with the true next token.</p>
+<div data-viz="nextTokenLoss"></div>
 <div data-viz="perplexity"></div>
 
 <h4 id="not-yet">What nanoGPT does not have — yet</h4>
 <div class="table-wrap"><table>
   <tr><th>Component</th><th>What it changes</th></tr>
-  <tr><td><b>RoPE</b></td><td>Rotary position embedding: relative position, no learned table</td></tr>
-  <tr><td><b>RMSNorm</b></td><td>LayerNorm without subtracting the mean; cheaper, about as good</td></tr>
-  <tr><td><b>SwiGLU</b></td><td>A gated MLP; the hidden width shrinks to \(8/3\cdot d\) to keep the parameter count</td></tr>
-  <tr><td><b>Grouped-query attention</b></td><td>Fewer key/value heads than query heads; a smaller memory cache at inference</td></tr>
-  <tr><td><b>Mixture of experts</b></td><td>Many MLPs, only a few active for each token</td></tr>
+  <tr><td><b><a data-ref="su2024">RoPE</a></b></td><td>Rotary position embedding: relative position, no learned table</td></tr>
+  <tr><td><b><a data-ref="zhang2019">RMSNorm</a></b></td><td>LayerNorm without subtracting the mean; cheaper, about as good</td></tr>
+  <tr><td><b><a data-ref="shazeer2020">SwiGLU</a></b></td><td>A gated MLP; the hidden width shrinks to \(8/3\cdot d\) to keep the parameter count</td></tr>
+  <tr><td><b><a data-ref="ainslie2023">Grouped-query attention</a></b></td><td>Fewer key/value heads than query heads; a smaller memory cache at inference</td></tr>
+  <tr><td><b><a data-ref="shazeer2017">Mixture of experts</a></b></td><td>Many MLPs, only a few active for each token</td></tr>
 </table></div>
 <p class="note">All five are refinements of C1–C6 found in current open models. Session 02 returns to them.</p>
 
 <!-- ═══════════════════════════════ PART C ═══════════════════════════════ -->
-<div class="part" id="part-c"><div class="label">PART C</div><h2>Break it — then you break it</h2><p>The ConvNeXt method, on a model small enough to run on a laptop.</p></div>
+<div class="part" id="part-c"><div class="label">PART C</div><h2>Break a GPT</h2><p>The ConvNeXt method, on a model small enough to run on a laptop.</p></div>
 
 <h3 id="ablation">Ablation, live</h3>
+<p><b>What we break.</b> <a data-ref="karpathy2022">nanoGPT</a> is a minimal GPT: a model file of about 300 lines with the six components above. We use a one-file copy with the same six parts, made small on purpose: TinyShakespeare (<a data-ref="karpathy2015b">char-rnn</a>), 1.1 MB of text with one character per token, and a model of 818,241 parameters, about 200,000 times fewer than GPT-3 (<a data-ref="brown2020">Brown et al., 2020</a>). One training run takes about a minute on a laptop. Unlike nanoGPT, the copy does not tie the output head to the token embedding and has no dropout.</p>
+<figure class="small-curve"><div data-viz="smallGptCurve"></div><figcaption>The baseline's training loss every 10 steps, mean of 3 seeds, from our laptop-CPU run of 29 Sep 2026. It starts near ln 65, the loss of a uniform guess over 65 characters. The parameters take 3.3 MB (818,241 × 4 bytes); GPT-3's would take 350 GB at 2 bytes each.</figcaption></figure>
 <div class="grid">
-  <div class="card"><div class="tag">Held fixed</div><p>Same data (character-level text), same number of steps, same optimiser and learning rate, same seeds.</p></div>
+  <div class="card"><div class="tag">Held fixed, for every run</div><p><b>Data:</b> TinyShakespeare, one character per token (65 characters); first 90% to train, last 10% to validate. <b>Model:</b> 4 blocks, 4 heads, width 128, context 64 characters, 818,241 parameters. <b>Training:</b> 3,000 steps of 32 sequences; AdamW, learning rate 3 × 10⁻⁴; gradients clipped at 1.0. <b>Seeds:</b> 1337, 1338, 1339. <b>Measure:</b> validation loss, averaged over 20 batches.</p></div>
   <div class="card accent"><div class="tag">Changed, one at a time</div><p>Remove LayerNorm · remove residual connections · remove positional embeddings · collapse multi-head attention to one head.</p></div>
 </div>
 <div data-viz="predict"></div>
-<div class="callout warn"><b>Results.</b> Validation loss for all five runs is filled in here after the live run in class.</div>
+<div class="callout warn"><b>Results.</b> Validation loss for all five variants is added here after the session.</div>
 <h4>Reading an ablation honestly</h4>
 <ol>
-  <li><b>One seed is an anecdote.</b> Run several and report the spread.</li>
-  <li><b>Match the compute.</b> Otherwise it is not a comparison.</li>
-  <li><b>Say what else changed.</b> Removing a component also removes its parameters.</li>
-  <li><b>A negative result is a result.</b> “It made no measurable difference” is worth reporting.</li>
+  <li><b>Train each version more than once.</b> Use a different random seed each time. One run can be lucky or unlucky, so report the average and the range.</li>
+  <li><b>Train every version the same way.</b> Same number of steps, same data. Otherwise a difference may come from the training, not from the change.</li>
+  <li><b>Say what else the change removed.</b> Taking out a part can also take out parameters, so the model is smaller as well as different.</li>
+  <li><b>Report changes that made no difference.</b> “It made no measurable difference” is a real finding.</li>
 </ol>
 
-<h3 id="homework">Homework preview</h3>
-<div class="callout warn">This is a preview. The official brief, rubric, weighting and deadline are on Canvas and take precedence over this page.</div>
-<p><b>Remove or change one component of a small language model. Measure what happens. Explain why.</b></p>
+<h3 id="homework">Homework, for practice</h3>
+<div class="callout warn">Homework is for practice. Free to do. No credits.</div>
+<p><b>Run your own ablation on the small GPT.</b> The goal: find out what one component does, by training the model with it and without it.</p>
+<ol>
+  <li><b>Run the baseline:</b> the base code below as given, 3 seeds.</li>
+  <li><b>Change one component, nothing else:</b> remove it or replace it, with the same data, steps and seeds. Choose one of today's four in more depth (does removing LayerNorm still help at 12 layers?), another (MLP width, depth, GELU → ReLU, tied vs untied embeddings), or add one nanoGPT lacks (RMSNorm, RoPE).</li>
+  <li><b>Compare and explain:</b> is the change in validation loss larger than the spread across seeds? What does the component do that explains it?</li>
+</ol>
+<p><b>What you produce:</b></p>
 <ul>
-  <li>Choose any component: one of today's four in more depth, or another (MLP width, depth, GELU → ReLU, tied vs untied embeddings), or add one nanoGPT lacks (RMSNorm, RoPE).</li>
-  <li>Hand in your code (a diff against nanoGPT is ideal) and a short report that states what you changed and what you held fixed.</li>
-  <li>Run at least three seeds, report the spread, include one plot, and say whether the result matched your prediction.</li>
+  <li>Your code change: a diff against <code>ablation_base.py</code>, with its fixed settings unchanged.</li>
+  <li>A table: validation loss, mean and range over 3 seeds, for the baseline and your version.</li>
+  <li>One plot: the training-loss curves of both.</li>
+  <li>A few sentences: what the component does, why the loss changed or did not, and whether you predicted it.</li>
 </ul>
-<p>Start from <a href="https://github.com/karpathy/nanoGPT">karpathy/nanoGPT</a>. Its README has a small CPU configuration of the Shakespeare character model that, per the README, trains in about three minutes (<a href="https://github.com/karpathy/nanoGPT#i-only-have-a-macbook">“I only have a macbook”</a>).</p>
+<p>Before you conclude, check your runs against the four rules above, and check that the loss at step 0 is near ln 65 = 4.17.</p>
+<p><b>Base code:</b> <a href="code/ablation_base.py">ablation_base.py</a>, the model and settings behind the class table: a nanoGPT-shaped Transformer (<a data-ref="karpathy2022">Karpathy, 2022</a>) in one file, with the fixed settings at the top and the four class variants as switches. Add your variant as a new switch, then run <code>python ablation_base.py --variant baseline</code> and <code>--variant your_variant</code>; each runs the three seeds. The output file also holds the training loss every 10 steps, for your plot.</p>
+<pre class="cmd"><code>python -m venv gpt &amp;&amp; source gpt/bin/activate   # optional: a clean environment
+pip install torch                               # Python 3.9+; no GPU needed
+curl -O https://costa-nus.github.io/CEG5305_GenAI/part2/lecture-1/code/ablation_base.py
+python ablation_base.py --out baseline.json     # 3 seeds; downloads the data
+# your change: add one entry to VARIANTS in ablation_base.py, e.g. "deeper": {"n_layer": 12}
+python ablation_base.py --variant deeper --out mine.json</code></pre>
+<p><b>Where to run it:</b> <a href="https://colab.research.google.com/github/costa-nus/CEG5305_GenAI/blob/main/part2/lecture-1/code/ablation_base.ipynb">open the notebook in Colab</a> (choose a T4 GPU runtime; about 35 s per run), or run it locally with Python 3.9+ and PyTorch. No GPU is needed: the run uses under 0.5 GB of RAM and takes about 75 s per run on a laptop CPU (measured on an Apple M5 Pro), so about 20 minutes for all 15 runs of the class table.</p>
 
 <!-- ═══════════════════════════════ RESOURCES ═══════════════════════════════ -->
 <h2 id="resources">Resources</h2>
@@ -261,7 +299,7 @@ Nothing in this lecture changed the objective. Every architecture above is a dif
 <p class="note">The official reading list for the module is on Canvas.</p>
 <h3>Code</h3>
 <ul>
-  <li><a href="https://github.com/karpathy/nanoGPT">karpathy/nanoGPT</a> — the model this lecture takes apart.</li>
+  <li><a href="https://github.com/karpathy/nanoGPT">karpathy/nanoGPT</a> — the model this lecture takes apart (<a data-ref="karpathy2022">Karpathy, 2022</a>).</li>
   <li><a href="https://github.com/karpathy/minGPT">karpathy/minGPT</a> — the same model written for reading rather than training.</li>
   <li><a href="https://github.com/karpathy/minbpe">karpathy/minbpe</a> — byte-pair encoding tokenisation.</li>
 </ul>
@@ -276,13 +314,18 @@ Nothing in this lecture changed the objective. Every architecture above is a dif
   <li><a href="https://attentionviz.com/">AttentionViz</a> — query and key vectors of trained models across layers and heads. Heavy: takes up to a minute to load.</li>
 </ul>
 
+<h2 id="references">References</h2>
+<p class="note">Every work cited on this page, in APA style with shortened author lists. Titles link to the paper.</p>
+<ul class="refs-list" data-refs-list></ul>
+
 <h2 id="next">Next session: how the model is actually trained</h2>
 <div class="grid">
-  <div class="card"><h4>The objective at scale</h4><p>What it takes to optimise the loss above over trillions of tokens.</p></div>
+  <div class="card"><h4>The objective at scale</h4><p>What it takes to minimise the next-token prediction loss over trillions of tokens.</p></div>
   <div class="card"><h4>Pre-training data</h4><p>Where the tokens come from, and why most of them are thrown away.</p></div>
-  <div class="card"><h4>Scaling laws</h4><p>Hypothesis 2, and predicting the loss before spending the compute.</p></div>
+  <div class="card"><h4>Scaling laws</h4><p>Predicting that loss from model size, data and compute, before spending the compute.</p></div>
   <div class="card"><h4>Adapting without retraining</h4><p>LoRA and parameter-efficient fine-tuning.</p></div>
 </div>
+<p><a href="session-2/">Go to the session 02 page →</a></p>
 
 </main>
 </div>
