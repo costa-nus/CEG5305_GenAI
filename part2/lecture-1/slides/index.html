@@ -26,7 +26,7 @@
   <p>Session 01 of 2 · Architecture <span>(session 02: Training)</span></p>
   <p>CEG5305 Introduction to Generative AI with Foundation Models<br>Junyuan Hong · AY2026/27 Semester 1</p>
   <div class="copyright">© 2026 Junyuan Hong. All rights reserved.</div>
-  <div class="version">2026.09.30v1</div>
+  <div class="version">2026.10.01v1</div>
 </section>
 
 <section class="slide part1-recap" data-title="Recap: Part 1">
@@ -284,6 +284,17 @@
       <div class="not"><b>DID NOT</b>The window is fixed: H has weights for each position, and earlier words are ignored.</div>
     </div>
   </div>
+</section>
+
+<section class="slide learn-slide" data-title="Training — gradient descent" data-refs="rumelhart1986 bengio1994">
+  <p class="eb">2 · History of generative models · how neural models learn</p>
+  <h2>Training: gradient descent and backpropagation</h2>
+  <div class="slide-body">
+    <p class="key">From the NPLM on, weights are trained, not counted: move each weight against its gradient.</p>
+    <p class="formula"><span class="lab">loss</span> \( \mathcal{L} = -\log p_\theta(x_{t+1} \mid x_{\le t}) \) <span class="lab">update</span> \( \theta \leftarrow \theta - \eta\,\nabla_\theta \mathcal{L} \) <span class="lab">backprop</span> \( \dfrac{\partial \mathcal{L}}{\partial h_1} = \dfrac{\partial \mathcal{L}}{\partial h_L}\,\dfrac{\partial h_L}{\partial h_{L-1}} \cdots \dfrac{\partial h_2}{\partial h_1} \)</p>
+    <div data-viz="learnSteps"></div>
+  </div>
+  <p class="src">Loss: Part 1, lecture 02. <a data-ref="rumelhart1986">Backpropagation</a>: Rumelhart et al. (1986). Left: \(L(w) = \tfrac12 (w-1)^2\). Right: one number \(g\) stands for the size of each factor; an illustration, not a trained model. Vanishing gradients in RNNs: <a data-ref="bengio1994">Bengio et al. (1994)</a>.</p>
 </section>
 
 <section class="slide rnn-slide" data-title="RNN" data-refs="elman1990 bengio1994 bengio2003">
@@ -591,8 +602,35 @@
   <p class="eb">4 · The components</p>
   <h2>nanoGPT in one diagram: six components</h2>
   <div class="slide-body">
-    <p class="key">Tokens become vectors (C1), pass through n_layer blocks with the same structure (C2–C5), then become next-token probabilities (C6). We examine each component next.</p>
+    <p class="key">Tokens become vectors (C1), pass through n_layer blocks with the same structure (C2–C5), then become next-token probabilities (C6). First, what it is trained to do; then each component.</p>
     <div data-viz="nanoMap"></div>
+  </div>
+</section>
+
+<section class="slide board derivation" data-title="Board 3 — the objective">
+  <p class="eb">Board · derivation 3 · ~7 min</p>
+  <h2>What is it actually trained to do?</h2>
+  <div class="slide-body">
+    <ol class="board-steps">
+      <li>Start from maximum likelihood: \( \theta^* = \arg\max_\theta \sum_i \log p_\theta(x^{(i)}) \)</li>
+      <li>Expand the sequence probability into next-token probabilities. Taking logs turns their product into a sum.</li>
+      <li>\( \mathcal{L} = -\frac{1}{T}\sum_t \log p_\theta(x_t \mid x_{&lt;t}) \): token-level cross-entropy.</li>
+      <li>\( \mathrm{PPL} = e^{\mathcal{L}} \). ✋ What does that number mean?</li>
+    </ol>
+    <p class="callout">All these models learn to predict the next token. Their designs, the six components next, change how they compute \(p_\theta\).</p>
+  </div>
+</section>
+
+<section class="slide" data-title="The next-token loss">
+  <p class="eb">4 · The components</p>
+  <h2>The loss: predict every next token</h2>
+  <div class="slide-body">
+    <p class="key">Every position predicts the token after it; the loss averages −log p of the true next token. Training lowers it by <a data-goto="Training — gradient descent">gradient descent</a>.</p>
+    <div class="derive">
+      <span class="lab">At position t</span><span>\( H_t = -\sum_{v \in V} y_{t,v} \log p_\theta(v \mid x_{\le t}) = -\log p_\theta(x_{t+1} \mid x_{\le t}) \) <span class="d">\(y_t\): 1 for the true next token, 0 for all others.</span></span>
+      <span class="lab">Over the sequence</span><span>\( \mathcal{L} = \frac{1}{T}\sum_{t=1}^{T} H_t = -\frac{1}{T}\sum_{t=1}^{T} \log p_\theta(x_{t+1} \mid x_{\le t}) \) <span class="d">the average cross-entropy over positions.</span></span>
+    </div>
+    <div data-viz="nextTokenLoss"></div>
   </div>
 </section>
 
@@ -630,12 +668,12 @@
   </div>
 </section>
 
-<section class="slide" data-title="C3 MLP">
+<section class="slide" data-title="C3 MLP" data-refs="hendrycks2016 radford2018 devlin2019 liu2022">
   <p class="eb">4 · The components</p>
   <div data-viz="nanoMap" data-mini="c3"></div>
   <h2>C3 · The MLP, with <a data-ref="hendrycks2016">GELU</a></h2>
   <div class="slide-body">
-    <p class="key">Attention combines information from different tokens. The feed-forward network (MLP) then updates each token separately.</p>
+    <p class="key">Attention mixes tokens; the MLP then updates each token on its own. Its nonlinearity, GELU, is a smooth ReLU whose slope is not zero for negative inputs, so gradients still pass.</p>
     <p class="formula">\( \mathrm{MLP}(x) = W_2\,\mathrm{GELU}(W_1 x) \) <span class="d">\(W_1\): \(4d \times d\), \(W_2\): \(d \times 4d\). Where are most of the parameters?</span></p>
     <div data-viz="mlpBlock"></div>
   </div>
@@ -646,7 +684,7 @@
   <div data-viz="nanoMap" data-mini="c4"></div>
   <h2>C4 · Residual connections</h2>
   <div class="slide-body">
-    <p class="key">Each sub-layer adds its result to the input x. This preserves a direct route for information and gradients.</p>
+    <p class="key">Each sub-layer adds its result to x, so <a data-goto="Training — gradient descent">gradients</a> flow straight down x instead of shrinking layer by layer.</p>
     <p class="formula">\( x \leftarrow x + \mathrm{Attn}(\mathrm{LN}_1(x)), \qquad x \leftarrow x + \mathrm{MLP}(\mathrm{LN}_2(x)) \) <span class="d">one nanoGPT block, as in <code>Block.forward</code>.</span></p>
     <div data-viz="residual"></div>
   </div>
@@ -658,7 +696,7 @@
   <div data-viz="nanoMap" data-mini="c5"></div>
   <h2>C5 · LayerNorm, and where you put it</h2>
   <div class="slide-body">
-    <p class="key">LayerNorm puts each token's vector on a standard scale; nanoGPT applies it before each sub-layer.</p>
+    <p class="key">LayerNorm rescales each token's vector, so sub-layers see inputs of one size at any depth: steadier <a data-goto="Training — gradient descent">training</a>.</p>
     <p class="formula">\( \mathrm{LN}(x) = \gamma \odot \dfrac{x-\mu}{\sqrt{\sigma^2+\epsilon}} + \beta \) <span class="d">for one token's vector \(x\) of \(d\) numbers: \(\mu\), \(\sigma^2\) are their mean and variance; \(\gamma\), \(\beta\) are learned.</span></p>
     <div data-viz="layerNorm"></div>
   </div>
@@ -675,33 +713,6 @@
     <div data-viz="params"></div>
   </div>
   <p class="src">Counts follow <a data-ref="karpathy2022">nanoGPT</a>'s <code>model.py</code>. GPT-2 small: 124,439,808.</p>
-</section>
-
-<section class="slide board derivation" data-title="Board 3 — the objective">
-  <p class="eb">Board · derivation 3 · ~7 min</p>
-  <h2>What is it actually trained to do?</h2>
-  <div class="slide-body">
-    <ol class="board-steps">
-      <li>Start from maximum likelihood: \( \theta^* = \arg\max_\theta \sum_i \log p_\theta(x^{(i)}) \)</li>
-      <li>Expand the sequence probability into next-token probabilities. Taking logs turns their product into a sum.</li>
-      <li>\( \mathcal{L} = -\frac{1}{T}\sum_t \log p_\theta(x_t \mid x_{&lt;t}) \): token-level cross-entropy.</li>
-      <li>\( \mathrm{PPL} = e^{\mathcal{L}} \). ✋ What does that number mean?</li>
-    </ol>
-    <p class="callout">All these models learn to predict the next token. Their designs change how they compute \(p_\theta\).</p>
-  </div>
-</section>
-
-<section class="slide" data-title="The next-token loss">
-  <p class="eb">4 · The components</p>
-  <h2>The loss: predict every next token</h2>
-  <div class="slide-body">
-    <p class="key">Every position predicts the token after it; the loss averages −log p of the true next token.</p>
-    <div class="derive">
-      <span class="lab">At position t</span><span>\( H_t = -\sum_{v \in V} y_{t,v} \log p_\theta(v \mid x_{\le t}) = -\log p_\theta(x_{t+1} \mid x_{\le t}) \) <span class="d">\(y_t\): 1 for the true next token, 0 for all others.</span></span>
-      <span class="lab">Over the sequence</span><span>\( \mathcal{L} = \frac{1}{T}\sum_{t=1}^{T} H_t = -\frac{1}{T}\sum_{t=1}^{T} \log p_\theta(x_{t+1} \mid x_{\le t}) \) <span class="d">the average cross-entropy over positions.</span></span>
-    </div>
-    <div data-viz="nextTokenLoss"></div>
-  </div>
 </section>
 
 <section class="slide gpt-summary" data-title="What makes GPT great">

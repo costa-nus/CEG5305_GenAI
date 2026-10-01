@@ -47,6 +47,7 @@
   <li class="sub"><a href="#history">History</a></li>
   <li class="sub"><a href="#ngram">n-grams</a></li>
   <li class="sub"><a href="#mlp-2003">NPLM (2003)</a></li>
+  <li class="sub"><a href="#training">How models learn</a></li>
   <li class="sub"><a href="#rnn">RNN</a></li>
   <li class="sub"><a href="#lstm">LSTM</a></li>
   <li class="sub"><a href="#seq2seq">Seq2seq + attention</a></li>
@@ -56,13 +57,13 @@
   <li class="sub"><a href="#beyond">Beyond language</a></li>
   <li><a href="#part-b">B · Transformers</a></li>
   <li class="sub"><a href="#convnext">ConvNeXt</a></li>
+  <li class="sub"><a href="#board3">The objective</a></li>
   <li class="sub"><a href="#c1">C1 Embeddings</a></li>
   <li class="sub"><a href="#c2">C2 Attention</a></li>
   <li class="sub"><a href="#c3">C3 MLP</a></li>
   <li class="sub"><a href="#c4">C4 Residuals</a></li>
   <li class="sub"><a href="#c5">C5 LayerNorm</a></li>
   <li class="sub"><a href="#c6">C6 Output head</a></li>
-  <li class="sub"><a href="#board3">The objective</a></li>
   <li><a href="#part-c">C · Break a GPT</a></li>
   <li class="sub"><a href="#ablation">Ablation</a></li>
   <li class="sub"><a href="#homework">Homework</a></li>
@@ -124,6 +125,13 @@ There is nothing to learn. The table of counts is the whole model.</p>
 <p>\(C, H, d, U, b\) are all trained together by gradient descent. \(H\) is \(h \times (n-1)m\): one block of columns for each position in the window. The window size is built into the weights, so a longer window is a different model, and a word outside the window has no way in.</p>
 <div data-viz="mlp"></div>
 <div class="verdict"><div class="fixed"><b>FIXED</b>Generalisation: words share structure through their vectors.</div><div class="not"><b>DID NOT</b>The window is still fixed in size, and each position has its own weights.</div></div>
+
+<h4 id="training">How neural models learn: gradient descent and backpropagation</h4>
+<p>An n-gram model is trained by counting. From the NPLM on, every model here has weights that are learned, and training repeats three steps. Compute the loss on some text: the cross-entropy of the true next token from Part 1 (lecture 02), \( \mathcal{L} = -\log p_\theta(x_{t+1} \mid x_{\le t}) \). Compute its gradient \(\nabla_\theta \mathcal{L}\), which says how the loss changes as each weight changes. Move every weight a small step against it, \( \theta \leftarrow \theta - \eta\,\nabla_\theta \mathcal{L} \), where \(\eta\) is the learning rate.</p>
+<p>Backpropagation (<a data-ref="rumelhart1986">Rumelhart et al., 1986</a>) computes all the gradients with the chain rule, from the loss back towards the input. For a stack of \(L\) layers with outputs \(h_1, \dots, h_L\),
+\[ \frac{\partial \mathcal{L}}{\partial h_1} = \frac{\partial \mathcal{L}}{\partial h_L}\,\frac{\partial h_L}{\partial h_{L-1}} \cdots \frac{\partial h_2}{\partial h_1}, \]
+one factor per layer, or per step in an RNN. If the factors are mostly smaller than 1, the product shrinks towards zero and the early layers barely learn (vanishing gradients); if they are larger than 1, it explodes (<a data-ref="bengio1994">Bengio et al., 1994</a>). Several designs in this lecture exist because of this product: the LSTM's cell state and residual connections (C4) give the gradient a path on which the factors stay near 1, and LayerNorm (C5) keeps the size of each layer's input fixed.</p>
+<figure class="learn-fig"><div data-viz="learnSteps"></div><figcaption>Left: gradient descent on one weight, \(L(w) = \tfrac12 (w-1)^2\), one step per click; try a learning rate above 2. Right: one number \(g\) stands for the size of each factor \(\partial h_{k+1}/\partial h_k\). An illustration, not a trained model.</figcaption></figure>
 
 <h4 id="rnn">RNN: carry a hidden state forward</h4>
 <p>A recurrent neural network (<a data-ref="elman1990">Elman, 1990</a>) updates one hidden state at every step, \(h_t = \tanh(W h_{t-1} + U x_t)\), so context is no longer limited to a window. The same weights are used at every step.</p>
@@ -196,6 +204,16 @@ There is nothing to learn. The table of counts is the whole model.</p>
 <p><a href="https://github.com/karpathy/nanoGPT">nanoGPT</a> implements a GPT-2-style model in about 300 lines of <a href="https://github.com/karpathy/nanoGPT/blob/3adf61e154c3fe3fca428ad6bc3818b27a3b8291/model.py"><code>model.py</code></a>. It has six kinds of component, C1–C6. Tokens enter at the bottom, become vectors (C1), pass through <code>n_layer</code> identical blocks (C2–C5), and leave as next-token probabilities (C6). Each code link below opens that part of <code>model.py</code>.</p>
 <div data-viz="nanoMap"></div>
 
+<h4 id="board3">What is it actually trained to do?</h4>
+<p>Maximum likelihood over the training text, factorised token by token:
+\[ \theta^* = \arg\max_\theta \sum_i \log p_\theta(x^{(i)}),\qquad \log p_\theta(x) = \sum_t \log p_\theta(x_t \mid x_{&lt;t}) \]
+Negate and average over tokens to get the loss, and exponentiate to get perplexity:
+\[ \mathcal{L} = -\frac{1}{T}\sum_t \log p_\theta(x_t \mid x_{&lt;t}),\qquad \mathrm{PPL} = e^{\mathcal{L}} \]
+Nothing in this lecture changes the objective. The architectures above, and the six components below, are different ways to compute \(p_\theta\).</p>
+<p>In training, every position of a sequence predicts its next token at once, and the loss is the average of \(-\log p\) over those predictions: the cross-entropy with the true next token. Gradient descent lowers it (<a href="#training">how neural models learn</a>).</p>
+<div data-viz="nextTokenLoss"></div>
+<div data-viz="perplexity"></div>
+
 <h4 id="c1">C1 · Token and position embeddings</h4>
 <p>\( x = E[\text{idx}] + P[0,\dots,T-1] \). The token table is the 2003 idea unchanged. The position table is needed because attention has no built-in notion of order.</p>
 <div data-viz="embeddings"></div>
@@ -208,10 +226,11 @@ This is the only place in the model where tokens exchange information. Remove it
 <h4 id="c3">C3 · The MLP, with GELU</h4>
 <p>\( \mathrm{MLP}(x) = W_2\,\mathrm{GELU}(W_1 x) \) with a hidden width of \(4d\) and the GELU activation (<a data-ref="hendrycks2016">Hendrycks &amp; Gimpel, 2016</a>). It works on each position separately. Most people guess attention holds most of the parameters; the MLP does.</p>
 <p>Some nonlinearity is needed, or \(W_2 W_1 x\) collapses to one matrix. Which one is an empirical choice: the 2017 Transformer used ReLU, GPT-1 (<a data-ref="radford2018">Radford et al., 2018</a>) and BERT (<a data-ref="devlin2019">Devlin et al., 2019</a>) switched to GELU, and Llama (<a data-ref="touvron2023a">Touvron et al., 2023</a>) uses SwiGLU (<a data-ref="shazeer2020">Shazeer, 2020</a>). In ConvNeXt, swapping ReLU for GELU left accuracy unchanged at 80.6% (<a data-ref="liu2022">Liu et al., 2022</a>).</p>
+<p>The difference from ReLU is in the slope, which is what a gradient is multiplied by on its way back through the unit. For \(x &lt; 0\), ReLU's slope is exactly 0, so no gradient passes; GELU, \(x\,\Phi(x)\) with \(\Phi\) the standard normal CDF, is smooth, and its slope there is small but not 0 (except at its minimum, near \(x = -0.75\)). Hendrycks &amp; Gimpel reported that it beat ReLU on all the vision, language and speech tasks they tested; GPT-1 adopted it, and BERT notes that it uses GELU “following OpenAI GPT”.</p>
 <div data-viz="mlpBlock"></div>
 
 <h4 id="c4">C4 · Residual connections</h4>
-<p>\( x \leftarrow x + \mathrm{Sublayer}(x) \). Unrolled, \( x_N = x_0 + \sum_n \mathrm{Sublayer}_n(x_n) \): there is a direct path from the input to the output. Residual connections came from ResNet (<a data-ref="he2016">He et al., 2016</a>) and are still in every large model.</p>
+<p>\( x \leftarrow x + \mathrm{Sublayer}(x) \). Unrolled, \( x_N = x_0 + \sum_n \mathrm{Sublayer}_n(x_n) \): there is a direct path from the input to the output, so in backpropagation the gradient reaches the first layer without being multiplied by one factor per layer (<a href="#training">see above</a>). Residual connections came from ResNet (<a data-ref="he2016">He et al., 2016</a>) and are still in every large model.</p>
 <div data-viz="residual"></div>
 
 <h4 id="c5">C5 · LayerNorm, and where to put it</h4>
@@ -221,16 +240,6 @@ This is the only place in the model where tokens exchange information. Remove it
 <h4 id="c6">C6 · The output head and weight tying</h4>
 <p>\( \text{logits} = \mathrm{LN}(x)\,E^\top \). nanoGPT uses the embedding matrix again as the output layer (weight tying, <a data-ref="press2017">Press &amp; Wolf, 2017</a>): the same space in, the same space out, and \(V\times d\) fewer parameters.</p>
 <div data-viz="params"></div>
-
-<h4 id="board3">What is it actually trained to do?</h4>
-<p>Maximum likelihood over the training text, factorised token by token:
-\[ \theta^* = \arg\max_\theta \sum_i \log p_\theta(x^{(i)}),\qquad \log p_\theta(x) = \sum_t \log p_\theta(x_t \mid x_{&lt;t}) \]
-Negate and average over tokens to get the loss, and exponentiate to get perplexity:
-\[ \mathcal{L} = -\frac{1}{T}\sum_t \log p_\theta(x_t \mid x_{&lt;t}),\qquad \mathrm{PPL} = e^{\mathcal{L}} \]
-Nothing in this lecture changed the objective. Every architecture above is a different way to parameterise \(p_\theta\).</p>
-<p>In training, every position of a sequence predicts its next token at once, and the loss is the average of \(-\log p\) over those predictions: the cross-entropy with the true next token.</p>
-<div data-viz="nextTokenLoss"></div>
-<div data-viz="perplexity"></div>
 
 <h4 id="not-yet">What nanoGPT does not have — yet</h4>
 <div class="table-wrap"><table>

@@ -1246,3 +1246,70 @@ export function youtube(root) {
     .observe(slide, { attributes: true, attributeFilter: ["class"] });
   poster();
 }
+
+// ── After the NPLM: how a neural model learns ───────────────────────────────
+// Left: gradient descent on one weight, L(w) = ½(w − 1)², one step per click.
+// Right: backpropagation through 12 layers, each factor ∂hₖ₊₁/∂hₖ replaced by one number g,
+// so layer k receives g^(12−k) of the gradient at the top. An illustration, not a trained model.
+export function learnSteps(root) {
+  root.innerHTML = "";
+  const L = w => 0.5 * (w - 1) ** 2, dL = w => w - 1, W0 = -2;
+  let w = W0, eta = 0.5, path = [W0], g = 0.7;
+  const s1 = svg(500, 160, null, "gradient descent on one weight");
+  const s2 = svg(500, 160, null, "size of the gradient reaching each layer");
+  uid(s1); uid(s2);
+  const r1 = h("div", { class: "readout" }), r2 = h("div", { class: "readout" });
+  const step = h("button", { onclick: () => { w = w - eta * dL(w); path.push(w); draw1(); } }, "Take a step");
+  const reset = h("button", { onclick: () => { w = W0; path = [W0]; draw1(); } }, "Reset");
+  root.append(h("div", { class: "learn-row" },
+    h("div", {}, h("div", { class: "tag" }, "① Gradient descent on one weight w; η is the learning rate"),
+      h("div", { class: "controls" }, step, reset,
+        slider("η", 0.1, 2.2, 0.1, eta, v => { eta = v; w = W0; path = [W0]; draw1(); }, v => v.toFixed(1))), s1, r1),
+    h("div", {}, h("div", { class: "tag" }, "② Backpropagation: the chain rule, one factor g per layer"),
+      h("div", { class: "controls" },
+        slider("g", 0.4, 1.6, 0.05, g, v => { g = v; draw2(); }, v => v.toFixed(2))), s2, r2)));
+  function draw1() {
+    s1.innerHTML = ""; arrowDefs(s1);
+    const lo = -3, hi = 5, X = v => 40 + ((v - lo) / (hi - lo)) * 440, Y = v => 138 - (Math.min(v, 9) / 9) * 128;
+    el("line", { x1: 40, y1: Y(0), x2: 480, y2: Y(0), class: "s-axis" }, s1);
+    el("path", { d: Array.from({ length: 161 }, (_, i) => { const v = lo + i * 0.05; return `${i ? "L" : "M"}${X(v)},${Y(L(v))}`; }).join(""), class: "s-line" }, s1).style.stroke = "var(--blue-2)";
+    text(s1, X(1), Y(0) + 18, "w = 1, lowest loss", "m");
+    text(s1, 480, Y(0) + 18, "w", "m", "end");
+    text(s1, 46, 14, "loss L(w)", "m", "start");
+    path.slice(-12).forEach((v, i, a) => {                        // the last steps, older ones fainter
+      if (i) { const p = a[i - 1]; const e = el("path", { d: `M${X(p)},${Y(L(p))} L${X(v)},${Y(L(v))}`, class: "s-edge on" }, s1); e.style.opacity = 0.35 + 0.65 * (i / a.length); }
+    });
+    const inView = w > lo && w < hi && L(w) <= 9;
+    if (inView) {
+      const sl = dL(w), dx = 0.7;                                 // the tangent: its slope is the gradient
+      const t = el("line", { x1: X(w - dx), y1: Y(L(w) - sl * dx), x2: X(w + dx), y2: Y(L(w) + sl * dx), class: "s-edge" }, s1); t.style.strokeDasharray = "4 3";
+      el("circle", { cx: X(w), cy: Y(L(w)), r: 8, fill: "var(--orange)" }, s1);
+    } else text(s1, 260, 90, "w has left the plot: the steps overshoot", "o");
+    const k = path.length - 1, gr = dL(w);
+    r1.innerHTML = Math.abs(w) > 1e3
+      ? `step ${k}: w = ${w.toExponential(1)}. η too large: each step overshoots further.`
+      : `step ${k}: w = ${w.toFixed(2)}, loss ${L(w).toFixed(3)}, gradient ${gr.toFixed(2)}`;
+  }
+  function draw2() {
+    s2.innerHTML = "";
+    const N = 12, lo = -5, hi = 3, x0 = 64, bw = 30, gap = 6;
+    const Y = e => 8 + 114 * (1 - (Math.max(lo, Math.min(hi, e)) - lo) / (hi - lo));
+    [[-4, "10⁻⁴"], [-2, "0.01"], [0, "1"], [2, "100"]].forEach(([e, lab]) => {
+      el("line", { x1: x0, y1: Y(e), x2: x0 + N * (bw + gap), y2: Y(e), class: "s-axis" }, s2).style.opacity = e ? 0.4 : 1;
+      text(s2, x0 - 6, Y(e) + 4, lab, "m", "end");
+    });
+    const col = g < 0.9 ? "var(--blue-2)" : g > 1.1 ? "#d93025" : "var(--orange)";
+    for (let k = 1; k <= N; k++) {                                // layer N is next to the loss; layer 1 next to the input
+      const e = (N - k) * Math.log10(g), x = x0 + (k - 1) * (bw + gap);
+      const r = el("rect", { x, y: Math.min(Y(e), Y(0)), width: bw, height: Math.max(2, Math.abs(Y(e) - Y(0))), rx: 3 }, s2);
+      r.style.fill = col;
+      if (k === 1 || k === N) text(s2, x + bw / 2, 140, `layer ${k}`, "m");
+    }
+    text(s2, x0, 157, "← input", "m", "start");
+    text(s2, x0 + N * (bw + gap) - gap, 157, "loss →", "m", "end");
+    const f = g ** (N - 1), fs = f < 1e-3 || f > 1e3 ? f.toExponential(1) : f.toFixed(3);
+    const verdict = g < 0.9 ? "vanishes" : g > 1.1 ? "explodes" : "kept";
+    r2.innerHTML = `layer 1: g¹¹ = <b>${fs}</b> × the top gradient (${verdict})`;
+  }
+  draw1(); draw2();
+}

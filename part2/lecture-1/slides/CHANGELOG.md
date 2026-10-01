@@ -3,6 +3,24 @@
 The version shown on slide 1 is `YYYY.MM.DDvN`. The newest version is at the top. A version
 marked *not yet published* is still being edited and becomes final when it is pushed.
 
+## 2026.10.01v1 — published 1 Oct 2026
+
+71 slides. Training is now explained before the parts that depend on it.
+
+- New slide 22, *Training: gradient descent and backpropagation*, after the NPLM. It gives the
+  loss, the update rule and the chain rule, with two interactive panels: gradient descent on one
+  weight (try a learning rate that is too large), and the size of the gradient that reaches each
+  of 12 layers (vanishing and exploding gradients).
+- Part B: the objective (*What is it actually trained to do?*) and *The loss: predict every next
+  token* now come right after *nanoGPT in one diagram*, before C1, instead of after C6.
+- C3 (MLP): the key line now says why GELU is used. A new *Slopes* button shows that ReLU's slope
+  is 0 for every negative input, while GELU's is small but not 0, so gradients still pass. The
+  side panel adds where GELU comes from (Hendrycks & Gimpel, 2016; GPT-1; BERT).
+- C4 (residuals) and C5 (LayerNorm): the key lines now say what each does for training, and link
+  back to slide 22.
+- The lecture page has the same changes: a new section *How neural models learn*, and the
+  objective moved before C1.
+
 ## 2026.09.30v1 — published 30 Sep 2026
 
 First published version of the deck: 70 slides, for the class of 30 Sep 2026.

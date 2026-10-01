@@ -81,13 +81,13 @@
 .slide [data-viz=mlpBlock] .viz-body { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 26px; align-items: start; }
 .slide [data-viz=mlpBlock] .viz-body > .controls, .slide [data-viz=mlpBlock] .viz-body > .readout { grid-column: 1 / -1; }
 .slide [data-viz=mlpBlock] .two { display: contents; }
-.slide [data-viz=mlpBlock] .two svg { height: 222px; width: auto; }
+.slide [data-viz=mlpBlock] .two svg { height: 200px; width: auto; }
 .slide [data-viz=mlpBlock] .two svg:first-child { grid-column: 1; grid-row: 2; }
 .slide [data-viz=mlpBlock] .two svg:last-child { grid-column: 3; grid-row: 2; }
 .slide [data-viz=mlpBlock] .why-gelu { grid-column: 2; grid-row: 2; font-size: 16.5px; line-height: 1.33; padding: 4px 0 0 16px; border-left: 1px solid var(--line); }
-.slide [data-viz=mlpBlock] .why-gelu p { margin: 0 0 7px; }
+.slide [data-viz=mlpBlock] .why-gelu p { margin: 0 0 4px; }
 .slide [data-viz=mlpBlock] .why-gelu p.f { font-size: 19px; margin: 2px 0 9px; }
-.slide [data-viz=mlpBlock] .readout { margin-top: 10px; }
+.slide [data-viz=mlpBlock] .readout { margin-top: 8px; font-size: 17px; padding: 6px 12px; }
 .slide [data-viz=params] svg { height: 156px; }
 .slide [data-viz=perplexity] .controls { margin-bottom: 28px; }
 .slide [data-viz=predict] .viz-body > .grid { gap: 26px; margin-top: 24px; }
@@ -506,3 +506,19 @@
 .slide.cover .version { bottom: 72px; font-size: 17px; }
 .slide.cover .copyright { position: absolute; left: 64px; right: 64px; bottom: 100px; font-size: 15px; color: #a5bccd; }
 .slide.cover .copyright, .slide.cover .version { color: #7f96aa; opacity: .6; font-size: 14px; }
+
+/* How neural models learn (after the NPLM): two panels, gradient descent and backpropagation */
+.slide.learn-slide .formula { font-size: 22px; margin: 4px 0 6px; }
+.slide.learn-slide .formula .katex { font-size: 1.05em; }
+.slide.learn-slide .learn-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
+.slide.learn-slide .learn-row .tag { font-size: 15px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+.slide.learn-slide .learn-row .controls { margin: 2px 0; }
+.slide.learn-slide .learn-row svg { display: block; width: 100%; height: auto; }
+.slide.learn-slide .learn-row .readout { font-size: 16px; padding: 6px 12px; white-space: pre-line; }
+.slide.learn-slide .learn-row .controls { display: flex; flex-wrap: nowrap; gap: 10px; align-items: center; }
+.slide.learn-slide .learn-row .controls input[type=range] { width: 140px; }
+.slide.learn-slide .learn-row .tag { text-transform: none; letter-spacing: 0; font-size: 16px; }
+.slide.learn-slide .learn-row .controls button { padding: 3px 12px; font-size: 15px; }
+.slide.learn-slide .formula .lab { font-size: 15px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; margin: 0 6px 0 18px; }
+.slide.learn-slide .formula .lab:first-child { margin-left: 0; }
+.slide [data-viz=mlpBlock] .controls button { padding: 3px 12px; font-size: 16px; }

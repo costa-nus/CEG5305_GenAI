@@ -451,3 +451,11 @@ pre.cmd code { font-size: 1em; background: none; padding: 0; }
 [data-viz=convVsVit] .cvv-badge { fill: var(--orange); }
 [data-viz=convVsVit] .s-text.cvv-num { fill: #fff; font-size: 12px; font-weight: 700; }
 [data-viz=convVsVit] .cvv-cut { stroke: #fff; stroke-width: 1.2; }
+
+/* How neural models learn: gradient descent and backpropagation, side by side */
+.learn-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; }
+.learn-row .tag { font-size: .8rem; color: var(--muted); font-weight: 600; margin-bottom: .2rem; }
+.learn-row svg { display: block; width: 100%; height: auto; }
+.learn-row .readout { white-space: pre-line; }
+.learn-fig { margin: 1rem 0; }
+@media (max-width: 720px) { .learn-row { grid-template-columns: 1fr; } }

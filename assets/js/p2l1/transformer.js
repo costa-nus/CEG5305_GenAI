@@ -552,29 +552,47 @@ export function mlpBlock(root) {
   const plot = svg(360, 250, null, "GELU and ReLU");
   const bars = svg(360, 250, null, "parameter split of one block");
   const read = h("div", { class: "readout" });
-  // why a nonlinearity, why GELU, and whether it matters (Hendrycks & Gimpel 2016, §2; the ConvNeXt staircase)
+  // why a nonlinearity, why GELU, and whether it matters. Sources: Hendrycks & Gimpel (2016), abstract;
+  // GPT-1 (Radford et al., 2018), §4.1; BERT (Devlin et al., 2019), App. A.2 "following OpenAI GPT";
+  // ConvNeXt (Liu et al., 2022), §2.6: ReLU → GELU left accuracy unchanged.
   const why = h("div", { class: "why-gelu", html:
-    "<p><b>Why a nonlinearity?</b> Without one, W<sub>2</sub>W<sub>1</sub>x is a single matrix, and widening to 4d adds nothing.</p>" +
-    "<p class=\"f\">\\( \\mathrm{GELU}(x) = x\\,\\Phi(x) = \\tfrac{x}{2}\\big[1 + \\mathrm{erf}(x/\\sqrt{2})\\big] \\)</p>" +
-    "<p><b>Why GELU?</b> Φ is the standard normal CDF, Φ(x) = P(Z ≤ x). Read GELU as: keep x with probability Φ(x), which grows with x, and take the average. " +
-    "Large inputs pass, very negative ones are dropped; for negative x the slope is small rather than exactly 0 as in ReLU.</p>" +
-    "<p><b>Is it required?</b> No. On the ConvNeXt staircase, ReLU → GELU changed nothing. The choice is made by experiment.</p>" });
+    "<p><b>Why a nonlinearity?</b> Without one, W<sub>2</sub>W<sub>1</sub>x is a single matrix: the two layers collapse into one.</p>" +
+    "<p><b>Why GELU, not ReLU?</b> Press <i>Slopes</i>. For x &lt; 0, ReLU's slope is exactly 0, so no gradient passes back through that unit. GELU is smooth; its slope there is small but not 0 (except at its minimum, x&nbsp;≈&nbsp;−0.75).</p>" +
+    "<p><b>Where it comes from.</b> <a data-ref=\"hendrycks2016\">Hendrycks &amp; Gimpel (2016)</a> found it beat ReLU on all their tasks; <a data-ref=\"radford2018\">GPT-1</a> adopted it, and <a data-ref=\"devlin2019\">BERT</a>, GPT-2 and nanoGPT kept it.</p>" +
+    "<p><b>Is it essential?</b> No: in <a data-ref=\"liu2022\">ConvNeXt</a>, ReLU → GELU changed nothing.</p>" });
   typeset(why);
-  body.append(h("div", { class: "controls" }, slider("d (n_embd)", 48, 1600, 16, dm, v => { dm = v; draw(); })),
+  let slopes = false;                                       // values GELU(x), or slopes GELU'(x): the factor a gradient is multiplied by
+  const bVal = h("button", { "aria-pressed": "true", onclick: () => { slopes = false; draw(); } }, "Values");
+  const bSl = h("button", { "aria-pressed": "false", onclick: () => { slopes = true; draw(); } }, "Slopes");
+  body.append(h("div", { class: "controls" }, bVal, bSl, slider("d (n_embd)", 48, 1600, 16, dm, v => { dm = v; draw(); })),
     h("div", { class: "two" }, plot, bars), why, read);
   const erf = x => { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; };
   const gelu = x => x * 0.5 * (1 + erf(x / Math.SQRT2));
+  const dgelu = x => 0.5 * (1 + erf(x / Math.SQRT2)) + x * Math.exp(-x * x / 2) / Math.sqrt(2 * Math.PI);
   function draw() {
     plot.innerHTML = "";
-    const X = x => 30 + ((x + 3) / 6) * 310, Y = y => 210 - ((y + 0.5) / 3.5) * 190;
+    bVal.setAttribute("aria-pressed", !slopes); bSl.setAttribute("aria-pressed", slopes);
+    const lo = slopes ? -0.3 : -0.5, hi = slopes ? 1.3 : 3;
+    const X = x => 30 + ((x + 3) / 6) * 310, Y = y => 210 - ((y - lo) / (hi - lo)) * 190;
     el("line", { x1: X(-3), y1: Y(0), x2: X(3), y2: Y(0), class: "s-axis" }, plot);
-    el("line", { x1: X(0), y1: Y(-0.5), x2: X(0), y2: Y(3), class: "s-axis" }, plot);
+    el("line", { x1: X(0), y1: Y(lo), x2: X(0), y2: Y(hi), class: "s-axis" }, plot);
     const path = f => Array.from({ length: 121 }, (_, i) => { const x = -3 + i * 0.05; return `${i ? "L" : "M"}${X(x)},${Y(f(x))}`; }).join("");
-    const pr = el("path", { d: path(x => Math.max(0, x)), class: "s-line" }, plot); pr.style.stroke = "var(--blue-2)"; pr.style.strokeDasharray = "6 4";
-    const pg = el("path", { d: path(gelu), class: "s-line" }, plot); pg.style.stroke = "var(--orange)";
-    text(plot, X(1.2), Y(2.4), "ReLU", "m", "start");
-    text(plot, X(2.1), Y(1.55), "GELU", "o", "start");
-    text(plot, X(-2.9), Y(-0.42), "GELU dips below 0; minimum near x ≈ −0.75", "m", "start");
+    const relu = slopes ? (x => (x > 0 ? 1 : 0)) : (x => Math.max(0, x));
+    const pr = el("path", { d: path(relu), class: "s-line" }, plot); pr.style.stroke = "var(--blue-2)"; pr.style.strokeDasharray = "6 4";
+    const pg = el("path", { d: path(slopes ? dgelu : gelu), class: "s-line" }, plot); pg.style.stroke = "var(--orange)";
+    if (slopes) {
+      el("line", { x1: X(-3), y1: Y(1), x2: X(3), y2: Y(1), class: "s-axis" }, plot).style.opacity = 0.4;
+      text(plot, X(-0.1), Y(1) + 4, "1", "m", "end");
+      text(plot, X(1.4), Y(0.88), "ReLU", "m", "start");
+      text(plot, X(0.5), Y(0.45), "GELU", "o", "start");
+      text(plot, X(-2.9), Y(0.78), "ReLU: slope 0", "m", "start");
+      text(plot, X(-2.9), Y(0.64), "for every x < 0", "m", "start");
+      text(plot, 180, 22, "slope = how much gradient passes back", "m");
+    } else {
+      text(plot, X(1.2), Y(2.4), "ReLU", "m", "start");
+      text(plot, X(2.1), Y(1.55), "GELU", "o", "start");
+      text(plot, X(-2.9), Y(-0.42), "GELU dips below 0; minimum near x ≈ −0.75", "m", "start");
+    }
     text(plot, 180, 244, "x from −3 to 3", "m");
     const attn = 4 * dm * dm + 4 * dm, mlpP = 8 * dm * dm + 5 * dm, ln = 4 * dm, tot = attn + mlpP + ln;
     bars.innerHTML = "";
