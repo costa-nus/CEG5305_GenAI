@@ -1,5 +1,5 @@
 /* Lecture 1 session 01 deck only: sizes for this deck's visualizations and tables.
-   The shared deck style is ../../../assets/css/slides-theme.css, loaded before this file. */
+   The shared deck style is ../../../../assets/css/slides-theme.css, loaded before this file. */
 .slide.comparison-table td:first-child { width: 19%; }
 .slide.comparison-table td:nth-child(2) { width: 20%; }
 .slide.extensions table { font-size: 20px; line-height: 1.3; width: 100%; }

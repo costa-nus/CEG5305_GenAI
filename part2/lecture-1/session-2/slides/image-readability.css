@@ -1,0 +1,64 @@
+/* Figure readability pass. Retain the course's canvas and source content. */
+.slide.cs336-b .csb-figure { max-height: 400px; }
+.slide.cs336-b.csb-stack .csb-figure { max-height: 380px; }
+.slide.cs336-b.csb-evidence .csb-figure,
+.slide.cs336-b.csb-evidence .csb-row .csb-figure,
+.slide.cs336-b.csb-split .csb-figure { max-height: 430px; }
+.slide.cs336-b[data-cs336-page="4"] .csb-figure { max-height: 310px; }
+.slide.cs336-b[data-cs336-page="7"] .csb-row { grid-template-columns: minmax(0,.8fr) minmax(0,1.25fr); }
+.slide.cs336-b[data-cs336-page="8"] .csb-figure,
+.slide.cs336-b[data-cs336-page="9"] .csb-figure { max-height: 430px; }
+.slide.cs336-b[data-cs336-page="14"] .csb-figure { max-height: 310px; }
+.slide.cs336-b[data-cs336-page="16"] .csb-row { grid-template-columns: minmax(0,.9fr) minmax(0,1.25fr); }
+.slide.cs336-b[data-cs336-page="16"] .csb-figure { max-height: 270px; }
+.slide.cs336-b[data-cs336-page="18"] .fit { gap: 12px; }
+.slide.cs336-b[data-cs336-page="18"] .fit > p { font-size: 26px; }
+.slide.cs336-b[data-cs336-page="18"] .csb-figure { max-height: 310px; }
+.slide.cs336-b[data-cs336-page="43"] .csb-row { grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); gap: 28px; }
+.slide.cs336-b[data-cs336-page="43"] .csb-row p,
+.slide.cs336-b[data-cs336-page="43"] .csb-math { font-size: 24px; }
+.slide.cs336-b[data-cs336-page="43"] .csb-row p + p { margin-top: 10px; }
+.slide.cs336-b.figure-readable .slide-body > .fit { gap: 14px; }
+.slide.cs336-b.figure-readable .fit > p { font-size: 27px; line-height: 1.28; }
+.slide.cs336-b.figure-readable .csb-figure { max-height: 435px; width: 100%; }
+.slide.cs336-b.figure-readable[data-cs336-page="13"] .fit > figure .csb-figure { max-height: 435px; }
+.slide.cs336-b.figure-readable .readable-caption-image { max-height: 77px; }
+.slide.cs336-b.figure-readable figcaption { font-size: 23px; margin-top: 8px; }
+.slide.cs336-b[data-cs336-page="10"].figure-readable:not([data-figure-detail]) .csb-figure { max-height: 415px; }
+.slide.cs336-b[data-cs336-page="10"].figure-readable:not([data-figure-detail]) .readable-caption-image { max-height: 77px; }
+.slide.cs336-b[data-cs336-page="51"].figure-readable:not([data-figure-detail]) .csb-figure { max-height: 310px; }
+.slide.cs336-b[data-cs336-page="51"].figure-readable:not([data-figure-detail]) li { font-size: 26px; margin-bottom: 8px; }
+.slide.c224.figure-readable .c224-figure img { max-height: 435px; max-width: 100%; width: auto; height: auto; }
+.slide.c224 .c224-pair .c224-figure img { height: auto; max-height: 370px; }
+.slide.c224 .readable-icl { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.slide.c224 .readable-icl h3 { font-size: 20px; margin: 0 0 10px; }
+.slide.c224 .readable-icl pre { font-size: 24px; line-height: 1.7; margin: 0; padding: 14px 18px; background: var(--panel); border-left: 2px solid var(--blue); }
+.slide.c224 .readable-prompt { display: grid; grid-template-columns: minmax(0,1.6fr) minmax(0,1fr); gap: 32px; align-items: start; }
+.slide.c224 .readable-prompt h3 { font-size: 21px; margin: 0 0 14px; color: var(--blue); text-transform: uppercase; letter-spacing: .06em; }
+.slide.c224 .readable-prompt p { font-size: 25px; line-height: 1.3; margin-bottom: 18px; }
+.slide.c224 .readable-prompt p:last-child { margin-bottom: 0; }
+.slide.c224 .readable-output { border-left: 3px solid var(--good); padding-left: 24px; }
+.slide.c224 .readable-output h3 { color: var(--good); }
+.slide.c224.figure-readable[data-source-page="27"] .fit { gap: 10px !important; }
+.slide.c224.figure-readable[data-source-page="27"] .fit > p { font-size: 25px; margin: 0; }
+.slide.c224[data-source-page="19"] .c224-cols,
+.slide.c224[data-source-page="20"] .c224-cols,
+.slide.c224[data-source-page="21"] .c224-cols { grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); gap: 28px; }
+.slide.c224[data-source-page="19"] .c224-cols img,
+.slide.c224[data-source-page="20"] .c224-cols img,
+.slide.c224[data-source-page="21"] .c224-cols img { max-height: 430px; }
+/* Give the existing introduction and appendix figures their available height. */
+.slide[data-title="The Chinchilla law"] img,
+.slide[data-title="Test-time scaling"] img,
+.slide[data-title="QLoRA"] img { max-height: 400px; }
+.figure-zoomable { cursor: zoom-in; }
+.figure-zoomable:focus-visible { outline: 3px solid var(--blue); outline-offset: 5px; }
+dialog.figure-viewer { width: 94vw; height: 92vh; max-width: none; max-height: none; padding: 0; border: 1px solid #61707e; background: #fff; color: #18364e; }
+dialog.figure-viewer::backdrop { background: rgba(13,22,32,.82); }
+.figure-viewer .figure-toolbar { height: 58px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid #d7dfe4; font: 16px system-ui, sans-serif; }
+.figure-viewer .figure-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.figure-viewer button { font: inherit; color: inherit; padding: 6px 12px; background: #f0f3f5; border: 1px solid #d7dfe4; cursor: pointer; white-space: nowrap; }
+.figure-viewer output { min-width: 45px; text-align: center; }
+.figure-viewer .figure-stage { height: calc(100% - 59px); overflow: auto; padding: 24px; box-sizing: border-box; }
+.figure-viewer .figure-stage img { display: block; height: auto; max-width: none; max-height: none; margin: 0 auto; }
+@media print { dialog.figure-viewer { display: none !important; } }

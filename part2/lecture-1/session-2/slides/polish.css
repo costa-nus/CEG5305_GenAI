@@ -1,0 +1,1006 @@
+/* Lecture 1 session 02 deck only: sizes for this deck's visualizations and tables.
+   The shared deck style is ../../../../assets/css/slides-theme.css, loaded before this file.
+   Visualizations are the lecture page's; their SVGs get fixed heights here (a width-driven
+   SVG does not shrink under the deck's CSS zoom). */
+.slide.model-mix .fit > .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
+.slide.model-mix .card p { margin-bottom: 8px; }
+
+.slide [data-viz] .viz-body > svg, .slide [data-viz] .two svg { width: auto; max-width: 100%; }
+.slide [data-viz=objectives].side .viz-body > svg { height: 296px; }
+.slide [data-viz=bpe] .two svg { height: 138px; }
+.slide [data-viz=sixND] .viz-body > svg { height: 300px; }
+.slide [data-viz=sixND][data-show=passes] .viz-body > .controls:not(:first-child),
+.slide [data-viz=sixND][data-show=passes] .viz-body > .readout,
+.slide [data-viz=sixND][data-show=run] .viz-body > .controls:first-child,
+.slide [data-viz=sixND][data-show=run] .viz-body > svg { display: none; }
+.slide [data-viz=floatBits] .viz-body > svg { height: 220px; }
+.slide [data-viz=bytesPerParam] .viz-body > svg { height: 230px; }
+.slide [data-viz=bytesPerParam][data-show=conv] .viz-body > svg:nth-of-type(2),
+.slide [data-viz=bytesPerParam][data-show=conv] .viz-body > .controls:nth-of-type(2) { display: none; }
+.slide [data-viz=bytesPerParam][data-show=zero] .viz-body > svg:nth-of-type(1) { display: none; }
+.slide [data-viz=bytesPerParam][data-show=zero] .viz-body > svg:nth-of-type(2) { height: 168px; }
+.slide [data-viz=dataFunnel] .viz-body > svg:nth-of-type(1) { height: 300px; }
+.slide [data-viz=dataFunnel][data-show=funnel] .viz-body > svg:nth-of-type(2),
+.slide [data-viz=dataFunnel][data-show=funnel] .viz-body > .note { display: none; }
+.slide [data-viz=powerLaw] .two svg { height: 264px; }
+.slide [data-viz=isoFlop] .viz-body { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 28px; row-gap: 12px; align-items: center; }
+.slide [data-viz=isoFlop] .viz-body > .controls { margin: 0; }
+.slide [data-viz=isoFlop] .viz-body > svg, .slide [data-viz=isoFlop] .viz-body > .readout { grid-column: 1 / -1; }
+.slide [data-viz=isoFlop] .viz-body > svg { height: 159px; }
+.slide [data-viz=isoFlop] .readout { font-size: 18px; }
+.slide [data-viz=twoSlopes].side .viz-body > svg { height: 330px; }
+.slide [data-viz=twoSlopes] .readout { font-size: 18px; }
+.slide [data-viz=peftAttach] .viz-body > svg { height: 184px; }
+.slide [data-viz=peftAttach] .readout { font-size: 18px; }
+.slide [data-viz=loraMatrix] .viz-body > svg { height: 172px; }
+.slide [data-viz=gpuFit] .viz-body > svg { height: 177px; }
+.slide [data-viz=emergence] .two svg { height: 198px; }
+.slide [data-viz=answerPicture] .viz-body > svg { height: 360px; }
+.slide [data-viz=bpe] table { font-size: 22px; }
+.slide [data-viz=bpe] th, .slide [data-viz=bpe] td { padding: 3px 10px; }
+.slide [data-viz=bpe] tr:nth-child(n+5) { display: none; }
+/* Diagram text at the page's sizes: these diagrams were laid out for them (slides.css enlarges to 15px). */
+.slide [data-viz] .s-text { font-size: 13px; }
+.slide [data-viz] .s-text.m { font-size: 11.5px; }
+.slide [data-viz=bytesPerParam][data-show=conv] .viz-body > .readout { display: none; }
+.slide [data-viz=bpe] th, .slide [data-viz=bpe] td { font-size: 22px; }
+.slide [data-viz=bpe] td .note, .slide [data-viz=bpe] td small { font-size: 17px; }
+/* The page's answer picture links labels to page sections; the deck has none. */
+.slide [data-viz=answerPicture] svg { pointer-events: none; }
+.slide [data-viz=answerPicture] svg text { text-decoration: none; }
+
+/* Slide 2, recap of session 01: one row per part, the takeaway left, a diagram right.
+   Diagram text is 13–17px (the LN boxes 13px), below the prose floor as diagram labels. */
+.slide.recap-s01 .slide-body > .fit { gap: 6px; }
+.slide.recap-s01 .row { display: grid; grid-template-columns: minmax(0, 1fr) 340px; column-gap: 36px; align-items: center; padding-top: 6px; border-top: 2px solid var(--line); }
+.slide.recap-s01 .tag { margin-bottom: 4px; color: var(--muted); font-size: 18px; font-weight: 650; letter-spacing: .07em; line-height: 1.3; text-transform: uppercase; }
+.slide.recap-s01 .tag a { color: inherit; }
+.slide.recap-s01 .row h4 { margin: 0 0 4px; }
+.slide.recap-s01 .row p { margin: 0; font-size: 27px; line-height: 1.3; }
+.slide.recap-s01 .rc-art { width: 340px; height: 105px; overflow: visible; }
+.slide.recap-s01 .rc-art text { font-family: var(--font); fill: var(--text); }
+.slide.recap-s01 .rc-art .nm { font-size: 17px; font-weight: 700; }
+.slide.recap-s01 .rc-art .cap { font-size: 15px; font-weight: 600; fill: var(--muted); }
+.slide.recap-s01 .rc-art .id { font-size: 15px; font-weight: 700; fill: var(--orange-2); }
+.slide.recap-s01 .rc-art .sm { font-size: 13px; font-weight: 700; }
+.slide.recap-s01 .rc-art .bad { fill: var(--bad); }
+.slide.recap-s01 .rc-art .good { fill: var(--good); }
+.slide.recap-s01 .rc-art .ah { fill: var(--muted); }
+.slide.recap-s01 .rc-art .ah.on { fill: var(--orange); }
+
+/* Slides 4–5, copied from session 01 (its slides 5–6) with its polish.css rules. The question
+   slide is scoped to .s01-question so this deck's own "Today's question" keeps the theme. */
+.slide.s01-question .fit { gap: 18px; padding-bottom: 20px; }
+.slide.s01-question [data-viz=archVsScale] svg { width: 100%; height: auto; display: block; }
+.slide.s01-question [data-viz=archVsScale] .s-text.ttl { font-size: 21px; font-weight: 700; fill: var(--deep); }
+.slide.s01-question [data-viz=archVsScale] .s-text.cap { font-size: 17px; }
+.slide.s01-question [data-viz=archVsScale] .s-text.cap.m { fill: var(--muted); font-size: 15px; }
+.slide.s01-question [data-viz=archVsScale] .s-edge.thin { stroke-width: .8; opacity: .55; }
+.slide.scale-arch .fit { gap: 10px; }
+.slide.scale-arch [data-viz="scaleArch"] svg { display: block; width: 100%; height: 266px; }
+.slide.scale-arch .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.slide.scale-arch .callout { font-size: 18px; line-height: 1.35; padding: 8px 14px; margin: 0; }
+.slide.scale-arch .src { font-size: 15px; margin-top: 8px; padding-top: 6px; }
+.slide.scale-arch .refs { font-size: 14px; line-height: 1.3; }
+.slide [data-viz="scaleArch"] .s-text { font-size: 15px; }
+.slide [data-viz="scaleArch"] .s-text.m { font-size: 13.5px; }
+
+/* Slides 8–12 (4 Oct 2026): scaling laws in brief. Slides 9 and 11 show the papers' own figures. */
+.slide .trend-row, .slide .law-row, .slide .tt-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 34px; align-items: center; }
+.slide .trend-row p, .slide .law-row p, .slide .tt-row p { margin: 0 0 16px; }
+.slide .trend-row p:last-child, .slide .law-row p:last-child, .slide .tt-row p:last-child { margin-bottom: 0; }
+.slide.scale-trend [data-viz=scaleArch] .viz-body > svg { height: 262px; width: auto; display: block; }
+.slide.scale-trend .src, .slide.test-time .src { font-size: 15px; margin-top: 8px; padding-top: 6px; }
+.slide img.paper-fig { height: 350px; width: auto; display: block; }
+.slide img.paper-fig.wide { height: auto; width: 540px; }
+.slide.chinchilla-law .src { font-size: 15px; margin-top: 8px; padding-top: 6px; }
+.slide .law { font-size: 30px; }
+.slide.test-time table.aime td { padding: 3px 12px; }
+.slide.test-time table.aime th { font-size: 18px; padding: 3px 12px; }
+.slide.test-time table.aime td:last-child { text-align: right; font-weight: 700; color: var(--blue); }
+.slide.roadmap table.map td:first-child { white-space: nowrap; color: var(--blue); }
+.slide.roadmap table.map td { padding: 6px 14px; }
+.slide.roadmap .law { margin: 0; }
+/* slide 11: o1's chain of thought on the cipher, steps paraphrased from OpenAI (2024); 22px, an example transcript */
+.slide .cot { margin: 0 0 8px; padding: 6px 14px; background: var(--panel); border-left: 3px solid var(--orange); font-size: 22px; line-height: 1.35; }
+.slide .cot b { color: var(--orange-2); font-size: 18px; letter-spacing: .05em; text-transform: uppercase; margin-right: 6px; }
+.slide .cot code { font-size: 20px; }
+.slide .cot ol { margin: 3px 0; padding-left: 1.3em; }
+.slide .cot li { margin: 0 0 2px; }
+.slide .cot-a { font-weight: 700; color: var(--blue); }
+
+/* Slide 8 (5 Oct 2026): why scaling laws mattered — a five-year timeline beside a click-to-load video */
+.slide .hist-row { display: grid; grid-template-columns: minmax(0, 1fr) 440px; column-gap: 34px; align-items: center; }
+.slide ol.hist { list-style: none; margin: 0 0 12px; padding: 0; border-left: 3px solid var(--line); }
+.slide ol.hist li { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: baseline; margin: 0; padding: 2px 0 2px 14px; line-height: 1.3; }
+.slide ol.hist li b { color: var(--muted); font-size: 22px; }
+.slide ol.hist li.key { border-left: 5px solid var(--orange); margin-left: -4px; background: var(--tint); }
+.slide ol.hist li.key b { color: var(--orange-2); }
+.slide .hist-row figure.clip { margin: 0; }
+.slide .hist-row figcaption { font-size: 18px; color: var(--muted); margin-top: 6px; }
+.slide.scale-history .src { font-size: 15px; margin-top: 8px; padding-top: 6px; }
+.slide .hist-row .yt .yt-link { font-size: 14px; }
+
+.slide.scale-history .callout { padding-top: 10px; padding-bottom: 10px; }
+.slide .hist-row figure.astra video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; background: #000; }
+.slide .hist-row figure.astra figcaption { font-size: 19px; line-height: 1.35; color: var(--text); background: var(--panel); border-left: 3px solid var(--orange); padding: 6px 10px; margin-top: 8px; }
+.slide .hist-row figure.astra figcaption b { color: var(--orange-2); font-size: 16px; letter-spacing: .05em; text-transform: uppercase; margin-right: 4px; }
+.slide .hist-row figure.astra .vid-title { font-size: 20px; font-weight: 700; color: var(--blue); margin: 0 0 6px; }
+
+/* ── Redesign, 5 Oct 2026: Opening, A how to train, B the scaling law, C emergence and adaptation ── */
+/* Slide 12, the plan: the law, then one row per part */
+.slide.roadmap table.map td:nth-child(1) { font-size: 34px; font-weight: 700; text-align: center; }
+.slide.roadmap table.map td:nth-child(4) { white-space: nowrap; color: var(--muted); }
+.slide.roadmap table.map td { font-size: 27px; line-height: 1.3; }
+.slide.roadmap .note { margin-top: 10px; }
+
+/* Comics (xkcd, CC BY-NC 2.5, loaded from imgs.xkcd.com): the drawing left, what to take from it right */
+.slide .comic-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 44px; align-items: center; }
+.slide .comic-row p { margin: 0 0 14px; }
+.slide .comic-row p:last-child { margin-bottom: 0; }
+.slide img.comic { display: block; height: 430px; width: auto; background: #fff; padding: 10px; border: 1px solid var(--line); border-radius: 4px; }
+.slide img.comic.wide { height: auto; width: 560px; }
+
+/* The training loop: four steps left, one real run right */
+.slide .loop-row { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); column-gap: 40px; align-items: start; }
+.slide.loop .board-steps li { font-size: 28px; margin-bottom: 14px; padding-left: 52px; }
+.slide.loop .card p { font-size: 27px; margin-bottom: 8px; }
+.slide.loop .callout { margin-top: 8px; }
+
+/* A video beside the question it answers */
+.slide .vid-row { display: grid; grid-template-columns: 600px minmax(0, 1fr); column-gap: 40px; align-items: center; }
+.slide .vid-row p { margin: 0 0 16px; }
+.slide .vid-row .yt .yt-link { font-size: 15px; }
+
+/* Figures used as published (see assets/img/p2l1/CREDITS.md) */
+.slide.kaplan-fig img.paper-fig { width: 796px; height: auto; margin: 0 auto 12px; }
+.slide.isoflop-fig img.paper-fig { width: 860px; height: auto; margin: 0 auto 10px; }
+.slide.isoflop-fig .card p { font-size: 27px; }
+.slide.kvc img.paper-fig { width: 600px; height: auto; }
+.slide.labs-use .card img.paper-fig { height: 200px; width: auto; margin: 0 0 10px; }
+.slide.labs-use .card p { font-size: 27px; }
+.slide.emergent-fig img.paper-fig { width: 660px; height: auto; }
+.slide.icl-fig img.paper-fig { width: 620px; height: auto; }
+.slide.mirage img.paper-fig { width: 640px; height: auto; }
+.slide.bridge .law-row { grid-template-columns: minmax(0, 1fr) auto; }
+.slide.bridge img.paper-fig { width: 338px; height: auto; }
+.slide.bridge .law-row p { margin-bottom: 10px; }
+.slide.bridge figure { margin: 0; width: 338px; }
+.slide.bridge figcaption { font-size: 18px; line-height: 1.3; color: var(--muted); margin-top: 6px; }
+.slide.bridge table.ways { margin-bottom: 14px; width: 100%; border-collapse: collapse; font-size: 27px; }
+.slide.bridge table.ways th { font-size: 17px; letter-spacing: .07em; text-transform: uppercase; text-align: left; color: var(--muted); background: var(--panel); font-weight: 650; }
+.slide.bridge table.ways td { border-bottom: 1px solid var(--line); line-height: 1.28; }
+.slide.bridge table.ways td:first-child { color: var(--deep); }
+.slide.bridge table.ways td, .slide.bridge table.ways th { padding: 5px 12px; }
+.slide.bridge table.ways td:last-child { white-space: nowrap; font-weight: 700; color: var(--blue); }
+.slide.kaplan-fig .src, .slide.isoflop-fig .src, .slide.kvc .src, .slide.labs-use .src, .slide.emergent-fig .src,
+.slide.icl-fig .src, .slide.mirage .src, .slide.bridge .src, .slide.comic .src, .slide.clip-slide .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+.slide.icl-fig .cot { margin-bottom: 12px; }
+.slide.icl-fig .cot code { font-size: 22px; }
+
+/* Homework slides: the layout of session 01's (its polish.css), so the two homeworks look alike.
+   Text here is 21–25px, as there: a task sheet students read on the page afterwards. */
+.slide p.key { font-size: 22px; line-height: 1.3; margin: 0 0 6px; padding: 1px 0 1px 14px; border-left: 4px solid var(--orange); color: var(--text); }
+.slide.task .task-row { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 36px; align-items: start; margin-top: 10px; }
+.slide.task .board-steps li { font-size: 25px; line-height: 1.4; margin-bottom: 12px; padding-left: 52px; }
+.slide.task .card.deliver { border-top: 3px solid var(--orange); padding: 16px 22px; }
+.slide.task .card.deliver p { font-size: 22px; line-height: 1.35; margin-bottom: 6px; padding-left: 18px; position: relative; }
+.slide.task .card.deliver p::before { content: "•"; position: absolute; left: 0; color: var(--orange-2); }
+.slide.task p.same { font-size: 21px; color: var(--muted); margin-top: 8px; }
+.slide.homework .fit > .grid > .card p { font-size: 24px; line-height: 1.3; margin-bottom: 6px; }
+.slide.homework .callout { margin-top: 12px; padding-top: 12px; padding-bottom: 12px; }
+/* Tables with a two-line reference footer: tighter rows keep the text at full size */
+.slide[data-title="Parallelism"] .fit > table td { padding-top: 4px; padding-bottom: 4px; }
+.slide[data-title="Energy and carbon"] .fit > table td,
+.slide[data-title="Architecture improvements"] .fit > table td { padding-top: 9px; padding-bottom: 9px; }
+.slide[data-title="Why the exponents differ"] .board-steps li, .slide[data-title="Architecture or scale: the evidence"] .board-steps li,
+.slide[data-title="Deduplication"] .board-steps li { padding-top: 9px; padding-bottom: 9px; margin-bottom: 8px; }
+.slide.test-time table.aime td { padding-top: 1px; padding-bottom: 1px; }
+.slide.law-why .fit > .grid > .card p { margin-bottom: 8px; }
+.slide.law-why .fit > .grid > .card h4 { margin-bottom: 8px; }
+.slide.derivation[data-title="Compute: C ≈ 6ND"] .board-steps li { margin-bottom: 6px; }
+.slide.scale-trend .trend-row p { margin-bottom: 12px; }
+
+/* Slide 14: the comic at full slide height on the right (5 Oct 2026, his request: the comic's
+   text was too small). 742 × 877 px image shown 688 px tall; the text keeps the left column.
+   Right edge at 64 px clears the feedback button and the slide number. */
+.slide.comic-tall { padding-right: 686px; }
+.slide.comic-tall .slide-body > .fit { gap: 18px; }
+.slide.comic-tall > a.comic-side { position: absolute; top: 16px; bottom: 16px; right: 64px; display: block; }
+.slide.comic-tall > a.comic-side img { display: block; height: 100%; width: auto; }
+/* slide 9 (6 Oct 2026): the fitted constants of Hoffmann et al. (2022), Eq. 10 */
+.slide.chinchilla-law table.consts { margin: 0 0 16px; font-size: 27px; }
+.slide.chinchilla-law table.consts th { font-size: 17px; padding: 4px 12px; }
+.slide.chinchilla-law table.consts td { padding: 6px 12px; }
+.slide.chinchilla-law table.consts td:first-child { color: var(--blue); font-weight: 700; }
+.slide.chinchilla-law table.consts td { white-space: nowrap; }
+/* Part A thread (6 Oct 2026): the seven steps of one nanoGPT training iteration (train.py's loop),
+   top right of every A1–A2 slide; the current step carries class "on". Supporting tier, 14px. */
+.slide > ol.runsteps { position: absolute; top: 30px; right: 64px; display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; counter-reset: rs; z-index: 2; }
+.slide > ol.runsteps li { counter-increment: rs; font-size: 14px; line-height: 1; letter-spacing: .03em; padding: 5px 9px; border-radius: 999px; background: var(--panel); color: var(--muted); white-space: nowrap; }
+.slide > ol.runsteps li::before { content: counter(rs) "\00a0"; font-weight: 700; }
+.slide > ol.runsteps li.on { background: var(--blue); color: #fff; }
+
+/* ── G1 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/G1.css) ── */
+/* G1 · The run and the data (6 Oct 2026): A0.1, A0.2, A1.1, A1.2, A2.1a, A2.1b, A2.2, A2.13.
+   Every selector is scoped to a class on G1's slides. Visualization text sizes are set inline in
+   nanogpt.js (1 viewBox unit = 1 canvas px); here only the figure widths and the slide layouts. */
+
+/* A0.1, the Part A divider: four segments under a two-line title, references at the foot */
+.slide.run-open { padding-top: 60px; }
+.slide.run-open h1 { max-width: 1100px; margin: 14px 0 16px; }
+.slide.run-open > p:not(.eb) { margin-bottom: 18px; max-width: 1080px; }
+.slide.run-open .seg { padding: 11px 0; }
+.slide.run-open .refs { margin-bottom: 64px; }
+
+/* A0.2, the comic mapped to the seven steps (layout from .comic-tall in polish.css) */
+.slide.xkcd-steps .slide-body > .fit { gap: 14px; }
+.slide.xkcd-steps ol.comic-steps { list-style: none; margin: 0; padding: 0; }
+.slide.xkcd-steps ol.comic-steps li { display: grid; grid-template-columns: 172px minmax(0, 1fr); align-items: baseline; margin: 0; padding: 6px 0; border-top: 1px solid var(--line); font-size: 27px; line-height: 1.3; }
+.slide.xkcd-steps ol.comic-steps li:last-child { border-bottom: 1px solid var(--line); }
+.slide.xkcd-steps ol.comic-steps b { color: var(--blue); }
+.slide.xkcd-steps ol.comic-steps span { color: var(--text); font-style: italic; }
+.slide.xkcd-steps p.cs-note { margin: 0; font-size: 27px; }
+
+/* A1.1 and A2.13, runMap: the loop of seven steps at full width */
+.slide.run-map [data-viz=runMap] .viz-body > svg { width: 100%; height: auto; display: block; }
+.slide.run-map [data-viz=runMap] .readout { margin-top: 8px; padding: 8px 14px; font-size: 19px; }
+.slide.run-map [data-viz=runMap] .readout code { margin: 0 10px; font-size: 19px; background: var(--card); }
+.slide.run-map [data-viz=runMap] .rm-step:focus { outline: none; }
+.slide.run-map [data-viz=runMap] .rm-step:focus-visible rect { stroke: var(--orange); stroke-width: 2.5; }
+.slide.run-sum .slide-body > .fit { display: flex; flex-direction: column; gap: 12px; }
+.slide.run-sum .callout { padding: 8px 20px; font-size: 27px; }
+
+/* A1.2, the loss: the math left, the loss–perplexity line right */
+.slide.loss-read .loss-row { display: grid; grid-template-columns: minmax(0, 1fr) 560px; column-gap: 34px; align-items: center; }
+.slide.loss-read .loss-math p { margin: 0 0 12px; font-size: 27px; line-height: 1.35; }
+.slide.loss-read .loss-math p:last-child { margin-bottom: 0; }
+.slide.loss-read .loss-math .katex-display { margin: 4px 0 10px; }
+.slide.loss-read [data-viz=lossScale] .viz-body > svg { width: 560px; height: auto; display: block; }
+.slide.loss-read [data-viz=lossScale] .controls { margin: 6px 0 0; flex-wrap: nowrap; gap: 14px; }
+.slide.loss-read [data-viz=lossScale] .controls input[type=range] { width: 130px; }
+.slide.loss-read [data-viz=lossScale] .readout { margin: 0; padding: 5px 10px; font: 17px/1.3 var(--font); white-space: nowrap; }
+
+/* A2.1a, BPE: the bpe figure keeps its own sizes (training.js); its readouts and the ✋ are compact */
+.slide.bpe-step .slide-body > .fit > p { margin: 0 0 8px; font-size: 27px; line-height: 1.35; }
+.slide.bpe-step [data-viz=bpe] .controls { margin-bottom: 6px; }
+.slide.bpe-step [data-viz=bpe] .readout { margin-top: 8px; padding: 6px 14px; font-size: 19px; }
+.slide.bpe-step [data-viz=bpe] .controls:not(:first-child) { margin-top: 8px !important; margin-bottom: 0; }
+.slide.bpe-step .slide-body > .fit > p.bpe-ask { margin: 6px 0 0; padding: 4px 20px; font-size: 27px; }
+
+/* A2.1b, data to tokens: one figure at full width */
+.slide.data-tokens [data-viz=tokenPipe] .viz-body > svg { width: 100%; height: auto; display: block; }
+
+/* A2.2, gradient accumulation: the identity and the reasons left, the grid and the arrows right */
+.slide.accum .acc-row { display: grid; grid-template-columns: minmax(0, 1fr) 640px; column-gap: 30px; align-items: center; }
+.slide.accum .acc-text .katex-display { margin: 4px 0 12px; }
+.slide.accum .acc-text p { margin: 0 0 12px; font-size: 27px; line-height: 1.3; }
+.slide.accum .acc-text .why { border-top: 2px solid var(--line); padding-top: 6px; }
+.slide.accum .acc-text .why .tag { color: var(--muted); font-size: 17px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; }
+.slide.accum .acc-text .why p { margin: 0 0 10px; }
+.slide.accum .acc-text .why:last-child p { margin-bottom: 0; }
+.slide.accum [data-viz=accumBatch] .viz-body > svg { width: 640px; height: auto; display: block; }
+.slide.accum [data-viz=accumBatch] .controls { margin-bottom: 4px; flex-wrap: nowrap; }
+.slide.accum [data-viz=accumBatch] .controls input[type=range] { width: 160px; }
+.slide.accum [data-viz=accumBatch] .readout { margin-top: 4px; padding: 5px 10px; font: 17px/1.3 var(--font); }
+
+/* ── G2 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/G2.css) ── */
+/* G2 · Clip, optimizer, schedule (Part A steps ⑤–⑥). Every rule is scoped to a G2 slide class:
+   optim-clip, optim-mom, optim-adam, optim-anim (+ optim-decay), optim-adamw, optim-lr.
+   Diagram text inside the SVGs is set by assets/js/p2l1/optim.js in SVG units (17px, labels 15px). */
+
+/* text and diagram side by side */
+.slide.optim-clip .g2-row, .slide.optim-mom .g2-row, .slide.optim-adam .g2-row, .slide.optim-adamw .g2-row, .slide.optim-lr .g2-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 32px; align-items: center; }
+.slide.optim-lr .g2-row { grid-template-columns: auto minmax(0, 1fr); }
+.slide.optim-clip .g2-text > *, .slide.optim-mom .g2-text > *, .slide.optim-adamw .g2-text > *, .slide.optim-lr .g2-text > * { margin: 0 0 14px; }
+.slide.optim-clip .g2-text > :last-child, .slide.optim-mom .g2-text > :last-child, .slide.optim-adamw .g2-text > :last-child, .slide.optim-lr .g2-text > :last-child { margin-bottom: 0; }
+.slide.optim-clip .g2-eq .katex-display, .slide.optim-mom .g2-eq .katex-display, .slide.optim-adamw .g2-eq .katex-display { margin: 4px 0; }
+.slide.optim-clip .callout, .slide.optim-mom .callout, .slide.optim-adamw .callout { padding: 12px 18px; }
+.slide.optim-adam .fit > .callout { margin-top: 8px; padding: 8px 18px; }
+.slide.optim-clip .src, .slide.optim-mom .src, .slide.optim-adam .src, .slide.optim-anim .src, .slide.optim-adamw .src, .slide.optim-lr .src {
+  font-size: 17px; margin-top: 8px; padding-top: 6px; }
+.slide.optim-clip .refs, .slide.optim-mom .refs, .slide.optim-adam .refs, .slide.optim-anim .refs, .slide.optim-adamw .refs, .slide.optim-lr .refs { margin-top: 6px; }
+
+/* the readouts repeat what the diagrams label; the lecture page keeps them */
+.slide [data-viz=clipPic] .readout, .slide [data-viz=momentumSum] .readout, .slide [data-viz=adamPerParam] .readout,
+.slide.optim-anim [data-viz=optimValley] .readout, .slide [data-viz=lrSchedule] .readout, .slide [data-viz=decayPull] .readout { display: none; }
+.slide [data-viz=clipPic] .controls, .slide [data-viz=momentumSum] .controls, .slide [data-viz=adamPerParam] .controls,
+.slide [data-viz=decayPull] .controls, .slide [data-viz=lrSchedule] .controls { margin: 6px 0 0; }
+
+/* ⑤ clip */
+.slide [data-viz=clipPic] svg { height: 370px; width: auto; display: block; }
+/* ⑥ momentum */
+.slide [data-viz=momentumSum] svg { height: 262px; width: auto; display: block; }
+/* ⑥ Adam: four equations stacked left, the two panels right */
+.slide.optim-adam .g2-eqs > div { margin: 0 0 2px; }
+.slide.optim-adam .g2-eqs .katex-display { margin: 0; }
+.slide.optim-adam .g2-eqs p.tag { margin: 0; text-align: center; font-size: 17px; line-height: 1.2; color: var(--muted); }
+.slide [data-viz=adamPerParam] svg { height: 294px; width: auto; display: block; }
+/* ⑥ AdamW */
+.slide [data-viz=decayPull] svg { height: 250px; width: auto; display: block; }
+.slide [data-viz=decayPull] .readout { font-size: 16px; margin-top: 8px; padding: 6px 12px; }
+/* ⑥ schedule */
+.slide [data-viz=lrSchedule] svg { height: 290px; width: auto; display: block; }
+.slide.optim-lr .callout { padding: 10px 16px; }
+.slide [data-viz=lrSchedule] .readout { font-size: 16px; margin-top: 6px; padding: 6px 12px; }
+
+/* ⑥ the valley: plot left; controls, legend and what to watch right */
+.slide.optim-anim .g2-anim { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 28px; align-items: start; }
+.slide.optim-anim .g2-anim > [data-viz], .slide.optim-anim .g2-anim .viz-body { display: contents; }
+.slide.optim-anim [data-viz=optimValley] svg { grid-column: 1; grid-row: 1 / span 5; height: 400px; width: auto; display: block; }
+.slide.optim-anim [data-viz=optimValley] .viz-body > :not(svg) { grid-column: 2; }
+.slide.optim-anim [data-viz=optimValley] .controls { margin: 0 0 8px; gap: 8px 12px; }
+.slide.optim-anim [data-viz=optimValley] .controls label { font-size: 18px; }
+.slide.optim-anim [data-viz=optimValley] .controls input[type=range] { width: 110px; }
+.slide.optim-anim [data-viz=optimValley] .controls button { padding: 4px 12px; }
+.slide.optim-anim .g2-watch { grid-column: 2; }
+.slide.optim-anim .g2-watch p { margin: 4px 0 0; font-size: 27px; line-height: 1.3; }
+.slide.optim-anim .g2-watch .callout { padding: 10px 16px; margin-top: 10px; }
+.slide.optim-anim .k-sgd { color: #687482; }
+.slide.optim-anim .k-mom { color: #0a6aa6; }
+.slide.optim-anim .k-adam { color: #a3438a; }
+.slide.optim-anim .k-adamw { color: #c04f00; }
+.slide.optim-lr .g2-code { margin: 10px 0 0; font-size: 18px; line-height: 1.3; color: var(--deep); white-space: nowrap; }
+.slide.optim-lr .g2-code code { font-size: 17px; padding: 2px 8px; color: var(--deep); }
+.slide.optim-adam .g2-eqs .katex-display > .katex { font-size: 1.02em; }
+.slide.optim-decay [data-viz=optimValley] svg { height: 388px; }
+.slide.optim-adam .g2-eqs p.tag code { font-size: 16px; }
+.slide.optim-adam .fit > p.g2-lead { margin: 0 0 4px; font-size: 27px; line-height: 1.3; }
+.slide.optim-mom .g2-text > p:not(.callout), .slide.optim-adamw .g2-text > p, .slide.optim-lr .g2-text > p:not(.callout) { font-size: 27px; line-height: 1.35; }
+.slide.optim-adamw .fit > .callout { margin-top: 10px; padding: 8px 18px; }
+
+/* ── G3 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/G3.css) ── */
+/* G3 (6 Oct 2026): precision, compute, GPUs, memory and time — Part A slides A2.3, A2.4, A2.5,
+   A2.11, A2.12. Every rule is scoped to .slide.g3. The visualizations in systems.js draw their
+   SVG at slide size, so each SVG's height here equals its viewBox height (text drawn 1:1). */
+.slide.g3 [data-viz] .s-text { font-size: 17px; }
+.slide.g3 [data-viz] .s-text.m { font-size: 15px; fill: var(--muted); }
+.slide.g3 [data-viz] .s-text.sm { font-size: 15px; }
+.slide.g3 [data-viz] .s-text.t { font-size: 19px; font-weight: 700; fill: var(--deep); }
+.slide.g3 [data-viz] .s-text.f { font-size: 21px; font-style: italic; }
+.slide.g3 [data-viz] .s-text.op { font-size: 34px; font-weight: 700; fill: var(--muted); }
+.slide.g3 [data-viz] .s-text.n { font-size: 17px; fill: var(--muted); }
+.slide.g3 [data-viz] .s-text.bl { fill: var(--blue-2); font-weight: 700; }
+.slide.g3 [data-viz] .s-text.big { font-size: 38px; font-weight: 750; fill: var(--orange-2); }
+.slide.g3 [data-viz] .s-text.big2 { font-size: 24px; font-weight: 750; fill: var(--deep); }
+.slide.g3 [data-viz] .viz-body > svg { display: block; width: auto; max-width: 100%; }
+.slide.g3 [data-viz=autocastFlow] .viz-body > svg { height: 296px; }
+.slide.g3 [data-viz=matmulCost] .viz-body > svg { height: 328px; }
+.slide.g3 [data-viz=ddpSync] .viz-body > svg { height: 268px; }
+.slide.g3 [data-viz=runMemory] .viz-body > svg { height: 286px; }
+.slide.g3 [data-viz=mfuRun] .viz-body > svg { height: 236px; }
+.slide.g3 .controls .lab { font-size: 20px; color: var(--muted); }
+.slide.g3-ddp [data-viz=ddpSync] .readout { font-size: 20px; padding: 8px 16px; }
+/* A2.3, the bits: floatBits from training.js, a little shorter than on slide 34 so the GradScaler line fits */
+.slide.g3-bits [data-viz=floatBitsAt] .viz-body > svg { height: 172px; }
+.slide.g3-bits [data-viz=floatBitsAt] .controls { margin-bottom: 4px; }
+.slide.g3-bits [data-viz=floatBitsAt] .readout { font-size: 18px; margin-top: 6px; padding: 6px 16px; }
+.slide.g3 .fit > p.g3-code, .slide.g3 .fit > p.g3-line { font-size: 27px; line-height: 1.35; }
+.slide.g3.g3-autocast .slide-body > .fit, .slide.g3.g3-ddp .slide-body > .fit,
+.slide.g3.g3-sixn .slide-body > .fit, .slide.g3.g3-mem .slide-body > .fit,
+.slide.g3.g3-mfu .slide-body > .fit, .slide.g3.g3-bits .slide-body > .fit { display: flex; flex-direction: column; gap: 16px; }
+.slide.g3.g3-bits .slide-body > .fit { gap: 6px; }
+
+/* A2.12, the run's total: three boxes joined by the two multiplications */
+.slide.g3-count .g3-chain { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.15fr) auto minmax(0, 1fr); align-items: stretch; column-gap: 18px; }
+.slide.g3-count .g3-op { align-self: center; }
+.slide.g3-count .g3-box { padding: 14px 18px 16px; border-top: 3px solid var(--line); background: var(--panel); }
+.slide.g3-count .g3-box.on { border-top-color: var(--orange); background: var(--tint); }
+.slide.g3-count .g3-box .tag { margin: 0 0 6px; color: var(--muted); font-size: 18px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; }
+.slide.g3-count .g3-box p { margin: 0; }
+.slide.g3-count .g3-box p.v { font-size: 40px; font-weight: 750; line-height: 1.15; color: var(--deep); }
+.slide.g3-count .g3-box.on p.v { color: var(--orange-2); }
+.slide.g3-count .g3-box p.u { font-size: 27px; line-height: 1.3; }
+.slide.g3-count .g3-op { text-align: center; font-size: 30px; font-weight: 700; color: var(--blue-2); line-height: 1.2; }
+.slide.g3-count .g3-op span { display: block; font-size: 18px; font-weight: 500; color: var(--muted); }
+.slide.g3-count .g3-op span code { font-size: 18px; }
+.slide.g3-mfu [data-viz=mfuRun] .readout { font-size: 20px; padding: 8px 16px; }
+/* xkcd 303 between the two Repeat slides: the comic left, the ✋ right (the deck's comic-row) */
+.slide.g3-comic img.comic { height: 400px; }
+.slide.g3-comic .comic-row p { font-size: 29px; }
+
+/* ── G4 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/G4.css) ── */
+/* G4 · Part A · 3 Scaling nanoGPT up and Part A · 4 Internet scale (6 Oct 2026).
+   Every selector is scoped to a class on G4's slides: g4-knobs, g4-terms, g4-ratio, g4-limits
+   (Part A · 3) and g4-inet, g4-dc (Part A · 4). Diagram labels are 17–20px (supporting tier). */
+
+/* ── The limits strip: top right of every Part A · 4 slide, the current limit marked "on".
+      It is a variant of the A1–A2 step strip (class "runsteps limits": polish.css gives the
+      geometry, 14px supporting tier); here without step numbers and in the accent colour, so
+      the two threads read apart. */
+.slide.g4-inet > ol.runsteps.limits li { margin: 0; }
+.slide.g4-inet > ol.runsteps.limits li::before { content: none; }
+.slide.g4-inet > ol.runsteps.limits li.on { background: var(--orange-2); color: #fff; font-weight: 700; }
+/* The first line of a Part A · 4 slide: which limit it answers */
+.slide.g4-inet p.g4-limit { margin: 0; padding: 2px 0 2px 16px; border-left: 4px solid var(--orange); font-size: 27px; line-height: 1.35; }
+.slide.g4-inet p.g4-limit b { color: var(--orange-2); }
+
+/* ── A3.1 Scaling nanoGPT up: the size table */
+.slide.g4-knobs .slide-body > .fit { gap: 12px; }
+.slide.g4-knobs .block-row { display: grid; grid-template-columns: 720px minmax(0, 1fr); column-gap: 24px; align-items: center; }
+.slide.g4-knobs .block-row p { margin: 0; font-size: 27px; line-height: 1.3; }
+.slide.g4-knobs svg.block12 { display: block; width: 720px; height: auto; overflow: visible; }
+.slide.g4-knobs svg.block12 rect.sq { fill: var(--blue-2); }
+.slide.g4-knobs svg.block12 rect.bar { fill: var(--orange); }
+.slide.g4-knobs svg.block12 text { font-family: var(--font); font-size: 20px; font-weight: 700; fill: #fff; text-anchor: middle; }
+.slide.g4-knobs svg.block12 text.cap { font-size: 18px; font-weight: 650; fill: var(--muted); }
+.slide.g4-knobs svg.block12 text.op { font-size: 26px; fill: var(--deep); }
+.slide.g4-knobs svg.block12 text.op.left { text-anchor: start; font-size: 24px; }
+.slide.g4-knobs .fit > p.note { margin: 0; font-size: 27px; color: var(--muted); }
+.slide.g4-knobs table.knobs { width: 100%; border-collapse: collapse; font-size: 27px; }
+.slide.g4-knobs table.knobs th { padding: 4px 10px; font-size: 17px; text-align: right; text-transform: none; letter-spacing: .03em; }
+.slide.g4-knobs table.knobs th code { font-size: 16px; color: var(--deep); background: transparent; padding: 0; }
+.slide.g4-knobs table.knobs td { padding: 4px 10px; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--line); }
+.slide.g4-knobs table.knobs th:first-child, .slide.g4-knobs table.knobs td:first-child { text-align: left; }
+.slide.g4-knobs table.knobs td:nth-child(5) { color: var(--blue); font-weight: 700; }
+.slide.g4-knobs table.knobs tr.me td:first-child { color: var(--orange-2); font-weight: 700; }
+.slide.g4-knobs .callout { padding: 6px 20px; font-size: 27px; line-height: 1.32; }
+.slide.g4-knobs .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── A3.2 Chinchilla's two terms: the law, nanoGPT's numbers, the stacked bars */
+.slide.g4-terms .slide-body > .fit { gap: 14px; }
+.slide.g4-terms .terms-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 40px; align-items: center; }
+.slide.g4-terms .terms-row p { margin: 0; font-size: 27px; line-height: 1.4; }
+.slide.g4-terms .terms-row .run p + p { margin-top: 2px; }
+.slide.g4-terms .terms-row .t-m { color: var(--blue-2); font-weight: 700; }
+.slide.g4-terms .terms-row .t-d { color: var(--orange-2); font-weight: 700; }
+.slide.g4-terms .terms-row .law { font-size: 30px; }
+.slide.g4-terms svg.terms { display: block; width: 100%; height: auto; overflow: visible; }
+.slide.g4-terms svg.terms text { font-family: var(--font); font-size: 19px; fill: var(--text); }
+.slide.g4-terms svg.terms .lab { text-anchor: end; font-size: 20px; }
+.slide.g4-terms svg.terms .row.best .lab { font-weight: 700; fill: var(--blue); }
+.slide.g4-terms svg.terms .in { text-anchor: middle; font-size: 18px; font-weight: 700; fill: var(--deep); }
+.slide.g4-terms svg.terms .in.w { fill: #fff; }
+.slide.g4-terms svg.terms .tot { font-size: 21px; font-weight: 700; fill: var(--deep); }
+.slide.g4-terms svg.terms .row.best .tot { fill: var(--blue); }
+.slide.g4-terms svg.terms rect.e { fill: var(--panel-2); }
+.slide.g4-terms svg.terms rect.m { fill: var(--blue-2); }
+.slide.g4-terms svg.terms rect.d { fill: var(--orange); }
+.slide.g4-terms svg.terms .ax line { stroke: var(--muted); stroke-width: 1; }
+.slide.g4-terms svg.terms .ax text { text-anchor: middle; font-size: 17px; fill: var(--muted); }
+.slide.g4-terms svg.terms .ax text.end { text-anchor: end; }
+.slide.g4-terms svg.terms .key text { font-size: 17px; fill: var(--muted); }
+.slide.g4-terms .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+.slide.g4-terms .fit > p.note { margin: 0; font-size: 27px; color: var(--muted); }
+
+/* ── A3.3 Tokens for each model size: three sources, then the dot plot against OpenWebText */
+.slide.g4-ratio .slide-body > .fit { gap: 12px; }
+.slide.g4-ratio .fit > .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 36px; }
+.slide.g4-ratio .fit > .grid.three > .card { padding-top: 10px; }
+.slide.g4-ratio .card .tag { margin-bottom: 4px; text-transform: none; }
+.slide.g4-ratio .card p { font-size: 27px; line-height: 1.3; }
+.slide.g4-ratio svg.ratio { display: block; width: 100%; height: auto; overflow: visible; }
+.slide.g4-ratio svg.ratio text { font-family: var(--font); font-size: 19px; fill: var(--text); }
+.slide.g4-ratio svg.ratio .lab { text-anchor: end; font-size: 20px; }
+.slide.g4-ratio svg.ratio .v { font-size: 18px; font-weight: 700; fill: var(--deep); paint-order: stroke; stroke: var(--bg); stroke-width: 6px; stroke-linejoin: round; }
+.slide.g4-ratio svg.ratio .v.end { text-anchor: end; }
+.slide.g4-ratio svg.ratio .v.act { fill: var(--orange-2); }
+.slide.g4-ratio svg.ratio circle { fill: var(--blue-2); }
+.slide.g4-ratio svg.ratio circle.over { fill: var(--orange); }
+.slide.g4-ratio svg.ratio path.actual { fill: none; stroke: var(--orange-2); stroke-width: 2.5; }
+.slide.g4-ratio svg.ratio rect.beyond { fill: var(--tint); }
+.slide.g4-ratio svg.ratio line.owt { stroke: var(--deep); stroke-width: 2.5; stroke-dasharray: 7 5; }
+.slide.g4-ratio svg.ratio .owt-lab { font-size: 18px; font-weight: 700; fill: var(--deep); }
+.slide.g4-ratio svg.ratio .ax line { stroke: var(--muted); stroke-width: 1; }
+.slide.g4-ratio svg.ratio .ax text { text-anchor: middle; font-size: 17px; fill: var(--muted); }
+.slide.g4-ratio svg.ratio .ax text.end { text-anchor: end; }
+.slide.g4-ratio .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── A3.4 Where nanoGPT stops: one row per limit, nanoGPT → needed → fix */
+.slide.g4-limits .slide-body > .fit { gap: 16px; }
+.slide.g4-limits table.limits-map { width: 100%; border-collapse: collapse; font-size: 27px; }
+.slide.g4-limits table.limits-map th { padding: 8px 10px; font-size: 17px; text-align: left; }
+.slide.g4-limits table.limits-map td { padding: 8px 10px; line-height: 1.25; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.slide.g4-limits table.limits-map td.ar { padding: 8px 2px; color: var(--muted); text-align: center; }
+.slide.g4-limits table.limits-map td:last-child { color: var(--blue); font-weight: 650; white-space: normal; }
+.slide.g4-limits table.limits-map td:nth-child(4) { color: var(--orange-2); font-weight: 650; }
+.slide.g4-limits table.limits-map td.lim { color: var(--orange-2); font-weight: 700; }
+.slide.g4-limits .callout { padding: 10px 20px; font-size: 27px; }
+.slide.g4-limits .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── Part A · 4, reused slides: room for the first line */
+.slide.g4-inet.model-mix .slide-body > .fit { gap: 18px; }
+.slide.g4-inet[data-title="Bytes per parameter"] .slide-body > .fit > .g4-limit { margin-bottom: 14px; }
+/* one convention only (data-only="16"): the bar svg is one row tall */
+.slide.g4-inet[data-title="Bytes per parameter"] [data-viz=bytesPerParam] .viz-body > svg:nth-of-type(1) { height: 134px; }
+.slide.g4-inet[data-title="Bytes per parameter"] .fit > p:last-child { margin: 16px 0 0; font-size: 27px; line-height: 1.35; }
+.slide.g4-inet[data-title="Energy and carbon"] .slide-body > .fit { gap: 10px; }
+.slide.g4-inet[data-title="How does 6ND compare with reported training costs?"] .fit > table td { padding: 5px 10px; white-space: nowrap; }
+.slide.g4-inet[data-title="How does 6ND compare with reported training costs?"] .slide-body > .fit { gap: 18px; }
+.slide.g4-inet[data-title="How does 6ND compare with reported training costs?"] .fit > table td:first-child { white-space: normal; }
+.slide.g4-inet[data-title="How does 6ND compare with reported training costs?"] .fit > table th { padding: 10px 10px; }
+.slide.g4-inet[data-title="How does 6ND compare with reported training costs?"] .fit > table td:last-child { color: var(--orange-2); font-weight: 700; white-space: nowrap; }
+.slide.g4-inet[data-title="Parallelism"] .fit > table tr.hl td:first-child { color: var(--orange-2); font-weight: 650; }
+
+/* ── xkcd 1737 Datacenter Scale (CC BY-NC 2.5, hot-linked _2x.png, 1480 × 588): the wide comic
+      across the slide, one line of evidence under it. */
+.slide.g4-dc .slide-body > .fit { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.slide.g4-dc a.dc-comic { display: block; }
+.slide.g4-dc img.comic { width: 840px; height: auto; padding: 8px; }
+.slide.g4-dc .fit > p { font-size: 27px; line-height: 1.35; margin: 0; }
+.slide.g4-inet[data-title="ZeRO sharding"] .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── Review fixes, 6 Oct 2026 ── */
+/* Pre-training mixtures: one stacked bar per model, web pages in the accent colour */
+.slide.g4-inet svg.mix { display: block; width: 100%; height: auto; overflow: visible; }
+.slide.g4-inet svg.mix text { font-family: var(--font); font-size: 20px; fill: var(--text); }
+.slide.g4-inet svg.mix .lab { text-anchor: end; font-size: 21px; font-weight: 700; fill: var(--deep); }
+.slide.g4-inet svg.mix .sub { text-anchor: end; font-size: 16px; fill: var(--muted); }
+.slide.g4-inet svg.mix rect.w { fill: var(--orange); }
+.slide.g4-inet svg.mix rect.o { fill: var(--panel-2); }
+.slide.g4-inet svg.mix rect.c { fill: var(--panel); stroke: var(--muted); stroke-width: 1; stroke-dasharray: 5 4; }
+.slide.g4-inet svg.mix .in { text-anchor: middle; font-size: 18px; font-weight: 650; }
+.slide.g4-inet svg.mix .in.w { fill: #fff; }
+.slide.g4-inet svg.mix .in.o, .slide.g4-inet svg.mix .in.c { fill: var(--deep); }
+.slide.g4-inet svg.mix .ann { font-size: 21px; font-weight: 700; fill: var(--orange-2); }
+.slide.g4-inet.model-mix .fit > .note { margin: 0; }
+/* Llama 3 405B: FLOPs to days — two bars on a log scale of days */
+.slide.g4-inet svg.days { display: block; width: 100%; height: auto; overflow: visible; }
+.slide.g4-inet svg.days text { font-family: var(--font); font-size: 20px; fill: var(--text); }
+.slide.g4-inet svg.days .lab { text-anchor: end; font-weight: 650; }
+.slide.g4-inet svg.days rect.slow { fill: var(--panel-2); }
+.slide.g4-inet svg.days rect.fast { fill: var(--orange); }
+.slide.g4-inet svg.days .in { text-anchor: end; font-weight: 700; fill: var(--deep); }
+.slide.g4-inet svg.days .v { font-weight: 700; fill: var(--orange-2); }
+.slide.g4-inet svg.days .ax line { stroke: var(--muted); stroke-width: 1; }
+.slide.g4-inet svg.days .ax text { text-anchor: middle; font-size: 17px; fill: var(--muted); }
+.slide.g4-inet[data-title="Llama 3 405B: FLOPs to days"] .slide-body > .fit { gap: 18px; }
+/* Energy and carbon: energy and emissions bars, the grid beside them */
+.slide.g4-inet svg.energy { display: block; width: 100%; height: auto; overflow: visible; }
+.slide.g4-inet svg.energy text { font-family: var(--font); font-size: 20px; fill: var(--text); }
+.slide.g4-inet svg.energy .hd { font-size: 17px; font-weight: 650; letter-spacing: .04em; fill: var(--muted); }
+.slide.g4-inet svg.energy .end { text-anchor: end; }
+.slide.g4-inet svg.energy .lab { text-anchor: end; font-weight: 650; fill: var(--deep); }
+.slide.g4-inet svg.energy .row.me .lab { fill: var(--orange-2); }
+.slide.g4-inet svg.energy rect.en { fill: var(--blue-2); }
+.slide.g4-inet svg.energy rect.co { fill: var(--orange); }
+.slide.g4-inet svg.energy rect.lc { fill: none; stroke: var(--orange); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.slide.g4-inet svg.energy .v { font-weight: 700; fill: var(--deep); }
+.slide.g4-inet svg.energy .v.m { font-weight: 400; fill: var(--muted); }
+.slide.g4-inet svg.energy .v.g { fill: var(--good); }
+.slide.g4-inet[data-title="Energy and carbon"] .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── G5 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/G5.css) ── */
+/* G5 · nanoGPT through Parts B and C. Every rule is scoped to a class on a G5 slide. */
+
+/* "The vote, answered": a two-row table under the cards */
+.slide.vote-nano .slide-body > .fit { gap: 24px; }
+.slide.vote-nano .fit > table td { padding-top: 12px; padding-bottom: 12px; }
+
+/* "Comparing scaling-law fits": room for the nanoGPT callout */
+.slide.fits-nano .slide-body > .fit { gap: 18px; }
+.slide.fits-nano .fit > table td { padding-top: 7px; padding-bottom: 7px; }
+.slide.fits-nano .fit > .callout { padding: 12px 22px; font-size: 27px; }
+
+/* "Emergent abilities": orange marker lines drawn over Wei et al.'s Fig. 2 (viewBox = image pixels) */
+.slide.nano-mark .nano-fig { position: relative; width: 620px; }
+.slide.nano-mark .nano-fig img.paper-fig { width: 620px; height: auto; }
+.slide.nano-mark .nano-fig svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.slide.nano-mark .nano-fig line { stroke: var(--orange); stroke-width: 6; opacity: .85; }
+.slide.nano-mark .nano-fig text { fill: var(--orange-2); font-size: 56px; font-weight: 700; }
+.slide.nano-mark .nano-key { color: var(--orange-2); }
+.slide.nano-mark .law-row p { margin-bottom: 10px; }
+.slide.nano-mark .law-row p:last-child { margin-bottom: 0; }
+
+/* "Why use parameter-efficient fine-tuning?": tighter paragraph rhythm for one extra paragraph */
+.slide.ft-nano .slide-body > .fit { gap: 20px; }
+
+/* ── LEAD (Part A / Part B rebuild, 6 Oct 2026; source partA_build/LEAD.css) ── */
+/* slide 6 (6 Oct 2026): two clips side by side, 2023 then 2026, right of the timeline */
+.slide.scale-history .hist-row.two-clips { grid-template-columns: minmax(0, 1fr) 530px; column-gap: 22px; align-items: start; }
+.slide.scale-history .clips { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; align-items: start; }
+.slide.scale-history .clips figure.clip { margin: 0; min-width: 0; }
+.slide.scale-history .clips .vid-title { font-size: 19px; font-weight: 700; color: var(--blue); margin: 0 0 6px; line-height: 1.25; }
+.slide.scale-history .clips .vid-title b { display: block; color: var(--orange-2); font-size: 22px; }
+.slide.scale-history .clips .yt .yt-play { width: 48px; height: 48px; line-height: 48px; font-size: 22px; }
+.slide.scale-history .hist-row figure.astra figcaption { font-size: 16px; line-height: 1.3; padding: 4px 8px; margin-top: 6px; }
+.slide.scale-history .two-clips ol.hist li { grid-template-columns: 66px minmax(0, 1fr); padding-left: 10px; }
+/* slide 4 (6 Oct 2026): room for the definitions added to its source line */
+.slide.scale-arch [data-viz="scaleArch"] svg { height: 244px; }
+
+/* ── PB1 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/PB1.css) ── */
+/* PB1 · Part B · 1–2 (6 Oct 2026). Every selector is scoped to a pb1-* class on PB1's slides.
+   Diagram labels in the inline SVG are 17–20px (supporting tier); prose stays at 27px or more. */
+
+/* ── "What matters for the loss": nanoGPT's knobs against what Kaplan et al. varied */
+.slide.pb1-why .slide-body > .fit { gap: 26px; }
+.slide.pb1-why table.knobs { width: 100%; border-collapse: collapse; font-size: 28px; }
+.slide.pb1-why table.knobs th { padding: 10px 16px; text-align: left; }
+.slide.pb1-why table.knobs td { padding: 9px 16px; line-height: 1.25; border-bottom: 1px solid var(--line); }
+.slide.pb1-why table.knobs td:first-child { color: var(--deep); font-weight: 650; }
+.slide.pb1-why table.knobs td:nth-child(2) { color: var(--orange-2); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.slide.pb1-why table.knobs td code { font-size: 27px; }
+.slide.pb1-why .callout { font-size: 30px; }
+
+/* ── "One run, planned in advance": compute ladder (inline SVG) beside one budget split three ways */
+.slide.pb1-once .slide-body > .fit { gap: 20px; }
+.slide.pb1-once .once-row { display: grid; grid-template-columns: 590px minmax(0, 1fr); column-gap: 36px; align-items: center; }
+.slide.pb1-once svg.ladder { display: block; width: 590px; height: auto; overflow: visible; }
+.slide.pb1-once svg.ladder text { font-family: var(--font); font-size: 19px; fill: var(--text); }
+.slide.pb1-once svg.ladder .lab { text-anchor: end; font-size: 20px; }
+.slide.pb1-once svg.ladder .lab.me { fill: var(--orange-2); font-weight: 700; }
+.slide.pb1-once svg.ladder .v { font-size: 19px; font-weight: 700; fill: var(--deep); }
+.slide.pb1-once svg.ladder .v.end { text-anchor: end; }
+.slide.pb1-once svg.ladder .rows line { stroke: var(--panel-2); stroke-width: 10; stroke-linecap: round; }
+.slide.pb1-once svg.ladder circle { fill: var(--blue-2); }
+.slide.pb1-once svg.ladder circle.me { fill: var(--orange); }
+.slide.pb1-once svg.ladder .ax line { stroke: var(--muted); stroke-width: 1; }
+.slide.pb1-once svg.ladder .ax text { text-anchor: middle; font-size: 17px; fill: var(--muted); }
+.slide.pb1-once svg.ladder .ax text.end { text-anchor: end; }
+.slide.pb1-once .split .tag { margin: 0 0 8px; color: var(--muted); font-size: 18px; font-weight: 650; letter-spacing: .05em; line-height: 1.3; }
+.slide.pb1-once table.splits { width: 100%; border-collapse: collapse; font-size: 27px; margin: 0 0 12px; }
+.slide.pb1-once table.splits td { padding: 6px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.slide.pb1-once table.splits tr.me td { color: var(--orange-2); font-weight: 700; }
+.slide.pb1-once .split p { margin: 0; font-size: 27px; line-height: 1.35; }
+.slide.pb1-once .callout { padding: 10px 22px; font-size: 27px; line-height: 1.35; }
+.slide.pb1-once .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── "Power law, fitted": a shorter diagram, room for the nanoGPT question */
+.slide.pb1-pl .slide-body > .fit { gap: 10px; }
+.slide.pb1-pl [data-viz=powerLaw] .two svg { height: 170px; }
+.slide.pb1-pl [data-viz=powerLaw] .readout { margin-top: 8px; padding: 8px 16px; }
+.slide.pb1-pl .callout { padding: 10px 22px; font-size: 27px; line-height: 1.35; }
+.slide.pb1-pl p.pb1-law { margin: 0; font-size: 27px; line-height: 1.35; }
+.slide.pb1-pl .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── "Kaplan: architecture or scale": Kaplan's Fig. 5 across the slide, two notes below */
+.slide.pb1-shape .slide-body > .fit { gap: 18px; }
+.slide.pb1-shape img.paper-fig { width: 960px; height: auto; margin: 0 auto; }
+.slide.pb1-shape .fit > .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 36px; align-items: stretch; }
+.slide.pb1-shape .callout { padding: 10px 20px; font-size: 27px; line-height: 1.35; }
+.slide.pb1-shape .still p { margin: 0; font-size: 27px; line-height: 1.35; }
+.slide.pb1-shape .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── "Kaplan's allocation": Kaplan's Fig. 3 left, the exponents and the question right */
+.slide.pb1-alloc .slide-body > .fit { gap: 18px; }
+.slide.pb1-alloc .alloc-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 34px; align-items: center; }
+.slide.pb1-alloc img.paper-fig { width: 560px; height: auto; }
+.slide.pb1-alloc .alloc-row p { margin: 0 0 14px; font-size: 28px; line-height: 1.38; }
+.slide.pb1-alloc .alloc-row p:last-child { margin-bottom: 0; }
+.slide.pb1-alloc .callout { padding: 10px 20px; font-size: 28px; line-height: 1.35; }
+.slide.pb1-alloc .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── "What labs did next": Hoffmann et al.'s Table 1, then GPT-3's sentence and the question */
+.slide.pb1-labs .slide-body > .fit { gap: 18px; }
+.slide.pb1-labs table.labs { width: 100%; border-collapse: collapse; font-size: 28px; }
+.slide.pb1-labs table.labs th { padding: 8px 16px; text-align: right; }
+.slide.pb1-labs table.labs td { padding: 4px 16px; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.slide.pb1-labs table.labs th:first-child, .slide.pb1-labs table.labs td:first-child { text-align: left; }
+.slide.pb1-labs table.labs td:nth-child(3) { color: var(--orange-2); font-weight: 700; }
+.slide.pb1-labs table.labs td:last-child { color: var(--blue); font-weight: 700; }
+.slide.pb1-labs table.labs tr.hl td { background: #e7edf2; }
+.slide.pb1-labs .fit > .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 28px; align-items: stretch; }
+.slide.pb1-labs .callout { padding: 10px 20px; font-size: 27px; line-height: 1.35; }
+.slide.pb1-labs .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── "One schedule for every run": Hoffmann et al.'s Fig. A1 (two panels + its legend), the reading beside it */
+.slide.pb1-sched .slide-body > .fit { gap: 16px; }
+.slide.pb1-sched .sched-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 28px; align-items: center; }
+.slide.pb1-sched .figA1 { width: 570px; }
+.slide.pb1-sched .figA1 img.paper-fig { width: 570px; height: auto; }
+.slide.pb1-sched .figA1 p.pb1-key { margin: 4px 0 0; font-size: 18px; line-height: 1.3; color: var(--muted); text-align: center; }
+.slide.pb1-sched .figA1 p.pb1-key span { font-weight: 700; margin-left: 6px; }
+.slide.pb1-sched .figA1 p.pb1-key span::before { content: ""; display: inline-block; width: 22px; height: 4px; margin-right: 4px; vertical-align: middle; background: currentColor; }
+/* the line colours of Hoffmann et al.'s Fig. A1 (seaborn "colorblind"), sampled from the figure */
+.slide.pb1-sched .figA1 .k1 { color: #0173b2; } .slide.pb1-sched .figA1 .k2 { color: #de8f05; } .slide.pb1-sched .figA1 .k3 { color: #029e73; }
+.slide.pb1-sched .figA1 .k4 { color: #d55e00; } .slide.pb1-sched .figA1 .k5 { color: #cc78bc; } .slide.pb1-sched .figA1 .k6 { color: #ca9161; }
+.slide.pb1-sched .sched-text p { margin: 0 0 12px; font-size: 27px; line-height: 1.35; }
+.slide.pb1-sched .sched-text p:last-child { margin-bottom: 0; }
+.slide.pb1-sched .sched-text code { font-size: 27px; }
+.slide.pb1-sched .callout { padding: 10px 20px; font-size: 27px; line-height: 1.35; }
+.slide.pb1-sched .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── "Chinchilla's experiment": the question sits in the left card */
+.slide.pb1-exp .card p { font-size: 27px; line-height: 1.35; }
+.slide.pb1-exp img.paper-fig { width: 800px; }
+
+/* ── "IsoFLOP curves": the question in the source line */
+.slide.pb1-iso .src { font-size: 18px; }
+
+/* ── "Kaplan vs Chinchilla": the test, with its question */
+.slide.pb1-kvc .law-row p { margin-bottom: 12px; font-size: 28px; }
+.slide.pb1-kvc .law-row p:last-child { margin-bottom: 0; }
+.slide.pb1-kvc .callout { padding: 12px 20px; font-size: 27px; line-height: 1.35; }
+
+/* ── "Why the exponents differ": Porian et al.'s steps as a table */
+.slide.pb1-differ .slide-body > .fit { gap: 16px; }
+.slide.pb1-differ .fit > table td { padding-top: 5px; padding-bottom: 5px; }
+.slide.pb1-differ .fit > table td:first-child { white-space: nowrap; }
+.slide.pb1-differ .fit > table { width: 100%; table-layout: auto; }
+.slide.pb1-differ .fit > table th { padding-top: 8px; padding-bottom: 8px; }
+.slide.pb1-differ .fit > table td:nth-child(n+2), .slide.pb1-differ .fit > table th:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; }
+.slide.pb1-differ .fit > table td:nth-child(2) { color: var(--blue); font-weight: 700; }
+.slide.pb1-differ .callout { padding: 10px 20px; font-size: 27px; line-height: 1.35; }
+.slide.pb1-differ .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── "Kaplan scaling laws": a slightly smaller figure, room for the definition of Kaplan's N */
+.slide.kaplan-fig.pb1-k1 img.paper-fig { width: 700px; }
+.slide.kaplan-fig.pb1-k1 .slide-body > .fit { gap: 20px; }
+
+/* "IsoFLOP curves" (lead, 7 Oct 2026): chart large on the left, controls and readout on the right */
+.slide.pb1-iso [data-viz=isoFlop] .viz-body { grid-template-columns: 600px minmax(0, 1fr); grid-auto-rows: min-content; column-gap: 26px; row-gap: 10px; align-items: start; }
+.slide.pb1-iso [data-viz=isoFlop] .viz-body > svg { grid-column: 1; grid-row: 1 / span 4; width: 600px; height: auto; }
+.slide.pb1-iso [data-viz=isoFlop] .viz-body > .controls, .slide.pb1-iso [data-viz=isoFlop] .viz-body > .readout { grid-column: 2; }
+.slide.pb1-iso [data-viz=isoFlop] .viz-body > .controls { flex-wrap: wrap; }
+.slide.pb1-iso [data-viz=isoFlop] .viz-body > .controls select { max-width: 100%; }
+.slide.pb1-iso [data-viz=isoFlop] .readout { font-size: 17px; white-space: pre-wrap; line-height: 1.4; }
+
+/* ── PB3 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/PB3.css) ── */
+/* PB3 (6 Oct 2026): Part B · 3, "How it guides large runs". Every rule is scoped to .slide.pb3
+   or .slide.pb3-close. The lawPlan SVG (assets/js/p2l1/lawplan.js) is drawn at slide size, so its
+   CSS height equals its viewBox height and its text is drawn 1:1. */
+
+/* B3.1 "What the law gives a lab": Llama 3's Fig. 2 beside the question */
+.slide.pb3-ask .law-row { column-gap: 40px; }
+.slide.pb3-ask img.paper-fig { height: 372px; width: auto; }
+.slide.pb3-ask .law-row p { margin-bottom: 18px; }
+.slide.pb3-ask .law-row p.pb3-q { font-size: 31px; line-height: 1.3; }
+.slide.pb3-ask .law-row p.callout { margin: 6px 0 0; padding: 14px 20px; }
+.slide.pb3 .src { font-size: 17px; line-height: 1.3; margin-top: 8px; padding-top: 6px; }
+
+/* B3.2 "What the small runs cost": the lawPlan visualization */
+.slide.pb3 [data-viz=lawPlan] .viz-body > svg { display: block; width: auto; max-width: 100%; height: 362px; }
+.slide.pb3 [data-viz=lawPlan] .controls { margin-bottom: 10px; }
+.slide.pb3 [data-viz=lawPlan] .s-text { font-size: 20px; fill: var(--text); }
+.slide.pb3 [data-viz=lawPlan] .s-text.b { font-weight: 700; }
+.slide.pb3 [data-viz=lawPlan] .s-text.o { fill: var(--orange-2); font-weight: 700; }
+.slide.pb3 [data-viz=lawPlan] .s-text.m { font-size: 17px; fill: var(--muted); }
+.slide.pb3 [data-viz=lawPlan] .s-text.m2 { fill: var(--muted); }
+.slide.pb3 [data-viz=lawPlan] .lp-bar { fill: var(--blue-2); }
+.slide.pb3 [data-viz=lawPlan] .lp-bar.nano { fill: var(--panel-2); }
+.slide.pb3 [data-viz=lawPlan] .lp-bar.small { fill: var(--blue-2); opacity: .55; }
+.slide.pb3 [data-viz=lawPlan] .lp-bar.sweep { fill: var(--orange); }
+.slide.pb3 [data-viz=lawPlan] .lp-bar.flag { fill: var(--blue); }
+.slide.pb3 [data-viz=lawPlan] .lp-bar.try { fill: var(--blue-2); }
+.slide.pb3 [data-viz=lawPlan] .lp-brace { fill: none; stroke: var(--orange-2); stroke-width: 2; }
+
+/* B3.3 "How labs use the law": two figures, each with its line */
+.slide.pb3-pred .fit > .grid { grid-template-columns: 470px minmax(0, 1fr); gap: 20px 48px; }
+.slide.pb3-pred .card img.paper-fig { height: 250px; width: auto; max-width: 100%; margin: 0 0 10px; }
+.slide.pb3-pred .card p { font-size: 27px; line-height: 1.35; }
+
+/* "Beyond compute-optimal": Sardana et al.'s Fig. 1 across the slide, the formula line, the ratio table */
+.slide.pb3-serve .slide-body > .fit { gap: 12px; }
+.slide.pb3-serve .pb3-figdefs { display: grid; grid-template-columns: 760px minmax(0, 1fr); column-gap: 32px; align-items: center; }
+.slide.pb3-serve .pb3-figdefs img.paper-fig { width: 760px; height: auto; }
+.slide.pb3-serve .pb3-figdefs p { font-size: 27px; line-height: 1.3; margin: 0 0 14px; }
+.slide.pb3-serve .pb3-figdefs p:last-child { margin-bottom: 0; }
+.slide.pb3-serve .fit > table td, .slide.pb3-serve .fit > table th { padding-top: 6px; padding-bottom: 6px; }
+
+/* "Part B close": three sentences under the title */
+.slide.pb3-close > p:not(.eb) { max-width: 1100px; }
+.slide.pb3 .nw { white-space: nowrap; }
+
+/* ── PC1 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/PC1.css) ── */
+/* PC1 · Part C · 1–2, "Emergent abilities" through "From the prompt to the weights" (6 Oct 2026).
+   Every selector is scoped to a pc1-* class on PC1's slides. The reused slides keep their polish.css
+   classes (emergent-fig nano-mark, mirage, icl-fig, bridge); only "From the prompt to the weights"
+   gets an extra pc1-pt class here. Prose stays at 27px or more; captions and sources 16–20px. */
+
+/* shared: compact source line, as on the other paper-figure slides */
+.slide.pc1-ask .src, .slide.pc1-tok .src, .slide.pc1-order .src, .slide.pc1-cost .src,
+.slide.pc1-when .src { font-size: 16px; margin-top: 8px; padding-top: 6px; }
+
+/* ── "Is emergence real?": two panels of Wei et al. Fig. 4 at one scale (0.67), the questions beside them */
+.slide.pc1-ask .ask-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 34px; align-items: center; }
+.slide.pc1-ask figure.pair { margin: 0; }
+.slide.pc1-ask .pair .two { display: flex; gap: 16px; align-items: flex-end; }
+.slide.pc1-ask .pair img.paper-fig.ppl { width: 288px; height: auto; }
+.slide.pc1-ask .pair img.paper-fig.mmlu { width: 309px; height: auto; }
+.slide.pc1-ask .pair img.leg { display: block; width: 384px; height: auto; margin: 12px auto 0; }
+.slide.pc1-ask .ask-row p { margin: 0 0 14px; font-size: 27px; line-height: 1.35; }
+.slide.pc1-ask ol.ask { margin: 0 0 16px; padding-left: 1.25em; }
+.slide.pc1-ask ol.ask li { margin: 0 0 6px; font-size: 28px; line-height: 1.3; color: var(--deep); font-weight: 650; }
+.slide.pc1-ask .callout { margin: 0; padding: 10px 20px; font-size: 28px; }
+
+/* ── "Emergence" (reused): the callout sits closer to the three short lines */
+.slide.mirage .law-row .callout { padding: 10px 20px; font-size: 28px; line-height: 1.35; }
+.slide.mirage img.paper-fig { width: 590px; }
+.slide.mirage .law-row p { margin-bottom: 12px; font-size: 28px; line-height: 1.35; }
+
+/* ── "Token accuracy and whole-answer accuracy": Schaeffer et al. Fig. 2 whole, the reading beside it */
+.slide.pc1-tok .tok-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 28px; align-items: center; }
+.slide.pc1-tok img.paper-fig { width: 680px; height: auto; }
+.slide.pc1-tok .tok-row p { margin: 0 0 12px; font-size: 27px; line-height: 1.35; }
+.slide.pc1-tok .tok-row b { color: var(--deep); }
+.slide.pc1-tok .callout { margin-top: 4px; padding: 10px 18px; font-size: 27px; line-height: 1.35; }
+
+/* ── "In-context learning is fragile": Lu et al. Fig. 1, two panels side by side, the reading at the right */
+.slide.pc1-order .order-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 26px; align-items: center; }
+.slide.pc1-order .pair { display: flex; gap: 14px; }
+.slide.pc1-order figure { margin: 0; }
+.slide.pc1-order figcaption.tag { display: block; margin: 0 0 4px; font-size: 19px; font-weight: 650; color: var(--deep); text-align: center; }
+.slide.pc1-order img.paper-fig { width: 390px; height: auto; }
+.slide.pc1-order .side p { margin: 0 0 10px; font-size: 27px; line-height: 1.33; }
+.slide.pc1-order .side .callout { margin: 0; padding: 10px 18px; }
+
+/* ── "ICL or a few trained weights": Liu et al. Fig. 3 left, the arithmetic right */
+.slide.pc1-cost .cost-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 34px; align-items: center; }
+.slide.pc1-cost img.paper-fig { width: 400px; height: auto; }
+.slide.pc1-cost .cost-row p { margin: 0 0 16px; font-size: 28px; line-height: 1.38; }
+.slide.pc1-cost .cost-row p:last-child { margin-bottom: 0; }
+.slide.pc1-cost .callout { padding: 10px 20px; font-size: 28px; line-height: 1.35; }
+
+/* ── "When is ICL enough?": the decision table, then the break-even question */
+.slide.pc1-when .slide-body > .fit { gap: 20px; }
+.slide.pc1-when table.when { width: 100%; border-collapse: collapse; font-size: 27px; line-height: 1.25; }
+.slide.pc1-when table.when tr:first-child th { padding: 6px 16px; text-align: left; }
+.slide.pc1-when table.when th[scope=row] { padding: 12px 16px 8px; text-align: left; vertical-align: top; white-space: nowrap; background: transparent; color: var(--muted); font-size: 19px; font-weight: 650; letter-spacing: .05em; border-bottom: 1px solid var(--line); }
+.slide.pc1-when table.when td { padding: 8px 16px; line-height: 1.28; border-bottom: 1px solid var(--line); vertical-align: top; }
+.slide.pc1-when table.when td:nth-child(2) { color: var(--deep); }
+.slide.pc1-when table.when td:nth-child(3) { color: var(--orange-2); font-weight: 650; }
+.slide.pc1-when .callout { padding: 10px 20px; font-size: 28px; line-height: 1.35; }
+
+/* ── "From the prompt to the weights" (reused, rebuilt): Lester et al. Fig. 1 beside the ladder */
+.slide.bridge.pc1-pt .law-row { grid-template-columns: minmax(0, 1fr) auto; column-gap: 30px; }
+.slide.bridge.pc1-pt figure { width: 380px; }
+.slide.bridge.pc1-pt img.paper-fig { width: 380px; }
+.slide.bridge.pc1-pt figcaption.tag { font-size: 17px; line-height: 1.3; }
+.slide.bridge.pc1-pt .law-row p { margin-bottom: 14px; font-size: 28px; line-height: 1.38; }
+.slide.bridge.pc1-pt table.ways { margin-bottom: 0; }
+.slide.bridge.pc1-pt table.ways td { padding: 5px 10px; }
+.slide.bridge.pc1-pt table.ways th { padding: 5px 10px; }
+.slide.bridge.pc1-pt table.ways td:first-child { white-space: nowrap; }
+
+/* ── "In-context learning" (reused): the worked example at prose size; a slightly smaller figure */
+.slide.icl-fig.pc1-icl img.paper-fig { width: 520px; }
+.slide.icl-fig.pc1-icl .cot { font-size: 27px; padding: 8px 14px; }
+.slide.icl-fig.pc1-icl .cot b { font-size: 18px; }
+.slide.icl-fig.pc1-icl .cot code { font-size: 27px; }
+.slide.icl-fig.pc1-icl .law-row p { margin-bottom: 14px; }
+
+/* ── "In-context learning is fragile": panel labels in the supporting tier */
+.slide.pc1-order figcaption.tag { letter-spacing: .02em; }
+.slide.bridge.pc1-pt .law-row p.peft { margin: 14px 0 0; font-size: 27px; line-height: 1.35; color: var(--deep); }
+
+/* ── "Emergent abilities" (reused): a slightly narrower figure, so the glosses in the source line fit */
+.slide.emergent-fig.nano-mark .nano-fig { width: 572px; }
+.slide.emergent-fig.nano-mark .nano-fig img.paper-fig { width: 572px; }
+.slide.emergent-fig.nano-mark .law-row p { font-size: 28px; line-height: 1.36; }
+
+/* ── PC2 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/PC2.css) ── */
+/* PC2 · LoRA (Part C · 2), 6 Oct 2026. Every rule is scoped to a PC2 slide class: pc2-lora, pc2-place,
+   pc2-rank, pc2-scale, pc2-serve, pc2-fit, pc2-qlora (More detail). Diagram text inside the SVGs is set by
+   assets/js/p2l1/lora.js in SVG units, drawn 1:1 (each viewBox is its size on the slide). */
+
+/* shared: sources and references a little tighter on the dense slides */
+.slide.pc2-place .src, .slide.pc2-rank .src, .slide.pc2-scale .src, .slide.pc2-serve .src, .slide.pc2-fit .src, .slide.pc2-qlora .src {
+  font-size: 18px; margin-top: 8px; padding-top: 4px; }
+.slide.pc2-place .refs, .slide.pc2-rank .refs, .slide.pc2-scale .refs, .slide.pc2-serve .refs, .slide.pc2-fit .refs, .slide.pc2-qlora .refs { margin-top: 5px; }
+.slide.pc2-place .controls, .slide.pc2-scale .controls, .slide.pc2-serve .controls, .slide.pc2-fit .controls, .slide.pc2-qlora .controls {
+  margin: 0 0 4px; gap: 6px 10px; align-items: center; }
+.slide.pc2-place .controls button, .slide.pc2-scale .controls button, .slide.pc2-serve .controls button, .slide.pc2-fit .controls button, .slide.pc2-qlora .controls button {
+  font-size: 18px; padding: 3px 12px; }
+.slide.pc2-place .lp-sep { display: inline-block; width: 1px; height: 26px; margin: 0 6px; background: var(--line); }
+.slide.pc2-serve .lp-lab, .slide.pc2-fit .lp-lab, .slide.pc2-qlora .lp-lab { font-size: 18px; color: var(--muted); }
+.slide.pc2-place .lp-hint { color: var(--muted); }
+
+/* LoRA: the paper's figure left, the equation and three lines right */
+.slide.pc2-lora .pc2-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 40px; align-items: center; }
+.slide.pc2-lora img.paper-fig { height: 262px; width: auto; display: block; }
+.slide.pc2-lora .pc2-text > * { margin: 0 0 14px; }
+.slide.pc2-lora .pc2-text > :last-child { margin-bottom: 0; }
+.slide.pc2-lora .pc2-eq .katex { font-size: 1.25em; }
+.slide.pc2-lora .pc2-text p { font-size: 27px; line-height: 1.35; }
+.slide.pc2-lora .pc2-text > .pc2-lead { margin-bottom: 0; }
+.slide.pc2-lora .pc2-eq .katex-display { margin: 2px 0 6px; }
+.slide.pc2-lora ul.pc2-defs { margin: 0 0 12px; padding-left: 22px; }
+.slide.pc2-lora ul.pc2-defs li { font-size: 27px; line-height: 1.3; margin: 0 0 4px; }
+.slide.pc2-lora .callout { padding: 10px 16px; }
+
+/* LoRA in the model: the animation fills the body; the caption below it */
+.slide [data-viz=loraPlace] svg { height: 300px; width: auto; display: block; }
+.slide.pc2-place [data-viz=loraPlace] .controls { margin: 4px 0 0; }
+.slide.pc2-place [data-viz=loraPlace] .readout { margin-top: 6px; padding: 6px 12px; font: 20px/1.32 var(--font); white-space: normal; min-height: calc(2 * 1.32em + 12px); }
+
+/* Rank results: cubes above the table, aligned to its columns; W_q, W_v in full on the right */
+.slide.pc2-rank .pc2-rank-row { display: grid; grid-template-columns: 820px minmax(0, 1fr); column-gap: 20px; align-items: end; }
+.slide [data-viz=rankCubes][data-show=ranks] svg { width: 820px; height: 92px; display: block; }
+.slide [data-viz=rankCubes][data-show=full] svg { width: 300px; height: 352px; display: block; margin: 0 auto; }
+.slide.pc2-rank table.pc2-rtab { width: 820px; table-layout: fixed; border-collapse: collapse; margin: 4px 0 0; }
+.slide.pc2-rank table.pc2-rtab th, .slide.pc2-rank table.pc2-rtab td { text-align: center; border-bottom: 1px solid var(--line); }
+.slide.pc2-rank table.pc2-rtab th { padding: 9px 10px; background: var(--panel); color: var(--muted); font-size: 18px; letter-spacing: .06em; }
+.slide.pc2-rank table.pc2-rtab td { padding: 9px 10px; font-size: 27px; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.slide.pc2-rank table.pc2-rtab tr > :first-child { width: 220px; text-align: left; }
+.slide.pc2-rank table.pc2-rtab td:first-child { color: var(--deep); }
+.slide.pc2-rank table.pc2-rtab tr.pc2-count td { color: var(--orange-2); }
+.slide.pc2-rank table.pc2-rtab tr.pc2-count td:first-child { color: var(--deep); }
+.slide.pc2-rank table.pc2-rtab td.hi { font-weight: 700; color: var(--deep); background: var(--tint); }
+
+/* LoRA matrices: cubes for four models */
+.slide [data-viz=loraScale] svg { width: auto; display: block; }
+.slide [data-viz=loraScale] svg { height: 316px; }
+/* the labels under each model carry the readout's numbers; the lecture page keeps the readout */
+.slide.pc2-scale [data-viz=loraScale] .readout { display: none; }
+
+/* Serving LoRA: two short cards left, the cubes right */
+.slide.pc2-serve .pc2-serve-row { display: grid; grid-template-columns: minmax(0, 1fr) 640px; column-gap: 32px; align-items: center; }
+.slide.pc2-serve .pc2-cards .card { padding: 16px 0 0; margin: 0 0 22px; border: 0; border-top: 2px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+.slide.pc2-serve .pc2-cards .card:first-child { border-top-color: var(--orange); }
+.slide.pc2-serve .pc2-cards .card:last-child { margin-bottom: 0; }
+.slide.pc2-serve .pc2-cards .card p { font-size: 28px; line-height: 1.38; margin: 0; }
+.slide [data-viz=loraServe] svg { width: 640px; height: 330px; display: block; }
+
+/* What fits on one GPU: three lines left, the chart right */
+.slide.pc2-fit .pc2-fit-row { display: grid; grid-template-columns: minmax(0, 1fr) 720px; column-gap: 28px; align-items: center; }
+.slide.pc2-fit .pc2-text > * { margin: 0 0 16px; }
+.slide.pc2-fit .pc2-text > :last-child { margin-bottom: 0; }
+.slide.pc2-fit .pc2-text p { font-size: 28px; line-height: 1.38; }
+.slide.pc2-fit .callout { padding: 12px 18px; }
+.slide.pc2-fit .k-full { color: var(--blue-2); }
+.slide.pc2-fit .k-lora { color: var(--orange-2); }
+.slide [data-viz=loraFit] svg { width: auto; height: 318px; display: block; }
+/* the callout (main) and the source line (More detail) say what the readout says */
+.slide [data-viz=loraFit] .readout { display: none; }
+
+/* More detail · QLoRA: the paper's figure and one line left, the chart with the QLoRA line right */
+.slide.pc2-qlora .pc2-q-row { display: grid; grid-template-columns: minmax(0, 1fr) 560px; column-gap: 24px; align-items: center; }
+.slide.pc2-qlora .pc2-q-left { min-width: 0; }
+.slide.pc2-qlora img.paper-fig { width: 520px; height: auto; display: block; margin: 0 0 10px; }
+.slide.pc2-qlora ul.pc2-q-defs { margin: 0; padding-left: 22px; }
+.slide.pc2-qlora ul.pc2-q-defs li { font-size: 27px; line-height: 1.28; margin: 0 0 4px; }
+.slide [data-viz=loraFit][data-qlora] svg { height: 270px; }
+
+/* ── PC3 (Part A / Part B rebuild, 6 Oct 2026; source partA_build/PC3.css) ── */
+/* PC3 · Part C · 3 "Fine-tuning and safety" (two slides). Every rule is scoped to .slide.pc3. */
+
+.slide.pc3 > h2 { margin-bottom: 16px; }
+/* shared: small labels (supporting tier), redaction bars, the ✋ line */
+.slide.pc3 .tag { display: block; color: var(--muted); font-size: 17px; font-weight: 650; letter-spacing: .07em; line-height: 1.3; text-transform: uppercase; }
+.slide.pc3 .tag.pc3-red { display: inline-block; padding: 0 10px; border-radius: 2px; background: var(--text); color: var(--bg); font-size: 17px; letter-spacing: .03em; line-height: 1.7; text-transform: none; vertical-align: 3px; }
+.slide.pc3 .pc3-panel .tag.pc3-red { color: var(--bg); }
+.slide.pc3 .tag.pc3-red::before { content: "hidden: "; opacity: .7; }
+.slide.pc3 .pc3-ask { font-size: 27px; line-height: 1.35; padding: 8px 22px; }
+
+/* slide 1: the demo. Three tabs (an exclusive <details> accordion); the open tab's panel sits
+   under the row of tabs, in a box of fixed height so the slide does not jump between examples. */
+.slide.pc3-demo .pc3-tabs { position: relative; display: flex; gap: 10px; height: 352px; }
+.slide.pc3-demo .pc3-tabs > details { flex: none; }
+.slide.pc3-demo .pc3-tabs summary { list-style: none; cursor: pointer; padding: 7px 16px; border: 1px solid var(--line); border-radius: 3px; background: var(--panel); }
+.slide.pc3-demo .pc3-tabs summary::-webkit-details-marker { display: none; }
+.slide.pc3-demo .pc3-tabs summary .tag { color: var(--deep); font-size: 18px; }
+.slide.pc3-demo .pc3-tabs details[open] > summary { background: var(--blue); border-color: var(--blue); }
+.slide.pc3-demo .pc3-tabs details[open] > summary .tag { color: #fff; }
+.slide.pc3-demo .pc3-tabs:not(:has(details[open]))::after { content: "Choose an example above"; position: absolute; left: 0; top: 64px; color: var(--muted); font-size: 20px; }
+.slide.pc3-demo .pc3-panel { position: absolute; left: 0; right: 0; top: 60px; display: flex; flex-direction: column; gap: 16px; }
+
+.slide.pc3-demo .pc3-user, .slide.pc3-demo .pc3-before, .slide.pc3-demo .pc3-after { padding: 10px 18px 12px; border-radius: 3px; }
+.slide.pc3-demo .pc3-user { margin-right: 160px; background: var(--panel); border-left: 3px solid var(--blue-2); }
+.slide.pc3-demo .pc3-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 18px; }
+.slide.pc3-demo .pc3-pair.pc3-wide { grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr); }
+.slide.pc3-demo .pc3-before { border: 1px solid var(--line); border-left: 3px solid var(--good); }
+.slide.pc3-demo .pc3-after { background: var(--tint); border: 1px solid var(--line); border-left: 3px solid var(--bad); }
+.slide.pc3-demo .pc3-before .tag { color: var(--good); }
+.slide.pc3-demo .pc3-after .tag { color: var(--bad); }
+.slide.pc3-demo .pc3-panel p { margin: 4px 0 0; font-size: 27px; line-height: 1.35; }
+.slide.pc3-demo .pc3-after pre { margin: 6px 0 0; padding: 0; background: transparent; border: 0; white-space: pre; overflow: visible; font-size: 27px; line-height: 1.18; }
+.slide.pc3-demo .pc3-after pre code { font-size: 27px; line-height: 1.18; background: transparent; padding: 0; }
+
+/* slide 2: Fig. 1 beside the rates, then the ✋ */
+.slide.pc3-three .slide-body > .fit { gap: 12px; }
+.slide.pc3-three .pc3-row { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 26px; align-items: center; }
+.slide.pc3-three img.paper-fig { width: 615px; height: auto; }
+.slide.pc3-three .pc3-side .tag { margin-bottom: 6px; }
+.slide.pc3-three table.pc3-rates { width: 100%; border-collapse: collapse; font-size: 27px; line-height: 1.25; }
+.slide.pc3-three .pc3-rates th { padding: 6px 8px; background: var(--panel); color: var(--muted); font-size: 17px; font-weight: 650; letter-spacing: .06em; text-align: right; text-transform: uppercase; }
+.slide.pc3-three .pc3-rates th:first-child { text-align: left; }
+.slide.pc3-three .pc3-rates td { padding: 4px 6px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.slide.pc3-three .pc3-rates td:first-child { text-align: left; white-space: normal; color: var(--deep); }
+.slide.pc3-three .pc3-rates td:last-child { color: var(--bad); font-weight: 700; }
+.slide.pc3-three .pc3-rates td:last-child::before { content: "→ "; color: var(--muted); font-weight: 400; }
+.slide.pc3-three .pc3-rates tr:first-child td { border-top: 1px solid var(--line); }
+.slide.pc3-three .pc3-side p { margin: 12px 0 0; font-size: 27px; line-height: 1.3; }
+/* A slide source line does not need the website footer's bottom padding. */
+.slide > footer {padding-bottom:0}
+
+/* Closing recap follows Session 1's blue summary style, with one takeaway per part. */
+.slide.session-summary h1 { margin-bottom: 22px; }
+.slide.session-summary .summary-parts { display: grid; gap: 0; }
+.slide.session-summary .summary-part { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 18px; padding: 17px 0; border-top: 1px solid #587185; }
+.slide.session-summary .summary-letter { color: #e1b477; font-size: 28px; font-weight: 700; line-height: 1.25; }
+.slide.session-summary .summary-part h3 { margin: 0 0 8px; color: #fff; font-size: 28px; line-height: 1.22; }
+.slide.session-summary .summary-part h3 a { color: inherit; text-decoration: none; }
+.slide.session-summary .summary-part h3 a:hover { text-decoration: underline; }
+.slide.session-summary .summary-part p { margin: 0; font-size: 25px; line-height: 1.35; }
+.slide.session-summary > p:last-of-type { margin-top: 0; }

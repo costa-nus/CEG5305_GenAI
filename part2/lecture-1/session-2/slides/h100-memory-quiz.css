@@ -1,0 +1,67 @@
+/* Inherits the navy / ochre course palette. Scoped to this two-slide exercise. */
+.h100-quiz .h100-assumptions {font-size:29px;line-height:1.3;padding:16px 18px;border-left:3px solid var(--blue-2);background:var(--panel);margin:0}
+.h100-quiz .h100-assumptions strong {color:var(--blue)}
+.h100-quiz .h100-question-layout {display:grid;grid-template-columns:1.45fr 1fr;gap:30px;align-items:start}
+.h100-quiz .h100-question-main {display:flex;flex-direction:column;gap:22px;min-width:0}
+.h100-quiz .h100-question-main .h100-assumptions {margin:0}
+.h100-quiz .h100-options {display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.h100-quiz .h100-option {border-top:3px solid var(--line);padding:15px 10px;display:flex;gap:20px;align-items:start;min-height:78px}
+.h100-quiz .h100-option >b {font-size:36px;color:var(--orange-2);line-height:1.1}
+.h100-quiz .h100-option strong {display:block;font-size:29px;line-height:1.2;color:var(--blue)}
+.h100-quiz .h100-option span {display:block;font-size:24px;margin-top:9px}
+.h100-quiz .h100-poll {border-left:1px solid var(--line);padding-left:25px;font-size:18px;line-height:1.3}
+.h100-quiz .h100-poll-kicker {font-size:16px;letter-spacing:.12em;color:var(--muted);font-weight:bold;margin-bottom:12px}
+.h100-quiz button {font:inherit;font-size:18px;padding:7px 12px;border:1px solid var(--line);background:var(--bg);color:var(--deep);cursor:pointer}
+.h100-quiz button:hover,.h100-quiz button:focus-visible {border-color:var(--orange);outline:2px solid var(--tint)}
+.h100-quiz button[data-server] {background:var(--blue);color:white;border-color:var(--blue)}
+.h100-quiz .h100-poll-launch {display:flex;gap:9px;align-items:center}
+.h100-quiz button:disabled {opacity:.6;cursor:wait}
+.h100-quiz .h100-join {margin:14px 0;display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:center}
+.h100-quiz .h100-qr {display:block;width:180px;height:180px;max-width:none;background:white;image-rendering:pixelated;cursor:default}
+.h100-quiz .h100-join small {display:block;font-size:16px;color:var(--muted);margin-bottom:6px}
+.h100-quiz .h100-join a {font-size:18px;font-weight:600;color:var(--blue);overflow-wrap:anywhere;display:block;margin-bottom:10px;line-height:1.3}
+.h100-quiz .h100-server-status {font-size:15px;color:var(--muted);margin:10px 0}
+.h100-quiz .h100-poll-status {font-size:18px;margin:12px 0;min-height:24px}
+.h100-quiz .h100-poll-actions {display:flex;gap:7px;flex-wrap:wrap}
+.h100-quiz .h100-poll-actions button {font-size:16px}
+.h100-quiz .h100-poll-help {font-size:15px;color:var(--muted);margin-top:13px}
+.h100-quiz .h100-poll-help p {font-size:15px;margin-top:8px}
+.h100-quiz .h100-poll-help code {font-size:13px;overflow-wrap:anywhere}
+.h100-quiz .h100-vote-result {display:grid;grid-template-columns:22px 1fr 90px;align-items:center;gap:8px;font-size:17px;margin-top:9px}
+.h100-quiz .h100-vote-result >span {height:12px;background:linear-gradient(to right,var(--blue-2) var(--votes),var(--panel) var(--votes))}
+.h100-quiz .h100-vote-result strong {text-align:right;font-size:17px}
+.h100-quiz .h100-vote-result small {font-size:14px;font-weight:normal}
+.h100-quiz .h100-comparison-legend {display:flex;gap:22px;font-size:18px;color:var(--muted);margin-bottom:20px;flex-wrap:wrap}
+.h100-quiz .h100-comparison-legend span:before {content:'';display:inline-block;width:15px;height:15px;margin-right:7px;vertical-align:-2px;background:var(--component)}
+.h100-quiz .weights {--component:var(--blue)}
+.h100-quiz .gradients {--component:#49728b}
+.h100-quiz .adam {--component:#91a9b8}
+.h100-quiz .activations {--component:var(--orange)}
+.h100-quiz .buffers {--component:#c9cdd0}
+.h100-quiz .h100-memory-row {display:grid;grid-template-columns:185px 1fr 148px;gap:20px;align-items:center;padding:15px 0 12px;border-bottom:1px solid var(--line)}
+.h100-quiz .h100-row-label {display:flex;align-items:center;gap:15px;font-size:23px}
+.h100-quiz .h100-row-label b {color:var(--blue);font-size:30px}
+.h100-quiz .h100-memory-track {position:relative;height:30px;background:var(--panel)}
+.h100-quiz .h100-memory-stack {height:100%;display:flex}
+.h100-quiz .h100-memory-stack >span {background:var(--component);border-right:1px solid var(--bg);box-sizing:border-box}
+.h100-quiz .h100-capacity {position:absolute;top:-6px;bottom:-6px;border-left:2px dashed var(--deep);font-style:normal}
+.h100-quiz .h100-capacity span {position:absolute;top:-21px;left:5px;font-size:15px;color:var(--deep);white-space:nowrap;background:var(--bg)}
+.h100-quiz .h100-breakdown {font-size:19px;color:var(--muted);margin:6px 0 0;line-height:1.2}
+.h100-quiz .h100-fit-status strong {display:block;font-size:30px;color:var(--bad)}
+.h100-quiz .h100-fit-status span {display:block;font-size:19px;color:var(--bad)}
+.h100-quiz .fits .h100-fit-status strong,.h100-quiz .fits .h100-fit-status span {color:var(--good)}
+.h100-quiz .h100-comparison-takeaway {font-size:26px;line-height:1.35;margin:20px 0 0}
+.h100-quiz .h100-comparison-poll {font-size:18px;color:var(--muted);margin-top:13px;display:flex;gap:20px}
+.h100-quiz [hidden] {display:none !important}
+
+/* Real hardware beside the classroom controls. */
+.h100-quiz .h100-hardware {display:grid;grid-template-columns:190px 1fr;gap:16px;align-items:center;margin:0 0 18px}
+.h100-quiz .h100-hardware img {display:block;width:190px;height:107px;max-width:none;object-fit:contain;cursor:default}
+.h100-quiz .h100-hardware figcaption {font-size:20px;line-height:1.3}
+.h100-quiz .h100-hardware strong,.h100-quiz .h100-hardware b,.h100-quiz .h100-hardware small {display:block}
+.h100-quiz .h100-hardware b {font-size:28px;color:var(--orange-2);margin:5px 0}
+.h100-quiz .h100-hardware small {font-size:16px;color:var(--muted)}
+.h100-quiz .h100-poll-results {display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-top:8px}
+.h100-quiz .h100-vote-result {grid-template-columns:18px 1fr 72px;margin-top:4px;gap:5px}
+
+.h100-quiz .h100-select-all {font-size:25px;font-weight:700;color:var(--blue);margin:0}

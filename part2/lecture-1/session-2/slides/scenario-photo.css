@@ -1,0 +1,10 @@
+/* Real B200 installation photo; scoped to the scenario slide. */
+.slide.cs336-b.csb-scenario-photo .scenario-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 34px; align-items: start; }
+.slide.cs336-b.csb-scenario-photo .scenario-photo { display: block; width: 100%; height: auto; }
+.slide.cs336-b.csb-scenario-photo figcaption { text-align: left; font-size: 17px; line-height: 1.3; margin-top: 10px; }
+.slide.cs336-b.csb-scenario-photo .scenario-scale { text-align: left; font-size: 28px; line-height: 1.25; margin-top: 20px; }
+.slide.cs336-b.csb-scenario-photo .scenario-density { text-align: left; font-size: 17px; line-height: 1.3; color: var(--muted); margin-top: 10px; }
+.slide.cs336-b.csb-scenario-photo .scenario-prompt { font-size: 27px; line-height: 1.3; }
+.slide.cs336-b.csb-scenario-photo .scenario-prompt p + p { margin-top: 16px; }
+.slide.cs336-b.csb-scenario-photo .scenario-prompt ul { margin-top: 12px; }
+.slide.cs336-b.csb-scenario-photo .scenario-prompt li { margin-bottom: 12px; }

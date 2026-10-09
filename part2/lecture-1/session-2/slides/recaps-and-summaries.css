@@ -1,0 +1,28 @@
+/* Session 1 p43: new-part agenda with a recap of the previous part. */
+.slide.s2-part-recap > h1, .slide.s2-part-recap > p, .slide.s2-part-recap > .seg { max-width:660px; }
+.slide.s2-part-recap > h1 { font-size:52px; }
+.slide.s2-part-recap[data-title="Part C"] > h1 { font-size:46px; }
+.slide.s2-part-recap > .eb { font-size:30px; }
+.slide.s2-part-recap .seg { grid-template-columns:46px minmax(0,1fr) 0; font-size:28px; padding:17px 0; }
+.slide.s2-part-recap .seg a { color:#fff; text-decoration-color:var(--orange); }
+.slide.s2-part-recap .recap { position:absolute; top:118px; right:60px; width:440px; padding:18px 22px; border-radius:10px; background:rgba(255,255,255,.07); border-left:4px solid var(--orange); }
+.slide.s2-part-recap .recap .t { font-size:16px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#b9cbd8; margin-bottom:10px; }
+.slide.s2-part-recap .recap ul { margin:0; padding-left:1.1em; }
+.slide.s2-part-recap .recap li { font-size:20px; line-height:1.35; color:#fff; margin:0 0 10px; }
+.slide.s2-part-recap > .citation-footer { font-size:17px; line-height:1.3; border-top:1px solid #496274; padding-top:10px; margin-top:20px; color:#b9cbd8; }
+.slide.s2-part-recap > .citation-footer a { color:inherit; }
+/* Session 1 p59: a diagram beside a table of ideas and their roles. */
+.slide.s2-part-summary .slide-body > .fit { gap:18px; }
+.slide.s2-part-summary .key { font-size:26px; line-height:1.3; border-left:4px solid var(--orange); padding-left:14px; }
+.slide.s2-part-summary .summary-layout { display:grid; grid-template-columns:220px minmax(0,1fr); gap:32px; align-items:center; }
+.slide.s2-part-summary .summary-art { width:220px; height:370px; }
+.slide.s2-part-summary .summary-art text { font-family:var(--font); font-size:17px; fill:var(--deep); }
+.slide.s2-part-summary .summary-art .caption { font-size:16px; fill:var(--muted); }
+.slide.s2-part-summary .summary-art .formula { font-size:18px; font-weight:650; }
+.slide.s2-part-summary table { width:100%; border-collapse:collapse; font-size:23px; line-height:1.3; }
+.slide.s2-part-summary th { padding:6px 10px; text-align:left; font-size:16px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); border-bottom:2px solid var(--line); }
+.slide.s2-part-summary td { padding:12px 10px; vertical-align:top; border-bottom:1px solid var(--line); }
+.slide.s2-part-summary td:first-child { width:22%; }
+.slide.s2-part-summary td:nth-child(2) { width:37%; }
+.slide.s2-part-summary td:nth-child(3) { width:41%; }
+.slide.s2-part-summary a[data-goto] { color:inherit; text-decoration-color:var(--orange); text-underline-offset:.16em; }

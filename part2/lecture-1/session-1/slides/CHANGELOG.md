@@ -46,6 +46,6 @@ First published version of the deck: 70 slides, for the class of 30 Sep 2026.
 
 **Data and credits**
 
-- Ablation results and training curves are from our own runs of `../code/ablation_base.py`
+- Ablation results and training curves are from our own runs of `../../code/ablation_base.py`
   (27 Sep 2026 on a Colab T4 GPU; 29 Sep 2026 on a laptop CPU).
-- Example images and their licences are listed in `../../../assets/img/p2l1/CREDITS.md`.
+- Example images and their licences are listed in `../../../../assets/img/p2l1/CREDITS.md`.

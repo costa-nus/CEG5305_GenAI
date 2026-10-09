@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>H100 memory · Classroom poll</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#213448;background:#fcfcfa}body{max-width:700px;margin:0 auto;padding:30px 22px}small{color:#607080;letter-spacing:.12em}h1{font-size:30px;color:#17384c;line-height:1.2;margin:18px 0 26px}.assumptions{background:#f0f3f5;padding:16px;line-height:1.55;font-size:17px}button{display:block;text-align:left;font:inherit;font-size:22px;width:100%;padding:20px;margin:14px 0;background:white;border:2px solid #d8e1e7;color:#17384c;cursor:pointer}button[aria-pressed=true]{border-color:#b57627;background:#f7f0e5}button:disabled{cursor:default;opacity:.75}button span{float:right}#submit-vote{background:#17384c;color:white;text-align:center;font-weight:700}[hidden]{display:none!important}#status{min-height:30px;font-size:19px}footer{font-size:14px;color:#607080;margin-top:28px;line-height:1.4}
+label{display:block;font-size:20px;font-weight:700;margin:24px 0 8px}input{box-sizing:border-box;width:100%;font:inherit;font-size:22px;padding:14px;border:2px solid #d8e1e7;border-radius:3px;background:white;color:#213448}input:focus{outline:2px solid #b57627;outline-offset:2px}.name-help{font-size:16px;color:#607080;margin:8px 0 20px}button:disabled{opacity:.5}
+</style>
+<small>PART A · CLASSROOM QUESTION</small><h1>Which training configurations fit one H100 SXM (80 GB)?</h1>
+<div class="assumptions">FP32 weights, gradients and Adam moments<span id="memory-hint" hidden>: <b>16 bytes/parameter</b></span>.<br>Batch = sequences on this GPU per forward/backward pass.<br>Assumed activations + batch memory per sequence: <b>3B → 1 GB; 7B → 4 GB</b>.<br>Reserve <b>4 GB</b> for other buffers. Decimal GB; fixed context; no sharding, quantization or checkpointing.</div>
+<form id="poll-form"><label for="student-name">Your name <span aria-hidden="true">(required)</span></label><input id="student-name" name="name" type="text" autocomplete="name" required maxlength="100" aria-describedby="name-help"><p class="name-help" id="name-help">Enter your name to enable the answer choices.</p><p><b>Select all that fit, then submit.</b></p><div id="options" role="group" aria-label="Select all configurations that fit"></div><button id="submit-vote" type="submit" disabled>Submit answer</button></form><p id="status" role="status">Connecting…</p><footer>Your name is saved with your answer. One vote per browser; you can change it while voting is open. The activation numbers are stipulated teaching estimates, not measured model peaks.</footer>
+<script>
+const room=location.pathname.split('/').pop(), options=document.querySelector('#options'), status=document.querySelector('#status'), nameInput=document.querySelector('#student-name'), submit=document.querySelector('#submit-vote');
+let state, busy=false, nameInitialized=false, selected=null;
+function validName(){return Boolean(nameInput.value.trim())&&nameInput.checkValidity();}
+function updateControls(){
+ for(const button of options.querySelectorAll('button')){
+   button.disabled=!state?.open||busy||!validName();
+   button.setAttribute('aria-pressed',String(selected?.includes(button.dataset.choice)));
+ }
+ submit.disabled=!state?.open||busy||!validName()||!selected?.length;
+ if(!state)return;
+ document.querySelector('#memory-hint').hidden=state.open;
+ status.textContent=state.open?(!validName()?'Enter your name, then select all options that fit.':state.vote?`Submitted: ${state.choices.join(', ')}. Select options and submit to change your answer.`:'Select all that fit, then submit your answer.'):`Voting closed. ${state.total} ${state.total===1?'response':'responses'}.`;
+}
+nameInput.addEventListener('input',()=>{nameInitialized=true;updateControls()});
+document.querySelector('#poll-form').addEventListener('submit',e=>{e.preventDefault();vote()});
+async function refresh(){try{
+ const response=await fetch('/api/rooms/'+room);state=await response.json();if(!response.ok)throw Error(state.error);
+ if(!nameInitialized){nameInput.value=state.name||'';nameInitialized=true;}
+ if(selected===null)selected=state.choices||[];
+ options.replaceChildren();for(const o of state.options){const b=document.createElement('button');b.type='button';b.dataset.choice=o.id;b.textContent=`${o.id} · ${o.parameters_b}B model · batch ${o.batch}`;if(!state.open){const count=document.createElement('span');count.textContent=state.counts[o.id]+(state.counts[o.id]===1?' selection':' selections');b.append(count)}b.onclick=()=>{selected=selected.includes(o.id)?selected.filter(c=>c!==o.id):[...selected,o.id];updateControls()};options.append(b)}updateControls();
+}catch(e){status.textContent=e.message||'Cannot reach the poll. Try again.'}}
+async function vote(){
+ if(!validName()){nameInput.reportValidity();status.textContent='Enter your name before voting.';return;}
+ if(!selected?.length){status.textContent='Select at least one option.';return;}
+ busy=true;updateControls();try{const r=await fetch('/api/rooms/'+room+'/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({choices:selected,name:nameInput.value.trim()})});const d=await r.json();if(!r.ok)throw Error(d.error);selected=d.choices;busy=false;await refresh()}catch(e){busy=false;updateControls();status.textContent=e.message}
+}
+refresh();setInterval(()=>{if(!busy)refresh()},2500);
+</script></html>

@@ -1,0 +1,32 @@
+{
+  "question": "Which training configurations fit one H100 SXM (80 GB)? Select all that fit.",
+  "capacity_gb": 80,
+  "bytes_per_parameter": 16,
+  "buffer_gb": 4,
+  "activation_gb_per_sequence": {
+    "3": 1,
+    "7": 4
+  },
+  "options": [
+    {
+      "id": "A",
+      "parameters_b": 3,
+      "batch": 1
+    },
+    {
+      "id": "B",
+      "parameters_b": 3,
+      "batch": 8
+    },
+    {
+      "id": "C",
+      "parameters_b": 7,
+      "batch": 1
+    },
+    {
+      "id": "D",
+      "parameters_b": 7,
+      "batch": 8
+    }
+  ]
+}

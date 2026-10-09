@@ -3,8 +3,10 @@ import { apa, sortRefs, linkCites } from "./bib.js";
 
 const registry = {};
 async function load() {
-  const [hist, tf, train, post] = await Promise.all([import("./p2l1/history.js"), import("./p2l1/transformer.js"), import("./p2l1/training.js"), import("./p2l2/posttraining.js")]);
-  Object.assign(registry, hist, tf, train, post);
+  const mods = await Promise.all([import("./p2l1/history.js?v=20261006-scale-panel"), import("./p2l1/transformer.js"), import("./p2l1/training.js"),
+    import("./p2l1/nanogpt.js"), import("./p2l1/optim.js"), import("./p2l1/systems.js"),
+    import("./p2l1/lawwhy.js"), import("./p2l1/lawplan.js"), import("./p2l1/lora.js"), import("./p2l2/posttraining.js")]);
+  Object.assign(registry, ...mods);
 }
 
 function toc() {

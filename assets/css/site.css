@@ -459,3 +459,72 @@ pre.cmd code { font-size: 1em; background: none; padding: 0; }
 .learn-row .readout { white-space: pre-line; }
 .learn-fig { margin: 1rem 0; }
 @media (max-width: 720px) { .learn-row { grid-template-columns: 1fr; } }
+
+/* ── P2-L1 session 02 lecture page (6 Oct 2026) ───────────────────────────────────────────
+   Figures from papers and comics, and the page sizes of the visualizations drawn for the
+   1280-px slides (nanogpt.js, systems.js, optim.js, lawplan.js, lora.js). Every rule is scoped
+   to main, which the decks do not have, so the slides keep polish.css's sizes and layouts. */
+main figure.paper { margin: 1.2rem 0 1.6rem; }
+main figure.paper img { display: block; width: 100%; height: auto; max-width: var(--fig-w, 100%); margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 6px; }
+main figure.paper figcaption { font-size: .85rem; color: var(--muted); margin: .55rem auto 0; max-width: 72ch; }
+main figure.paper.comic img { padding: 10px; }
+main .fig-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: .8rem; align-items: end; }
+main .fig-pair img { max-width: 100%; }
+main .nano-overlay { position: relative; max-width: var(--fig-w, 100%); margin: 0 auto; }
+main .nano-overlay img { padding: 0; }
+main .nano-overlay svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+main .nano-overlay line { stroke: #ef7c00; stroke-width: 6; opacity: .85; }
+main .nano-overlay text { fill: #b85f00; font-size: 56px; font-weight: 700; }
+main .clips { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 1rem 0 1.4rem; }
+main .clips figure { margin: 0; min-width: 0; }
+main .clips .vid-title { font-weight: 700; color: var(--blue); margin: 0 0 .4rem; }
+main .clips .vid-title b { color: var(--orange-2); margin-right: .35rem; }
+main .clips video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; background: #000; }
+main .clips figcaption { font-size: .85rem; color: var(--muted); margin-top: .4rem; }
+main .ex-table td { vertical-align: top; }
+main .ex-table pre { margin: 0; white-space: pre-wrap; font-size: .82rem; }
+main .redact { background: var(--panel-2); color: var(--muted); border-radius: 4px; padding: 0 .3em; font-size: .85em; }
+main th .katex { text-transform: none; letter-spacing: 0; }
+/* systems.js draws its text with classes that the deck sizes (polish.css, .slide.g3); the same sizes here */
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text { font-size: 17px; }
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text.m { font-size: 16.7px; fill: var(--muted); }
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text.sm { font-size: 16.7px; }
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text.t { font-size: 19px; font-weight: 700; fill: var(--deep); }
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text.f { font-size: 21px; font-style: italic; }
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text.op { font-size: 34px; font-weight: 700; fill: var(--muted); }
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text.n { font-size: 17px; fill: var(--muted); }
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text.bl { fill: var(--blue-2); font-weight: 700; }
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text.big { font-size: 38px; font-weight: 750; fill: var(--orange-2); }
+main :is([data-viz=autocastFlow], [data-viz=matmulCost], [data-viz=ddpSync], [data-viz=runMemory], [data-viz=mfuRun]) .s-text.big2 { font-size: 24px; font-weight: 750; fill: var(--deep); }
+main :is([data-viz=matmulCost], [data-viz=mfuRun]) .controls .lab { font-size: .9rem; color: var(--muted); }
+/* lawplan.js: the deck's sizes and bar colours (polish.css, .slide.pb3) */
+main [data-viz=lawPlan] .s-text { font-size: 20px; fill: var(--text); }
+main [data-viz=lawPlan] .s-text.b { font-weight: 700; }
+main [data-viz=lawPlan] .s-text.o { fill: var(--orange-2); font-weight: 700; }
+main [data-viz=lawPlan] .s-text.m { font-size: 17px; fill: var(--muted); }
+main [data-viz=lawPlan] .s-text.m2 { fill: var(--muted); }
+main [data-viz=lawPlan] .lp-bar { fill: var(--blue-2); }
+main [data-viz=lawPlan] .lp-bar.nano { fill: var(--panel-2); }
+main [data-viz=lawPlan] .lp-bar.small { fill: var(--blue-2); opacity: .55; }
+main [data-viz=lawPlan] .lp-bar.sweep { fill: var(--orange); }
+main [data-viz=lawPlan] .lp-bar.flag { fill: var(--blue); }
+main [data-viz=lawPlan] .lp-bar.try { fill: var(--blue-2); }
+main [data-viz=lawPlan] .lp-brace { fill: none; stroke: var(--orange-2); stroke-width: 2; }
+/* lora.js: its two 1,150-unit figures, labels a little larger than on the slides */
+main :is([data-viz=loraPlace], [data-viz=loraScale]) .s-text { font-size: 15.5px; }
+main :is([data-viz=loraPlace], [data-viz=loraScale]) .s-text.m { font-size: 14.5px; }
+main [data-viz=rankCubes][data-show=ranks] .s-text.m { font-size: 12.5px; }
+/* figures drawn narrow for the slides: no wider than their text needs on the page */
+main [data-viz] .viz-body > svg { margin-inline: auto; }
+main [data-viz=scaleArch] .viz-body > svg { max-width: 720px; }
+main [data-viz=clipPic] .viz-body > svg { max-width: 440px; }
+main [data-viz=momentumSum] .viz-body > svg { max-width: 470px; }
+main [data-viz=adamPerParam] .viz-body > svg { max-width: 470px; }
+main [data-viz=optimValley] .viz-body > svg { max-width: 560px; }
+main [data-viz=decayPull] .viz-body > svg { max-width: 400px; }
+main [data-viz=lrSchedule] .viz-body > svg { max-width: 560px; }
+main [data-viz=lossScale] .viz-body > svg { max-width: 480px; }
+main [data-viz=accumBatch] .viz-body > svg { max-width: 580px; }
+main [data-viz=rankCubes][data-show=full] .viz-body > svg { max-width: 300px; }
+main [data-viz=loraServe] .viz-body > svg { max-width: 640px; }
+main [data-viz=loraFit] .viz-body > svg { max-width: 720px; }

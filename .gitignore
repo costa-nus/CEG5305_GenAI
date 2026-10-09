@@ -1,2 +1,6 @@
 .claude/
 .DS_Store
+# staging and check copies made by the lecture build tools (never publish)
+.stage-*.html
+.check-*
+__pycache__/

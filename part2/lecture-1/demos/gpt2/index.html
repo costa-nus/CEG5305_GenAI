@@ -48,6 +48,9 @@
   <div id="out" aria-live="polite"></div>
 </main>
 <script type="module">
+if (new URLSearchParams(location.search).get("lesson") === "icl") {
+  await import("./icl-comparison.js?v=20261007");
+} else {
 // Transformers.js runs the ONNX export of GPT-2 small with WebAssembly. Pinned so the
 // demo does not change under the lecture; the 8-bit file is 128 MB against 500 MB in fp32.
 const LIB = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
@@ -110,6 +113,7 @@ async function generate() {
 
 go.addEventListener("click", () => (gen ? generate() : load()).catch(e => { say(`Error: ${e.message}`, true); go.disabled = false; }));
 go.disabled = false;
+}
 </script>
 </body>
 </html>

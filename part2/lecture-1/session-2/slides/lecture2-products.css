@@ -1,0 +1,13 @@
+/* Lecture 2 preview: two product illustrations in the course's blue and orange style. */
+.slide.lecture2-products .slide-body > .fit { height:100%; display:flex; flex-direction:column; justify-content:center; }
+.slide.lecture2-products .lecture2-product-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px; }
+.slide.lecture2-products .lecture2-product-card { padding:24px 28px; border:1px solid var(--line); border-top:4px solid var(--orange); background:var(--panel); }
+.slide.lecture2-products .lecture2-product-header { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:18px; }
+.slide.lecture2-products .lecture2-session { font-size:18px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:700; margin:0 0 8px; }
+.slide.lecture2-products h3 { font-size:36px; line-height:1.15; margin:0; color:var(--blue); }
+.slide.lecture2-products .lecture2-logo { width:136px; height:136px; object-fit:contain; flex-shrink:0; }
+.slide.lecture2-products .lecture2-slogan { font-size:34px; line-height:1.25; margin:0 0 24px; }
+.slide.lecture2-products .lecture2-transformation { display:flex; align-items:center; gap:16px; font-size:28px; line-height:1.2; color:var(--blue); font-weight:700; margin-bottom:24px; }
+.slide.lecture2-products .lecture2-transformation > span:not(.lecture2-arrow) { padding:10px 16px; border:1px solid #bdcbd5; background:#fff; }
+.slide.lecture2-products .lecture2-arrow { color:var(--orange); font-size:38px; }
+.slide.lecture2-products .lecture2-explanation { font-size:25px; line-height:1.35; margin:0; }

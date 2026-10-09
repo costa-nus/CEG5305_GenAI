@@ -859,6 +859,7 @@ function badge(g, cx, cy, key, r) {
   }
 }
 
+// data-panel="0" | "1" | "2" shows one era only (the session 02 deck reuses the 2020–2024 panel)
 export function scaleArch(root) {
   const body = frame(root, "Architecture or scale?", "published scores against scale, one dot per model");
   const W = 1180, H = 322, s = svg(W, H, body, "Scores against scale for three eras of language models");
@@ -866,6 +867,7 @@ export function scaleArch(root) {
   arrowDefs(s);
   const boxes = [[62, 300], [455, 225], [772, 388]], top = 54, bot = 262;
   SCALE_PANELS.forEach((P, i) => {
+    if (root.dataset.panel !== undefined && i !== Number(root.dataset.panel)) return;
     const [x0, w] = boxes[i];
     const X = c => x0 + (Math.log10(c) - P.x[0]) / (P.x[1] - P.x[0]) * w;
     const Y = v => bot - (v - P.y[0]) / (P.y[1] - P.y[0]) * (bot - top);
@@ -919,6 +921,7 @@ export function scaleArch(root) {
       if (p.l) text(pg, x + p.l[0], y + p.l[1], p.lt || p.n, p.b ? "b" : "m", p.l[2]);
     }
   });
+  if (root.dataset.panel) { const [x0, w] = boxes[+root.dataset.panel]; s.setAttribute("viewBox", `${x0 - 48} 0 ${w + 56} ${H}`); }
 }
 
 // ── The common principle: the chain rule, and the Markov chain that truncates it ──
@@ -1077,9 +1080,15 @@ export function archVsScale(root) {
   uid(s); arrowDefs(s);
   const node = (x, y, cls = "") => el("circle", { cx: x, cy: y, r: 9, class: `s-box ${cls}` }, s);
   const line = (x1, y1, x2, y2, cls) => el("line", { x1, y1, x2, y2, class: cls }, s);
-  text(s, 270, 24, "Architecture: how the parts connect", "ttl");
-  text(s, 830, 24, "Scale: the same wiring, more parameters", "ttl");
-  line(550, 12, 550, 226, "s-axis");
+  text(s, 270, 24, root.hasAttribute("data-short-labels") ? "Architecture" : "Architecture: how the parts connect", "ttl");
+  text(s, 830, 24, root.hasAttribute("data-short-labels") ? "Scale" : "Scale: the same wiring, more parameters", "ttl");
+  if (root.hasAttribute("data-versus")) {
+    line(550, 12, 550, 45, "s-axis");
+    text(s, 550, 82, "VS", "versus");
+    line(550, 98, 550, 226, "s-axis");
+  } else {
+    line(550, 12, 550, 226, "s-axis");
+  }
 
   // architecture: the same five tokens, wired two ways
   const row = x0 => [0, 1, 2, 3, 4].map(i => x0 + 52 * i), Y = 150;
@@ -1223,10 +1232,11 @@ export function penSteps(root) {
 }
 
 // ── A YouTube clip that loads and plays only when pressed ───────────────────
-// <div data-viz="youtube" data-id="…" data-title="…" data-vertical>. Until pressed it is a
+// <div data-viz="youtube" data-id="…" data-title="…" data-vertical data-start="seconds">. Until pressed it is a
 // thumbnail with a play button, so nothing from YouTube runs; leaving the slide stops it.
 export function youtube(root) {
   const id = root.dataset.id, title = root.dataset.title || "YouTube video";
+  const start = +root.dataset.start > 0 ? `&start=${Math.floor(+root.dataset.start)}` : "";
   const thumb = `https://i.ytimg.com/vi/${id}/${root.dataset.vertical !== undefined ? "oar2" : "hqdefault"}.jpg`;
   root.classList.add("yt");
   function poster() {
@@ -1234,11 +1244,11 @@ export function youtube(root) {
     const b = h("button", { class: "yt-poster", "aria-label": `Play: ${title}`, style: `background-image: url(${thumb})` },
       h("span", { class: "yt-play" }, "▶"));
     b.addEventListener("click", play);
-    root.append(b, h("a", { class: "yt-link", href: `https://www.youtube.com/watch?v=${id}`, target: "_blank", rel: "noopener" }, "Open on YouTube ↗"));
+    root.append(b, h("a", { class: "yt-link", href: `https://www.youtube.com/watch?v=${id}${start ? `&t=${Math.floor(+root.dataset.start)}s` : ""}`, target: "_blank", rel: "noopener" }, "Open on YouTube ↗"));
   }
   function play() {
     root.innerHTML = "";
-    root.append(h("iframe", { src: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`, title,
+    root.append(h("iframe", { src: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1${start}`, title,
       allow: "autoplay; encrypted-media; picture-in-picture; fullscreen", referrerpolicy: "strict-origin-when-cross-origin" }));
   }
   const slide = root.closest(".slide");

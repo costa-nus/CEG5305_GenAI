@@ -54,7 +54,7 @@ const tokW = t => t.length * 7.4 + 12;
 // ── Opening: the vote ────────────────────────────────────────────────────────
 export function computeVote(root) {
   const body = frame(root, "Ten times the compute: bigger model, or more data?",
-    "Pick one before reading on. Board 5 shows what two published studies concluded, and they disagree.",
+    "If the compute budget grows by 10×, how should model size and training tokens change? We return to this question in Part B.",
     "Your answer is kept in this browser only.");
   const opts = [["model", "Mostly a bigger model"], ["data", "Mostly more data"], ["both", "Both equally"]];
   let pick = store.get("vote", null);
@@ -64,15 +64,15 @@ export function computeVote(root) {
   function draw() {
     row.innerHTML = "";
     opts.forEach(([k, l]) => row.appendChild(h("button", { "aria-pressed": String(pick === k), onclick: () => { pick = k; store.set("vote", k); draw(); } }, l)));
-    read.textContent = pick ? `Your answer: ${opts.find(o => o[0] === pick)[1]}. Board 5 comes back to it.` : "No answer yet.";
+    read.textContent = pick ? `Your answer: ${opts.find(o => o[0] === pick)[1]}. We will compare this with two scaling-law recommendations.` : "No answer yet.";
   }
   draw();
 }
 
 // ── Six objectives, one sentence ─────────────────────────────────────────────
 export function objectives(root) {
-  const body = frame(root, "Six self-supervised objectives on one input",
-    "Orange boxes are cut out of the input and become the target. Click a row to show or hide its target.",
+  const body = frame(root, "Six ways to obtain training targets from data",
+    "A target is what the model learns to predict or match. Orange highlights the target. Click a row to show or hide it.",
     "The sentence and the span-corruption targets follow <a data-ref=\"raffel2020\">Raffel et al. (2020)</a>, Fig. 2. BERT masks 15% of tokens (<a data-ref=\"devlin2019\">Devlin et al., 2019</a>, §3.1); CLIP trains on 400M web image–text pairs (<a data-ref=\"radford2021\">Radford et al., 2021</a>, §2.2); MAE removes a large share of patches, e.g. 75% (<a data-ref=\"he2022\">He et al., 2022</a>); DINO is self-distillation with no labels (<a data-ref=\"caron2021\">Caron et al., 2021</a>). The photos are drawn tiles, not real images.");
   const W = 760;
   let hideAll = false;
@@ -84,12 +84,12 @@ export function objectives(root) {
 
   const SENT = ["Thank", "you", "for", "inviting", "me", "to", "your", "party", "last", "week."];
   const rows = [
-    { name: "Causal LM", model: "GPT · Board 3", kind: "text", input: [...SENT.slice(0, 9), { hid: "?" }], target: ["week."], note: "and, at every earlier position, the next token" },
-    { name: "Masked LM", model: "BERT", kind: "text", input: ["Thank", "you", "for", { hid: "[MASK]" }, "me", "to", "your", "party", { hid: "[MASK]" }, "week."], target: ["inviting", "last"], note: "15% of tokens are masked" },
-    { name: "Span corruption", model: "T5", kind: "text", input: ["Thank", "you", { hid: "<X>" }, "me", "to", "your", "party", { hid: "<Y>" }, "week."], target: ["<X>", "for", "inviting", "<Y>", "last", "<Z>"], note: "15% of tokens, mean span length 3" },
+    { name: "Next-token LM", model: "GPT", kind: "text", input: [...SENT.slice(0, 9), { hid: "?" }], target: ["week."], note: "predict the next token at each position" },
+    { name: "Masked LM", model: "BERT", kind: "text", input: ["Thank", "you", "for", { hid: "[MASK]" }, "me", "to", "your", "party", { hid: "[MASK]" }, "week."], target: ["inviting", "last"], note: "15% selected for prediction" },
+    { name: "Missing spans", model: "T5", kind: "text", input: ["Thank", "you", { hid: "<X>" }, "me", "to", "your", "party", { hid: "<Y>" }, "week."], target: ["<X>", "for", "inviting", "<Y>", "last", "<Z>"], note: "predict missing groups of tokens" },
     { name: "Contrastive", model: "CLIP", kind: "clip" },
     { name: "Masked patches", model: "MAE", kind: "mae" },
-    { name: "Self-distillation", model: "DINO", kind: "dino" },
+    { name: "Match views", model: "DINO", kind: "dino" },
   ];
   const PAL = [["#9cc4ff", "#7fb2ff", "#6aa56a", "#3f7f4a"], ["#7fd0e0", "#9cc4ff", "#e8d49a", "#d9bf73"], ["#2a3550", "#223052", "#ffc15e", "#3a3f55"]];
   function photo(g, x, y, cell, pal, hidden = null, only = null) {
@@ -185,9 +185,14 @@ function bpeMerge(syms, a, b) {
 }
 export function bpe(root) {
   const body = frame(root, "Byte-pair encoding, one merge at a time",
-    "Press Merge: the most frequent adjacent pair (orange) becomes one symbol everywhere. Then segment a word the dictionary never contained.",
+    "BPE builds tokens by repeatedly merging the most frequent adjacent pair. Press Merge, then try splitting a new word into tokens.",
     "Dictionary and algorithm from <a data-ref=\"sennrich2016\">Sennrich et al. (2016)</a>, Algorithm 1. Merges are computed in your browser; ties go to the pair counted first, as Python's <code>max</code> does in the paper's code.");
   let vocab = bpeInit(), merges = [];
+  // On a slide the deck draws this svg about 138 px tall (scale ≈ 0.73), so the chips get
+  // slide-sized text (26 → ≈ 19 px); the lecture page keeps the original geometry.
+  const big = !!root.closest(".slide");
+  const CH = big ? { fs: 26, cnt: 21, cw: 15.6, pad: 16, hh: 38, gap: 5, row: 45, y0: 4 }
+    : { fs: 0, cnt: 0, cw: 8.2, pad: 14, hh: 30, gap: 4, row: 44, y0: 10 };
   const s = svg(430, 190, null, "BPE dictionary as symbol boxes");
   const table = h("div", { class: "table-wrap", style: "margin:0" });
   const bStep = h("button", { class: "primary" }, "Merge top pair");
@@ -219,21 +224,23 @@ export function bpe(root) {
     const [ta, tb] = tk ? tk.split("|") : [];
     s.innerHTML = "";
     vocab.forEach((r, i) => {
-      const y = 10 + i * 44;
+      const y = CH.y0 + i * CH.row;
       let x = 0;
       r.syms.forEach((sym, j) => {
         const on = tk && ((sym === ta && r.syms[j + 1] === tb) || (sym === tb && r.syms[j - 1] === ta));
-        const w = sym.length * 8.2 + 14;
-        box(s, x, y, w, 30, sym, on ? "on" : "", on ? "b" : "mono");
-        x += w + 4;
+        const w = sym.length * CH.cw + CH.pad;
+        const g = box(s, x, y, w, CH.hh, sym, on ? "on" : "", on ? "b" : "mono");
+        if (big) { const t = g.querySelector("text"); t.style.fontSize = `${CH.fs}px`; t.setAttribute("y", y + CH.hh / 2 + 9); }
+        x += w + CH.gap;
       });
-      text(s, x + 8, y + 20, `× ${r.f}`, "m", "start");
+      const c = text(s, x + 8, y + (big ? 26 : 20), `× ${r.f}`, "m", "start");
+      if (big) c.style.fontSize = `${CH.cnt}px`;
     });
     const sorted = [...stats].sort((p, q) => q[1] - p[1]).slice(0, 7);
     const ties = [...stats].filter(([, v]) => v === tv).length;
     table.innerHTML = `<table><tr><th>pair</th><th>count</th></tr>${sorted.map(([k, v]) =>
       `<tr${k === tk ? ' style="background:var(--tint)"' : ""}><td style="white-space:nowrap"><code>${k.split("|").map(esc).join(" ")}</code></td><td>${v}${k === tk && ties > 1 ? ` <span class="note">tie with ${ties - 1} other${ties > 2 ? "s" : ""}: first counted wins</span>` : ""}</td></tr>`).join("")}</table>`;
-    read.textContent = merges.length ? `Merges so far:\n${merges.map(([a, b], i) => `${i + 1}. ${a} ${b} → ${a + b}`).join("\n")}` : "No merges yet. The vocabulary is the characters plus </w>.";
+    read.textContent = merges.length ? `Merges so far:\n${merges.map(([a, b], i) => `${i + 1}. ${a} ${b} → ${a + b}`).join("\n")}` : "No merges yet. Each character is a token; </w> marks the end of a word.";
     const w = (word.value || "").trim().toLowerCase().replace(/[^a-z]/g, "");
     let sy = [...w.split(""), "</w>"];
     merges.forEach(([a, b]) => { sy = bpeMerge(sy, a, b); });
@@ -245,8 +252,8 @@ const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
 // ── Board 4: C ≈ 6ND ─────────────────────────────────────────────────────────
 export function sixND(root) {
-  const body = frame(root, "Board 4 — one matrix product forward, two backward",
-    "Step through the passes for y = Wx, then price a whole training run.",
+  const body = frame(root, "Training compute: one forward product and two gradient products",
+    "For y = Wx, compare the forward pass with the two gradient calculations. Then estimate a full run using C ≈ 6ND.",
     "Counting rule from <a data-ref=\"kaplan2020\">Kaplan et al. (2020)</a>, §2.1. Reported totals: GPT-3 from <a data-ref=\"brown2020\">Brown et al. (2020)</a>, Table D.1; Llama 3 from <a data-ref=\"grattafiori2024\">Grattafiori et al. (2024)</a>, §1 and §3.2; DeepSeek-V3 from <a data-ref=\"deepseekai2024\">DeepSeek-AI (2024)</a>, §1; nanoGPT's tokens from <code>config/train_gpt2.py</code> (<a data-ref=\"karpathy2022\">Karpathy, 2022</a>). 6ND is computed here.");
   const m = 4, n = 5;
   let stage = 0;
@@ -258,7 +265,7 @@ export function sixND(root) {
   // calculator
   const MODELS = [
     { name: "GPT-2 small (nanoGPT)", N: 124439808, D: 294912000000, rep: null, note: "No total reported. The nanoGPT README says the run takes about 4 days on one node of 8 A100 40GB GPUs." },
-    { name: "same, non-embedding N", N: 84934656, D: 294912000000, rep: null, note: "N ≈ 12·n_layer·d² = 12·12·768², the convention of Kaplan et al. (2020), eq. 2.1." },
+    { name: "nanoGPT, excluding embeddings", N: 84934656, D: 294912000000, rep: null, note: "N ≈ 12·n_layer·d² = 12·12·768², the convention of Kaplan et al. (2020), eq. 2.1." },
     { name: "GPT-3 175B", N: 174.6e9, D: 300e9, rep: 3.14e23, note: "Brown et al. computed their total with this same rule, so agreement checks the arithmetic, not the rule." },
     { name: "Llama 3 405B", N: 405e9, D: 15.6e12, rep: 3.8e25, note: "The paper does not say how its total was computed." },
     { name: "DeepSeek-V3 (37B active of 671B)", N: 37e9, D: 14.8e12, rep: null, note: "A mixture of experts: only active parameters count. Reported cost: 2.664M H800 GPU-hours for pre-training." },
@@ -269,7 +276,7 @@ export function sixND(root) {
   const inD = h("input", { type: "text", value: show(cur.D), "aria-label": "tokens D", style: "width:8em;font:inherit;padding:.2rem .4rem;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--text)" });
   const presets = h("div", { class: "controls" }, ...MODELS.map(M => h("button", { onclick: () => { cur = M; inN.value = show(M.N); inD.value = show(M.D); calc(); } }, M.name)));
   const read = h("div", { class: "readout" });
-  body.append(presets, h("div", { class: "controls" }, h("label", {}, "N (parameters)", inN), h("label", {}, "D (tokens)", inD), h("span", { class: "note" }, "suffixes K, M, B, T")), read);
+  body.append(presets, h("div", { class: "controls" }, h("label", {}, "N (parameters)", inN), h("label", {}, "D (tokens)", inD), h("span", { class: "note" }, "K = thousand; M = million; B = billion; T = trillion")), read);
   [inN, inD].forEach(i => i.addEventListener("input", () => { cur = null; calc(); }));
   function calc() {
     const N = parseCount(inN.value), D = parseCount(inD.value);
@@ -305,15 +312,15 @@ export function sixND(root) {
     const tot = [2, 4, 6][stage];
     text(s, 548, 176, `so far: ${tot}mn per token`, "b", "start");
     text(s, 548, 200, stage === 2 ? "= 6 FLOPs per parameter" : "", "o", "start");
-    text(s, 548, 234, "a product: mn × and mn +", "m", "start");
+    text(s, 548, 234, "mn multiplications + mn additions", "m", "start");
   }
   draw(); calc();
 }
 
 // ── Memory: bytes per parameter, and ZeRO ────────────────────────────────────
 export function bytesPerParam(root) {
-  const body = frame(root, "Bytes per parameter for mixed-precision AdamW, and ZeRO sharding",
-    "Set the model size. Top: three published accountings against one 80 GB GPU. Bottom: split the 16-byte version across GPUs.",
+  const body = frame(root, "Training memory per parameter and per GPU",
+    "Training stores weights, gradients and optimiser values. Compare memory assumptions, then divide these values across GPUs with ZeRO.",
     "16 bytes and the ZeRO stage formulas: <a data-ref=\"rajbhandari2020\">Rajbhandari et al. (2020)</a>, §3.1 and §5 (Table 1 gives 7.5B on 64 GPUs: 120, 31.4, 16.6 and 1.88 GB — choose 7.5B and 64 to check). 12 bytes: Stanford CS336 (2026), lecture 2. 18 bytes: CMU 11-711 (Spring 2026), lecture 20. 80 GB per H100: <a data-ref=\"grattafiori2024\">Grattafiori et al. (2024)</a>, §3.3.1. Activations are excluded. GB = 10⁹ bytes; totals computed here.");
   const CONV = [
     { src: "12 bytes (CS336)", parts: [["16-bit weights", 2], ["16-bit grads", 2], ["Adam m", 4], ["Adam v", 4]] },
@@ -322,11 +329,15 @@ export function bytesPerParam(root) {
   ];
   // fixed fills, readable with white digits in light and dark themes
   const COL = { "16-bit weights": "#1f5aa6", "BF16 weights": "#1f5aa6", "16-bit grads": "#4f86c6", "FP32 grads": "#4f86c6", "FP32 master": "#5b6f8c", "FP32 weights": "#5b6f8c", "Adam m": "#ef7c00", "Adam v": "#b85f00" };
-  const SIZES = [["1.5B", 1.5e9], ["7B", 7e9], ["7.5B", 7.5e9], ["70B", 70e9], ["175B", 175e9]];
-  let P = 7e9, Nd = 64;
-  const sizeBar = h("div", { class: "controls" }, h("span", { class: "note" }, "Parameters Ψ:"));
-  const s1 = svg(760, 188, null, "bytes per parameter, three conventions");
-  const ndSl = slider("GPUs N_d", 0, 6, 1, 6, v => { Nd = 2 ** v; draw(); }, v => String(2 ** v));
+  const SIZES = [["1.5B", 1.5e9], ["7B", 7e9], ["7.5B", 7.5e9], ["70B", 70e9], ["175B", 175e9], ["405B", 405e9]];
+  let P = parseCount(root.dataset.size || "") || 7e9, Nd = 64; // data-size="405B" opens at that size
+  // data-only="16" keeps one convention (the deck's memory slide); on a slide the ZeRO bars get
+  // plain stage names instead of the paper's P_os, Ψ and N_d, and larger labels.
+  const only = root.dataset.only, CONVS = only ? CONV.filter(c => c.src.startsWith(`${only} `)) : CONV;
+  const big = !!root.closest(".slide");
+  const sizeBar = h("div", { class: "controls" }, h("span", { class: "note" }, big ? "Parameters:" : "Parameters Ψ:"));
+  const s1 = svg(760, 8 + CONVS.length * 50 + 30, null, only ? `bytes per parameter, ${only}-byte convention` : "bytes per parameter, three conventions");
+  const ndSl = slider(big ? "GPUs" : "GPUs N_d", 0, 6, 1, 6, v => { Nd = 2 ** v; draw(); }, v => String(2 ** v));
   const s2 = svg(760, 190, null, "ZeRO stages per GPU");
   const read = h("div", { class: "readout" });
   body.append(sizeBar, s1, h("div", { class: "controls", style: "margin-top:.6rem" }, ndSl), s2, read);
@@ -335,7 +346,7 @@ export function bytesPerParam(root) {
     [...sizeBar.querySelectorAll("button")].forEach((b, i) => b.setAttribute("aria-pressed", String(SIZES[i][1] === P)));
     s1.innerHTML = "";
     const X = linS(0, 18, 150, 520);
-    CONV.forEach((c, i) => {
+    CONVS.forEach((c, i) => {
       const y = 8 + i * 50;
       text(s1, 140, y + 22, c.src, "b", "end");
       let acc = 0;
@@ -349,30 +360,36 @@ export function bytesPerParam(root) {
       text(s1, 540, y + 21, `${gb(tot)}`, tot > 80e9 ? "o" : "b", "start");
       text(s1, 640, y + 21, tot > 80e9 ? `≥ ${Math.ceil(tot / 80e9)} × 80 GB` : "fits one 80 GB GPU", "m", "start");
     });
-    const LEG = [["16-bit weights", "#1f5aa6"], ["gradients (16- or 32-bit)", "#4f86c6"], ["FP32 copy of weights", "#5b6f8c"], ["Adam m", "#ef7c00"], ["Adam v", "#b85f00"]];
+    const LEG = [["16-bit weights", "#1f5aa6"], [only === "16" ? "16-bit gradients" : "gradients (16- or 32-bit)", "#4f86c6"], ["FP32 copy of weights", "#5b6f8c"], ["Adam m", "#ef7c00"], ["Adam v", "#b85f00"]];
     let lx = 150;
+    const ly = 8 + CONVS.length * 50 + 8; // 166 with all three conventions
     LEG.forEach(([nm, c]) => {
-      el("rect", { x: lx, y: 166, width: 14, height: 14, rx: 2, fill: c }, s1);
-      const t = text(s1, lx + 20, 178, nm, "m", "start");
+      el("rect", { x: lx, y: ly, width: 14, height: 14, rx: 2, fill: c }, s1);
+      const t = text(s1, lx + 20, ly + 12, nm, "m", "start");
       lx += 20 + (t.getComputedTextLength() || nm.length * 6.2) + 16;
     });
     s2.innerHTML = "";
+    const NAMES = big ? ["no split (data parallel)", "stage 1: optimizer states split", "stage 2: + gradients", "stage 3: + parameters"]
+      : ["data parallel", "P_os  4Ψ + 12Ψ/N_d", "P_os+g  2Ψ + 14Ψ/N_d", "P_os+g+p  16Ψ/N_d"];
     const stages = [
-      ["data parallel", 16 * P],
-      ["P_os  4Ψ + 12Ψ/N_d", 4 * P + (12 * P) / Nd],
-      ["P_os+g  2Ψ + 14Ψ/N_d", 2 * P + (14 * P) / Nd],
-      ["P_os+g+p  16Ψ/N_d", (16 * P) / Nd],
+      [NAMES[0], 16 * P],
+      [NAMES[1], 4 * P + (12 * P) / Nd],
+      [NAMES[2], 2 * P + (14 * P) / Nd],
+      [NAMES[3], (16 * P) / Nd],
     ];
-    const max = stages[0][1], XB = linS(0, max, 200, 640);
+    const x0 = big ? 340 : 200, sz = (t, px) => { if (big) t.style.fontSize = `${px}px`; return t; };
+    const max = stages[0][1], XB = linS(0, max, x0, 640);
     stages.forEach(([nm, v], i) => {
       const y = 8 + i * 44;
-      text(s2, 190, y + 20, nm, i ? "" : "m", "end");
-      el("rect", { x: 200, y, width: Math.max(2, XB(v) - 200), height: 28, rx: 3, class: `s-bar ${i === 3 ? "on" : i ? "hi" : ""}` }, s2);
-      text(s2, Math.max(XB(v), 200) + 8, y + 19, gb(v), v > 80e9 ? "o" : "b", "start");
+      sz(text(s2, x0 - 10, y + (big ? 21 : 20), nm, i || big ? "" : "m", "end"), 21);
+      el("rect", { x: x0, y, width: Math.max(2, XB(v) - x0), height: 28, rx: 3, class: `s-bar ${i === 3 ? "on" : i ? "hi" : ""}` }, s2);
+      sz(text(s2, Math.max(XB(v), x0) + 8, y + (big ? 21 : 19), gb(v), v > 80e9 ? "o" : "b", "start"), 21);
     });
     const x80 = XB(80e9);
-    if (x80 < 640) { el("line", { x1: x80, y1: 0, x2: x80, y2: 180, class: "s-edge dash" }, s2); text(s2, x80 + 4, 186, "80 GB", "m", "start"); }
-    read.innerHTML = `Ψ = ${human(P)} parameters, N_d = ${Nd} GPUs: model states per GPU fall from <b>${gb(16 * P)}</b> to <b>${gb((16 * P) / Nd)}</b> with all three stages.\nOptimiser state (12 of the 16 bytes) dominates, which is why ZeRO shards it first.`;
+    if (x80 < 640) { el("line", { x1: x80, y1: 0, x2: x80, y2: 180, class: "s-edge dash" }, s2); sz(text(s2, x80 + 4, 188, "80 GB", "m", "start"), 18); }
+    read.innerHTML = big
+      ? `${human(P)} parameters on ${Nd} GPUs: the memory per GPU falls from <b>${gb(16 * P)}</b> to <b>${gb((16 * P) / Nd)}</b> with all three stages.\nThe optimizer states use 12 of the 16 bytes per parameter. ZeRO splits them first.`
+      : `Ψ = ${human(P)} parameters, N_d = ${Nd} GPUs: model states per GPU fall from <b>${gb(16 * P)}</b> to <b>${gb((16 * P) / Nd)}</b> with all three stages.\nOptimiser storage, including the FP32 weight copy, uses 12 of 16 bytes per parameter. ZeRO partitions this storage first.`;
   }
   draw();
 }
@@ -398,7 +415,7 @@ function encodeFloat(x, E, M) {
 }
 export function floatBits(root) {
   const body = frame(root, "FP32, FP16 and BF16, bit by bit",
-    "Type a number. Each row shows the bits that store it and the value that comes back. BF16 has FP32's 8 exponent bits.",
+    "Type a number to compare its stored value in each format. Exponent bits control the range; fraction bits control precision.",
     "Bit layouts and ranges from <a data-ref=\"kalamkar2019\">Kalamkar et al. (2019)</a>, Table 1. Encoding computed in your browser, rounding to the nearest representable value.");
   const FMT = [["FP32", 8, 23], ["FP16", 5, 10], ["BF16", 8, 7]];
   const inp = h("input", { type: "text", value: "70000", "aria-label": "number", style: "width:9em;font:inherit;padding:.2rem .4rem;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--text)" });
@@ -424,7 +441,7 @@ export function floatBits(root) {
           el("rect", { x: cx + j * cw, y, width: cw - 2, height: 26, rx: 2, fill, stroke: k === "e" ? "var(--orange)" : "var(--line)" }, s);
           if (str) text(s, cx + j * cw + (cw - 2) / 2, y + 18, str[j], "mono");
         }
-        text(s, cx + (len * cw) / 2, y + 42, k === "s" ? "sign" : k === "e" ? `exponent ${len}` : `mantissa ${len}`, "m");
+        text(s, cx + (len * cw) / 2, y + 42, k === "s" ? "sign" : k === "e" ? `exponent ${len}` : `fraction ${len}`, "m");
         cx += len * cw + 6;
       });
       if (r) out.push(`${nm.padEnd(5)} ${r.status.padEnd(34)} stored value: ${Number.isFinite(r.value) ? r.value.toPrecision(8) : r.value}`);
@@ -437,7 +454,7 @@ export function floatBits(root) {
 // ── The data funnel ──────────────────────────────────────────────────────────
 export function dataFunnel(root) {
   const body = frame(root, "RefinedWeb: how much of Common Crawl survives",
-    "Enter your prediction, then step through the stages. Bar width is the share of the original crawl still kept.",
+    "Common Crawl collects web pages. Predict how much remains after cleaning, then step through the filters. Each bar shows the share retained.",
     "Stages and rates from <a data-ref=\"penedo2023\">Penedo et al. (2023)</a>, Fig. 2 — redrawn. Rates are in documents during document preparation and in tokens afterwards. The figure's caption gives 24% and 12% where the bars read 23.34% and 11.67% kept; the figure's values are used. DINOv2 pipeline from <a data-ref=\"oquab2024\">Oquab et al. (2024)</a>, §3; the paper gives only the endpoints, so no percentages are drawn.");
   const ST = [
     ["Common Crawl", null, 100, ""],
@@ -455,38 +472,53 @@ export function dataFunnel(root) {
   const bNext = h("button", { class: "primary" }, "Next stage");
   const bAll = h("button", {}, "Show all");
   const bReset = h("button", {}, "Reset");
-  const s = svg(760, 360, null, "data filtering funnel");
+  // On a slide the deck draws this svg 300 px tall (scale ≈ 0.83): a wider canvas and larger
+  // labels there (stage names 23 → ≈ 19 px); the lecture page keeps the original layout.
+  const big = !!root.closest(".slide");
+  const L = big ? { W: 1100, lab: 560, cx: 780, half: 190, rem: 1096, fGrp: 20, fLab: 23, fIn: 20, fRem: 20, fFoot: 19 }
+    : { W: 760, lab: 290, cx: 520, half: 175, rem: 752 };
+  const F = (t, px) => { if (big && t) t.style.fontSize = `${px}px`; return t; };
+  // plain names for each stage of ST, and its group, used on slides
+  const PLAIN = [["Common Crawl", ""], ["remove bad web addresses", "Prepare"], ["take the text from each page", ""], ["keep English only", ""],
+    ["remove repeated text", "Filter"], ["remove bad pages", ""], ["fix bad lines", ""], ["remove near-copies", "Remove copies"], ["remove exact copies", ""]];
+  const s = svg(L.W, 360, null, "data filtering funnel");
   const read = h("div", { class: "readout" });
   const s2 = svg(760, 118, null, "DINOv2 data pipeline");
   body.append(h("div", { class: "controls" }, h("label", {}, "My prediction: % kept", inp), bNext, bAll, bReset), s, read,
-    h("p", { class: "note", style: "margin:.9rem 0 .3rem" }, "Image foundation models, same shape: DINOv2's LVD-142M."), s2);
+    h("p", { class: "note", style: "margin:.9rem 0 .3rem" }, "Image datasets also need filtering and deduplication: DINOv2’s LVD-142M."), s2);
   inp.addEventListener("input", () => { pred = inp.value; store.set("funnel", pred); draw(); });
   bNext.addEventListener("click", () => { shown = Math.min(ST.length, shown + 1); draw(); });
   bAll.addEventListener("click", () => { shown = ST.length; draw(); });
   bReset.addEventListener("click", () => { shown = 1; draw(); });
   function draw() {
     s.innerHTML = "";
-    const cx = 520, half = 175, rh = 36;
+    const cx = L.cx, half = L.half, rh = 36, ty = big ? 25 : 20;
     const W = k => (half * 2 * k) / 100;
-    ST.forEach(([nm, rem, kept, grp], i) => {
+    ST.forEach(([nm0, rem, kept, grp0], i) => {
       const y = 8 + i * rh, vis = i < shown, last = i === shown - 1;
-      if (grp) text(s, 0, y + 20, grp, "m", "start");
-      text(s, 290, y + 20, nm, vis ? (last ? "b" : "") : "m", "end").setAttribute("opacity", vis ? 1 : 0.4);
+      // on a slide: plain names for the stages and groups (same stages, same numbers)
+      const nm = big ? PLAIN[i][0] : nm0, grp = big ? PLAIN[i][1] : grp0;
+      if (grp) F(text(s, 0, y + ty, grp, "m", "start"), L.fGrp);
+      F(text(s, L.lab, y + ty, nm, vis ? (last ? "b" : "") : "m", "end"), L.fLab).setAttribute("opacity", vis ? 1 : 0.4);
       if (!vis) return;
       el("rect", { x: cx - W(kept) / 2, y: y + 4, width: W(kept), height: rh - 10, rx: 3, class: `s-bar ${last ? "on" : ""}` }, s);
-      text(s, cx, y + 21, `${kept.toFixed(2)}%`, last ? "b" : "", "middle");
-      if (rem !== null) text(s, 752, y + 21, `−${rem.toFixed(2)}%`, "m", "end");
+      F(text(s, cx, y + (big ? 24 : 21), `${kept.toFixed(2)}%`, last ? "b" : "", "middle"), L.fIn);
+      if (rem !== null) F(text(s, L.rem, y + (big ? 24 : 21), `−${rem.toFixed(2)}%`, "m", "end"), L.fRem);
     });
     const p = parseFloat(pred);
     if (p >= 0 && p <= 100) {
       [cx - W(p) / 2, cx + W(p) / 2].forEach(x => el("line", { x1: x, y1: 4, x2: x, y2: 8 + ST.length * rh, class: "s-edge dash" }, s));
-      text(s, cx, 8 + ST.length * rh + 18, `your prediction: ${p}%`, "o");
+      F(text(s, cx, 8 + ST.length * rh + 18, `your prediction: ${p}%`, "o"), L.fFoot);
     }
-    text(s, 752, 8 + ST.length * rh + 18, "removed at this stage", "m", "end");
+    F(text(s, L.rem, 8 + ST.length * rh + 18, "removed at this stage", "m", "end"), L.fFoot);
     const [nm, rem, kept] = ST[shown - 1];
-    read.textContent = shown === 1 ? "All documents in the crawl. Press Next stage." :
+    read.textContent = big
+      ? (shown === 1 ? "This is all of the documents in the crawl. Press Next stage." :
+        `Stage ${shown - 1}: ${kept.toFixed(2)}% of the crawl remains. This stage removed ${rem.toFixed(2)}% of its input.` +
+        (shown === ST.length ? "\nThe result is about five trillion English tokens (§3). The language filter removes the most. The two copy filters remove half of the rest." : ""))
+      : shown === 1 ? "All documents in the crawl. Press Next stage." :
       `After ${nm.toLowerCase()}: ${kept.toFixed(2)}% of the original crawl is kept; this stage removed ${rem.toFixed(2)}% of what reached it.` +
-      (shown === ST.length ? "\nThe result is about five trillion English tokens (§3). Every stage removes a large share, and deduplication removes the most." : "");
+      (shown === ST.length ? "\nThe result is about five trillion English tokens (§3). Language identification removes the most; deduplication halves what is left." : "");
     // DINOv2
     s2.innerHTML = ""; uid(s2); arrowDefs(s2);
     const steps = [["web-crawl", "image links"], ["drop unsafe URLs,", "duplicates, NSFW;", "blur faces"], ["1.2B unique", "images"], ["remove copies of", "benchmark", "test images"], ["retrieve against", "curated sets", "(ImageNet-22k …)"], ["LVD-142M", "142M images"]];
@@ -504,12 +536,12 @@ export function dataFunnel(root) {
 // ── Kaplan et al.: a power law is a straight line ────────────────────────────
 export function powerLaw(root) {
   const body = frame(root, "Kaplan et al. scaling law: L(N) = (N_c / N)^α_N",
-    "Move α_N, switch to linear axes, or fit a line to three small models and extend it.",
+    "The exponent α_N controls how quickly loss falls. Compare linear and log axes, then fit three example points to predict larger models.",
     "L(N) with N_c = 8.8 × 10¹³ and α_N = 0.076 from <a data-ref=\"kaplan2020\">Kaplan et al. (2020)</a>, §1.2 (N excludes embeddings; loss in nats per token). Other α values keep N_c fixed and are for exploration only. The right panel is schematic, after the paper's Fig. 7, with no values.");
   const Nc = 8.8e13;
   let alpha = 0.076, linear = false, fit = false;
   const bLin = h("button", { "aria-pressed": "false" }, "Linear axes");
-  const bFit = h("button", { "aria-pressed": "false" }, "Fit from three small models");
+  const bFit = h("button", { "aria-pressed": "false" }, "Fit three example points");
   const s = svg(470, 330, null, "loss against parameters");
   const s2 = svg(290, 330, null, "schematic: LSTM and Transformer curves");
   const read = h("div", { class: "readout" });
@@ -532,8 +564,8 @@ export function powerLaw(root) {
     const pts = [];
     for (let k = 0; k <= 200; k++) { const N = linear ? Math.max(lo, (hi * k) / 200) : 10 ** (3 + (8 * k) / 200); pts.push([X(N), Y(L(N))]); }
     el("path", { d: path(pts), class: "s-line", stroke: "var(--blue-2)" }, g);
-    let t = `α_N = ${alpha.toFixed(3)}:  doubling N multiplies L by 2^−α = ${(2 ** -alpha).toFixed(3)}\n` +
-      `halving L needs N × 2^(1/α) = ${Math.round(2 ** (1 / alpha)).toLocaleString("en-US")}   (computed here)`;
+    let t = `α_N = ${alpha.toFixed(3)}:  if N doubles, L becomes 2^−α_N = ${(2 ** -alpha).toFixed(3)} times as large.\n` +
+      `To halve L, N must grow ${Math.round(2 ** (1 / alpha)).toLocaleString("en-US")} times (2^(1/α_N); we calculated this).`;
     if (fit) {
       const small = [1e5, 1e6, 1e7];
       small.forEach(N => el("circle", { cx: X(N), cy: Y(L(N)), r: 5, fill: "var(--orange)" }, g));
@@ -573,8 +605,8 @@ const FITS = {
   refit: { name: "Besiroglu et al. (2024), Table 1 refit", E: 1.8172, A: 482.01, B: 2085.43, al: 0.3478, be: 0.3658 },
 };
 export function isoFlop(root) {
-  const body = frame(root, "Board 5 — at fixed compute, a model can be too big or too small",
-    "Each curve holds C = 6ND fixed and trades parameters for tokens. Pick a fit and a budget.",
+  const body = frame(root, "Choosing model size at a fixed compute budget",
+    "Each curve uses the same compute budget C = 6ND. Increasing model size N leaves fewer training tokens D. The lowest point gives the best balance.",
     "Computed from published fits, not measured runs. L(N, D) = E + A/N^α + B/D^β from <a data-ref=\"hoffmann2022\">Hoffmann et al. (2022)</a>, eq. 2 and eq. 10; unrounded values and the refit from <a data-ref=\"besiroglu2024\">Besiroglu et al. (2024)</a>, eq. 4 and Table 1. Gopher's budget, 5.76 × 10²³ FLOPs, from Hoffmann et al., Fig. 2 caption. Visual echo of their Fig. 3, redrawn. Kaplan's exponent 0.73 from <a data-ref=\"kaplan2020\">Kaplan et al. (2020)</a>, eq. 1.7.");
   const BUD = [1e19, 1e20, 1e21, 1e22, 5.76e23];
   let fitK = "printed", bi = 4;
@@ -612,8 +644,8 @@ export function isoFlop(root) {
     const o = ops[bi], vote = store.get("vote", null);
     const vt = { model: "mostly a bigger model", data: "mostly more data", both: "both equally" }[vote];
     read.innerHTML = `${f.name}\na = β/(α+β) = <b>${o.a.toFixed(3)}</b>   at C = ${sciN(BUD[bi])}:  N_opt = <b>${human1(o.N)}</b>,  D_opt = <b>${human1(o.D)}</b>,  D/N = ${(o.D / o.N).toFixed(0)}\n` +
-      `10× compute with this fit: model × ${(10 ** o.a).toFixed(1)}, data × ${(10 ** (1 - o.a)).toFixed(1)}.   With Kaplan's 0.73: model × 5.4, data × 1.9.\n` +
-      `Chinchilla as trained: 70B parameters, 1.4T tokens (Hoffmann et al., Table 1).` + (vt ? `\nYou voted: ${vt}.` : "");
+      `With 10× compute, this fit grows the model ${(10 ** o.a).toFixed(1)}× and the data ${(10 ** (1 - o.a)).toFixed(1)}×. With Kaplan's 0.73: model 5.4×, data 1.9×.\n` +
+      `Chinchilla, the actual model: 70B parameters, 1.4T tokens (Hoffmann et al., Table 1).` + (vt ? `\nYou voted: ${vt}.` : "");
   }
   draw();
 }
@@ -621,7 +653,7 @@ export function isoFlop(root) {
 // ── Kaplan vs Chinchilla: two slopes ─────────────────────────────────────────
 export function twoSlopes(root) {
   const body = frame(root, "Kaplan vs Chinchilla: how fast should the model grow with compute?",
-    "Drag the budget. Click a model to see its tokens per parameter.",
+    "Change the compute budget to compare the recommended model sizes. Click a model to see how many tokens it used per parameter.",
     "Both lines are anchored at the head-to-head of <a data-ref=\"hoffmann2022\">Hoffmann et al. (2022)</a>, App. D.4, at 10²¹ FLOPs: Kaplan's rule chose 4.68B parameters (slope 0.73), Approach 1 chose 2.86B (slope 0.50). Kaplan's own intercept is in different units. Model sizes and tokens from Hoffmann et al., Table 1; C = 6ND and the read-offs are computed here.");
   const MODELS = [["GPT-3", 175e9, 300e9], ["Gopher", 280e9, 300e9], ["MT-NLG 530B", 530e9, 270e9], ["Chinchilla", 70e9, 1.4e12]];
   let lc = lg(5.76e23), sel = 3;
@@ -659,15 +691,15 @@ export function twoSlopes(root) {
 
 // ── PEFT: where each method attaches ─────────────────────────────────────────
 export function peftAttach(root) {
-  const body = frame(root, "Where each PEFT method attaches to a Transformer block",
-    "Grey parts are frozen. Pick a method: orange shows what is trained.",
+  const body = frame(root, "Where parameter-efficient fine-tuning (PEFT) changes the model",
+    "Frozen parameters stay fixed (grey). Select a method to see which parameters training updates (orange).",
     "Block after session 01's C1–C6, redrawn. Method details from the papers named below the diagram.");
   const M = {
-    Adapter: { t: "Small bottleneck MLPs inserted after the attention and MLP sub-layers, in series on the path.", f: "3.6% of parameters per task, within 0.4% of full fine-tuning on GLUE (<a data-ref=\"houlsby2019\">Houlsby et al., 2019</a>).", inf: "Extra layers run in sequence: on GPT-2 medium at batch 1, +20.7% and +30.3% latency for two adapter variants (<a data-ref=\"hu2022\">Hu et al., 2022</a>, Table 1)." },
+    Adapter: { t: "Small feed-forward networks added after attention and the existing feed-forward layer.", f: "3.6% of parameters per task, within 0.4 percentage points of full fine-tuning on GLUE (<a data-ref=\"houlsby2019\">Houlsby et al., 2019</a>).", inf: "Extra layers run in sequence: on GPT-2 medium at batch 1, +20.7% and +30.3% latency for two adapter variants (<a data-ref=\"hu2022\">Hu et al., 2022</a>, Table 1)." },
     Prefix: { t: "Trained vectors that every layer's attention reads as if they were extra tokens at the front.", f: "0.1% of the parameters, comparable in the full-data setting (<a data-ref=\"li2021a\">Li &amp; Liang, 2021</a>).", inf: "No extra layers, but the prefix takes part of the context." },
     Prompt: { t: "Trained vectors at the input sequence only.", f: "Matches full model tuning as T5 models exceed billions of parameters (<a data-ref=\"lester2021\">Lester et al., 2021</a>).", inf: "No extra layers, but the vectors take part of the context." },
     BitFit: { t: "Only the bias terms of the existing layers are trained.", f: "Under 0.1% of the parameters (<a data-ref=\"benzaken2022\">Ben Zaken et al., 2022</a>).", inf: "No change at inference." },
-    LoRA: { t: "Low-rank side paths in parallel with W_q and W_v; the update BA can be merged into the weights.", f: "GPT-3 175B: 18.9M parameters, about 10⁻⁴ of the model (<a data-ref=\"hu2022\">Hu et al., 2022</a>).", inf: "No extra latency once BA is merged into W." },
+    LoRA: { t: "Two small trained matrices add a low-rank update to W_q and W_v; after training, the update can be merged into them.", f: "GPT-3 175B: 18.9M parameters, about 10⁻⁴ of the model (<a data-ref=\"hu2022\">Hu et al., 2022</a>).", inf: "No extra matrix operations once the update is merged into the original weights." },
   };
   let cur = "LoRA";
   const tabs = h("div", { class: "controls" });
@@ -701,7 +733,7 @@ export function peftAttach(root) {
         el("rect", { x: bx + 4, y: by + 30, width: 44, height: 8, rx: 2, class: "s-box on" }, s);
       }
     });
-    if (on("LoRA")) text(s, X[1] + 67, y + 76, "BA beside W_q, W_v", "o");
+    if (on("LoRA")) text(s, X[1] + 67, y + 76, "small trained matrices beside W_q, W_v", "o");
     if (on("Prefix")) {
       for (let i = 0; i < 3; i++) el("rect", { x: X[1] + 30 + i * 26, y: y + 68, width: 20, height: 20, rx: 3, class: "s-box on" }, s);
       arrow(s, X[1] + 67, y + 66, X[1] + 67, y + 62, true);
@@ -725,7 +757,7 @@ export function peftAttach(root) {
     el("circle", { cx: X[5] + 50, cy: y, r: 12, class: "s-box" }, s); text(s, X[5] + 50, y + 5, "+");
     el("path", { d: `M${X[2] + 90},${y} C${X[2] + 90},${y + 110} ${X[5] + 50},${y + 110} ${X[5] + 50},${y + 12}`, class: "s-edge faint" }, s);
     arrow(s, X[5] + 62, y, 752, y);
-    text(s, 700, y - 16, "× N layers", "m");
+    text(s, 700, y - 16, "× n_layer", "m");
     if (on("BitFit")) text(s, 380, 26, "only bias vectors train (+b); LayerNorm parameters stay frozen here", "o");
     const m = M[cur];
     read.innerHTML = `<b>${cur}</b>: ${m.t}\nTrainable: ${m.f}\nInference: ${m.inf}`;
@@ -736,8 +768,8 @@ export function peftAttach(root) {
 
 // ── Board 6: LoRA ────────────────────────────────────────────────────────────
 export function loraMatrix(root) {
-  const body = frame(root, "Board 6 — LoRA: a thin trainable side path on a frozen matrix",
-    "Change d and r, step training (B starts at zero), then merge BA into W₀.",
+  const body = frame(root, "LoRA: two small trainable matrices update fixed weights",
+    "d is the matrix size; r is the rank of the update. Step through the training illustration, then merge the scaled update into W₀.",
     "h = W₀x + (α/r)BAx with A random and B = 0 at the start, after <a data-ref=\"hu2022\">Hu et al. (2022)</a>, eq. 3 and Fig. 1 — redrawn. GPT-3 175B: 96 layers, d_model = 12,288 (<a data-ref=\"brown2020\">Brown et al., 2020</a>, Table 2.1). Counts computed here; the paper's budget is “18M (roughly 35MB if stored in FP16)”, §7.1. A and B are drawn to scale but kept between 5 and 40 px thick. Training is animated, not computed.");
   const DS = [64, 128, 256, 512, 768, 1024, 2048, 4096, 8192, 12288], RS = [1, 2, 4, 8, 16, 32, 64];
   let di = 9, ri = 2, layers = 96, t = 0, merged = false;
@@ -745,7 +777,7 @@ export function loraMatrix(root) {
   const sR = slider("rank r", 0, RS.length - 1, 1, ri, v => { ri = v; draw(); }, v => String(RS[v]));
   const sL = slider("layers", 1, 96, 1, layers, v => { layers = v; draw(); });
   const bStep = h("button", { class: "primary" }, "Training step");
-  const bMerge = h("button", {}, "Merge BA into W₀");
+  const bMerge = h("button", {}, "Merge update into W₀");
   const bReset = h("button", {}, "Reset");
   const s = svg(760, 330, null, "LoRA matrices");
   const read = h("div", { class: "readout" });
@@ -789,7 +821,7 @@ export function loraMatrix(root) {
     read.innerHTML = `One matrix: full update d·k = ${full.toLocaleString("en-US")}; LoRA r(d+k) = <b>${lora.toLocaleString("en-US")}</b>; ratio ${Math.round(full / lora).toLocaleString("en-US")}×\n` +
       `W_q and W_v in ${layers} layers: ${layers} × 2 × ${lora.toLocaleString("en-US")} = <b>${tot.toLocaleString("en-US")}</b> trainable, ${(tot * 2 / 1e6).toFixed(1)} MB in FP16\n` +
       (merged ? "Merged: the side path is gone; serving costs exactly what W₀ did." :
-        t === 0 ? "At step 0, BA = 0: the model is exactly the pre-trained one. ∂L/∂A = s·Bᵀg·xᵀ = 0, but ∂L/∂B = s·g·(Ax)ᵀ ≠ 0, so B moves first." : "B has moved away from zero; A keeps receiving gradient through B.");
+        t === 0 ? "At step 0, BA = 0: the model is exactly the pre-trained one. ∂L/∂A = s·Bᵀg·xᵀ = 0, but ∂L/∂B = s·g·(Ax)ᵀ ≠ 0, so B moves first." : "Once B is nonzero, gradients can update A as well.");
   }
   draw();
 }
@@ -797,7 +829,7 @@ export function loraMatrix(root) {
 // ── What fits on one GPU ─────────────────────────────────────────────────────
 export function gpuFit(root) {
   const body = frame(root, "Full fine-tuning, LoRA and QLoRA: what fits on one GPU",
-    "Pick a model and a rank. Bars are model-state memory on a log scale; vertical lines mark 24, 48 and 80 GB.",
+    "Choose a model and rank r. Ψ counts frozen model parameters; ψ counts trainable LoRA parameters. Bars exclude activations and other overheads.",
     "Computed here, weights and optimiser states only (no activations, no quantisation constants): full fine-tuning at 12, 16 and 18 bytes per parameter; LoRA = 2Ψ + 16ψ; QLoRA = 0.5Ψ + 16ψ, with ψ = r(d+k) for W_q and W_v in every layer. Shapes: LLaMA from <a data-ref=\"touvron2023a\">Touvron et al. (2023)</a>, Table 2; GPT-3 from <a data-ref=\"brown2020\">Brown et al. (2020)</a>, Table 2.1. Marked points: <a data-ref=\"hu2022\">Hu et al. (2022)</a>, §4.2 (GPT-3 with LoRA: 350 GB); <a data-ref=\"dettmers2023\">Dettmers et al. (2023)</a> (65B on one 48 GB GPU).");
   const MODELS = [
     { n: "LLaMA 7B", P: 6.7e9, d: 4096, L: 32 },
@@ -835,8 +867,8 @@ export function gpuFit(root) {
 
 // ── Emergence: smooth inside, sharp outside ──────────────────────────────────
 export function emergence(root) {
-  const body = frame(root, "A smooth quantity through an all-or-nothing metric",
-    "Set the answer length L. Left: per-token accuracy p against exact match p^L. Right: the same, against model size.",
+  const body = frame(root, "Gradual token improvements can produce sharp score gains",
+    "Set answer length L. Assuming independent token errors, exact-match accuracy is p^L. Compare token accuracy with the chance of a fully correct answer.",
     "The argument of <a data-ref=\"schaeffer2023\">Schaeffer et al. (2023)</a>, §2, drawn for this page. The right panel is schematic: p is made a smooth function of log model size; there is no model and no data.");
   let L = 10;
   const s1 = svg(370, 280, null, "p and p to the L");
@@ -861,7 +893,7 @@ export function emergence(root) {
     panel(s1, "per-token accuracy p", null, u => 0.5 + 0.5 * u, [[0, "0.5"], [0.5, "0.75"], [1, "1"]]);
     panel(s2, "model size (log) — schematic", null, u => 0.55 + 0.44 * u, [[0, "small"], [1, "large"]]);
     read.textContent = [0.8, 0.9, 0.95, 0.99].map(p => `p = ${p.toFixed(2)}  →  p^${L} = ${(p ** L).toFixed(3)}`).join("\n") +
-      "\nPer-token accuracy rises steadily; exact match stays near zero and then climbs. On a log axis of model size that looks like a jump.";
+      "\nExact match rewards only fully correct answers. It can make gradual improvements look sudden; this example does not explain every emerging ability.";
   }
   draw();
 }
@@ -869,7 +901,7 @@ export function emergence(root) {
 // ── Close: architecture picks the curve, scale moves along it ────────────────
 export function answerPicture(root) {
   const body = frame(root, "Architecture or scale? One picture for the answer",
-    "Schematic, no values. Move along the curve with the slider; click a label to jump to the section that measured it.",
+    "This is a conceptual diagram, not measured data. Move the slider to see how increasing compute can lower loss for a given architecture.",
     "Summary of this session. Curves after <a data-ref=\"kaplan2020\">Kaplan et al. (2020)</a>, Fig. 7; refinement sizes after <a data-ref=\"narang2021\">Narang et al. (2021)</a>; LoRA's fraction from <a data-ref=\"hu2022\">Hu et al. (2022)</a>.");
   let u = 0.4;
   const s = svg(760, 340, null, "schematic summary");
@@ -889,11 +921,11 @@ export function answerPicture(root) {
     el("path", { d: `M${dx},${dy} Q${dx + 10},${48} ${540},${46}`, class: "s-edge on" }, s);
     const labels = [
       [572, 158, "LSTM", "#kaplan", "b", "start"],
-      [572, 176, "architecture: which curve", "#kaplan", "m", "start"],
+      [572, 176, "architecture affects the curve", "#kaplan", "m", "start"],
       [572, 256, "Transformer", "#kaplan", "b", "start"],
-      [572, 280, "refinement or better data:", "#beyond", "o", "start"],
-      [572, 297, "a small shift", "#beyond", "m", "start"],
-      [548, 50, "LoRA: 10⁻⁴ of the parameters", "#board6", "o", "start"],
+      [572, 280, "design changes or better data:", "#beyond", "o", "start"],
+      [572, 297, "can lower loss", "#beyond", "m", "start"],
+      [548, 50, "LoRA: ~0.01% trained (GPT-3)", "#board6", "o", "start"],
       [dx - 8, dy + 38, "scale: along the curve", "#board5", "b", "end"],
     ];
     labels.forEach(([x, y, t, href, cls, anchor]) => {

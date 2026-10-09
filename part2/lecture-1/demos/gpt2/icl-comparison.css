@@ -1,0 +1,29 @@
+body.icl-mode { background: #fcfcfa; }
+.icl-mode main { max-width:none; padding:8px 12px; gap:8px; }
+.icl-controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.icl-controls button { font-size:16px; padding:6px 10px; }
+.icl-controls span { margin-left:auto; font-size:16px; color:var(--muted); }
+.icl-panels { display:grid; grid-template-columns:1fr 1fr; gap:16px; flex:1; min-height:0; }
+.icl-panel { display:flex; flex-direction:column; min-width:0; border:1px solid var(--line); border-top:3px solid var(--deep); padding:10px 14px; gap:5px; }
+.icl-panel:last-child { border-top-color:var(--orange); }
+.icl-panel-head { display:flex; justify-content:space-between; align-items:center; gap:6px; }
+.icl-panel-head h2 { font-size:20px; margin:0; line-height:1.2; }
+.icl-panel-head button { font-size:14px; padding:4px 8px; }
+.icl-panel label, .icl-output-label { font-size:15px; color:var(--muted); font-weight:650; }
+.icl-panel textarea { flex:none; width:100%; height:142px; box-sizing:border-box; font:18px/1.4 var(--mono); white-space:pre; overflow:auto; background:var(--panel); border-radius:0; padding:7px 9px; }
+.icl-panel pre { margin:0; flex:1; min-height:45px; overflow:auto; white-space:pre-wrap; font:22px/1.3 var(--mono); padding:7px 9px; background:var(--tint); color:var(--deep); border-left:3px solid var(--orange); }
+.icl-panel .icl-reference { font-size:17px; margin:0; }
+.icl-mode #icl-status { font-size:16px; color:var(--muted); margin:0; }
+.icl-mode #icl-status.err { color:var(--bad); }
+@media (max-width:700px) { .icl-panels { grid-template-columns:1fr; } .icl-mode main {height:auto;} .icl-controls span {margin-left:0;} }
+/* Keep the prompt, continuation, and revealed reference visible in the slide frame. */
+.icl-controls button { font-size:15px; padding:5px 8px; }
+.icl-controls span { font-size:14px; }
+.icl-panel { box-sizing:border-box; padding:8px 10px; gap:4px; }
+.icl-panel textarea { height:120px; font:17px/1.2 var(--mono); padding:6px 8px; }
+.icl-panel pre { min-height:32px; padding:6px 8px; }
+.icl-panel .icl-reference { font-size:16px; line-height:1.2; }
+.icl-mode #icl-status { font-size:14px; line-height:1.25; }
+.icl-panels { grid-template-rows:minmax(0,1fr); }
+.icl-panel { min-height:0; }
+.icl-panel label { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }

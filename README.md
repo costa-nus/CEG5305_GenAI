@@ -10,7 +10,11 @@ CDN only when its button is pressed.
 
 ```
 index.html                    course home
-part2/lecture-1/index.html    Part 2 · Lecture 1 — Architecture of LLMs
+part2/lecture-N/session-M/    one folder per session: index.html (the page) and slides/
+part2/lecture-1/session-1/    Part 2 · Lecture 1 · Session 01 — Architecture of LLMs
+part2/lecture-1/session-2/    Part 2 · Lecture 1 · Session 02 — Training LLMs
+part2/lecture-1/index.html    redirects to session-1/ (the URL session 01 had until 4 Oct 2026)
+part2/lecture-1/slides/       redirects to session-1/slides/, keeping the #/N slide number
 assets/css/site.css           shared styles, light and dark
 assets/js/lib.js              SVG, matrix and seeded-random helpers
 assets/js/demos.js            click-to-load embeds of external demo sites
@@ -27,15 +31,23 @@ part2/lecture-1/code/         ablation_base.py, the homework's base code (the cl
 ES modules do not load from `file://`, so serve the folder:
 
 ```bash
-python3 -m http.server 8000
+python3 tools/course_server.py
 ```
 
 then open <http://localhost:8000/>.
 
+The local server also enables **Start poll server** and **New poll** on the
+Session 02 H100 memory question (slide 29). Students scan its generated QR code
+on the same network. See [classroom poll instructions](tools/CLASSROOM_POLL.md).
+A plain `python3 -m http.server 8000` still serves the slides, but cannot start
+the polling service from a button.
+
 ## Slides
 
-Each lecture can have an HTML slide deck beside its page, built from the same
-visualizations: `part2/lecture-1/slides/index.html`.
+Each session has an HTML slide deck beside its page, built from the same
+visualizations: `part2/lecture-N/session-M/slides/index.html`, e.g.
+`part2/lecture-1/session-1/slides/index.html`. Files shared by a lecture's sessions
+(`code/`, `demos/`) stay in the lecture folder.
 
 | Key | Action |
 |---|---|

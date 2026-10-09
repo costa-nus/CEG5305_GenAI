@@ -1,0 +1,114 @@
+/* Stanford CS336 Lecture 9 adaptation. Every rule is scoped to Part B. */
+.slide.cs336-b { font-size: 29px; line-height: 1.3; }
+.slide.cs336-b > h2 { font-size: 42px; margin-bottom: 22px; }
+.slide.cs336-b .slide-body > .fit { display: flex; flex-direction: column; gap: 18px; }
+.slide.cs336-b p { margin: 0; }
+.slide.cs336-b ul, .slide.cs336-b ol { margin: 0; padding-left: 1.15em; }
+.slide.cs336-b li { margin-bottom: 12px; padding-left: .12em; }
+.slide.cs336-b li:last-child { margin-bottom: 0; }
+.slide.cs336-b .csb-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 34px; align-items: center; }
+.slide.cs336-b .csb-row.wide-left { grid-template-columns: minmax(0,1.55fr) minmax(0,1fr); }
+.slide.cs336-b .csb-row.narrow-left { grid-template-columns: minmax(0,.7fr) minmax(0,1.5fr); }
+.slide.cs336-b .csb-row p + p, .slide.cs336-b .csb-row p + ul, .slide.cs336-b .csb-row p + ol { margin-top: 16px; }
+.slide.cs336-b .csb-three { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; }
+.slide.cs336-b figure { margin: 0; min-width: 0; text-align: center; }
+.slide.cs336-b .csb-figure { display: block; width: 100%; height: auto; max-height: 335px; object-fit: contain; margin: 0 auto; }
+.slide.cs336-b.csb-stack .csb-figure { max-height: 250px; }
+.slide.cs336-b.csb-evidence .csb-figure { max-height: 380px; }
+.slide.cs336-b.csb-evidence .csb-row .csb-figure { max-height: 360px; }
+.slide.cs336-b.csb-split .csb-figure { max-height: 370px; }
+.slide.cs336-b figcaption { margin-top: 10px; font-size: 23px; line-height: 1.25; color: var(--muted); }
+.slide.cs336-b .csb-math { font-size: 29px; margin: 6px 0; text-align: center; }
+.slide.cs336-b .katex-display { margin: 0; }
+.slide.cs336-b .csb-muted { font-size: 23px; color: var(--muted); }
+.slide.cs336-b .csb-source { margin: 16px 0 0; padding-top: 10px; font-size: 17px; line-height: 1.3; color: var(--muted); border-top: 1px solid var(--line); }
+.slide.cs336-b .csb-source a { color: inherit; }
+.slide.cs336-b .csb-excerpts { display: flex; flex-direction: column; gap: 20px; }
+.slide.cs336-b .csb-excerpts .csb-row { grid-template-columns: minmax(0,.6fr) minmax(0,1.5fr); }
+.slide.cs336-b .csb-excerpts .csb-figure { max-height: 118px; }
+.slide.cs336-b .csb-table { font-size: 24px; line-height: 1.25; width: 100%; border-collapse: collapse; }
+.slide.cs336-b .csb-table th, .slide.cs336-b .csb-table td { padding: 14px 14px; }
+.slide.cs336-b .csb-table th { font-weight: 650; text-align: left; border-bottom: 2px solid var(--line); }
+.slide.cs336-b .csb-table td { border-bottom: 1px solid var(--line); }
+.slide.cs336-b .csb-table tr:last-child td { border-top: 2px solid var(--line); }
+.slide.cs336-b.blue .csb-source { color: #b9ccd9; border-top-color: #496274; }
+.slide.cs336-b.blue .slide-body { margin-top: 20px; }
+.slide.cs336-b.blue .slide-body li { color: #fff; font-size: 30px; margin-bottom: 28px; }
+.slide.cs336-b.blue .seg { grid-template-columns: 46px minmax(0,1fr) 0; }
+/* Source pages with a different evidence aspect ratio. */
+.slide.cs336-b[data-cs336-page="4"] .csb-figure { max-height: 235px; }
+.slide.cs336-b[data-cs336-page="6"] .csb-figure { max-height: 170px; }
+.slide.cs336-b[data-cs336-page="13"] .fit > figure .csb-figure { max-height: 200px; }
+.slide.cs336-b[data-cs336-page="13"] .csb-row .csb-figure { max-height: 155px; }
+.slide.cs336-b[data-cs336-page="14"] .csb-figure { max-height: 235px; }
+.slide.cs336-b[data-cs336-page="15"] .csb-row { grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); }
+.slide.cs336-b[data-cs336-page="16"] .csb-figure { max-height: 150px; }
+.slide.cs336-b[data-cs336-page="19"] .slide-body > .fit { gap: 14px; }
+.slide.cs336-b[data-cs336-page="24"] .csb-figure { max-height: 255px; }
+.slide.cs336-b[data-cs336-page="24"] .csb-row { gap: 20px; font-size: 23px; }
+.slide.cs336-b[data-cs336-page="38"] .slide-body > .fit { gap: 10px; }
+.slide.cs336-b[data-cs336-page="38"] li { margin-bottom: 7px; }
+.slide.cs336-b[data-cs336-page="43"] .csb-row { grid-template-columns: minmax(0,.75fr) minmax(0,1.35fr); }
+.slide.cs336-b[data-cs336-page="43"] .csb-row p + p { margin-top: 12px; }
+.slide.cs336-b[data-cs336-page="43"] .csb-math { margin: 8px 0; }
+.slide.cs336-b[data-cs336-page="46"] .slide-body > .fit { gap: 20px; }
+.slide.cs336-b[data-cs336-page="54"] .slide-body > .fit { gap: 12px; }
+.slide.cs336-b[data-cs336-page="54"] li { margin-bottom: 7px; }
+.slide.cs336-b[data-cs336-page="55"] .csb-figure { max-height: 310px; }
+.slide.cs336-b[data-cs336-page="15"] .csb-figure { max-height: 320px; }
+.slide.cs336-b[data-cs336-page="31"] .csb-row { grid-template-columns: minmax(0,.9fr) minmax(0,1.4fr); gap: 20px; }
+.slide.cs336-b[data-cs336-page="38"] .slide-body > .fit { gap: 6px; }
+.slide.cs336-b[data-cs336-page="38"] .csb-muted { font-size: 21px; }
+
+/* Keep subsection links legible on the dark opener after shared-theme changes. */
+.slide.cs336-b.blue .seg a { color: #fff; text-decoration-color: #b8833e; }
+
+/* Source p6: stack the original excerpts at readable widths. */
+.slide.cs336-b[data-cs336-page="6"] .slide-body > .fit { gap: 12px; }
+.slide.cs336-b[data-cs336-page="6"] .fit > p { font-size: 27px; line-height: 1.25; }
+.slide.cs336-b[data-cs336-page="6"] .csb-row { grid-template-columns: minmax(0,1fr); gap: 16px; }
+.slide.cs336-b[data-cs336-page="6"] .csb-figure { max-height: none; width: 100%; }
+.slide.cs336-b[data-cs336-page="6"] .csb-row > div:first-child .csb-figure { max-width: 850px; }
+.slide.cs336-b[data-cs336-page="6"] figcaption { font-size: 21px; margin-top: 6px; }
+
+/* Source p24 equation: plot effective data against repeat count. */
+.slide.cs336-b.csb-repetition-curve .slide-body > .fit { gap:14px; }
+.slide.cs336-b.csb-repetition-curve .csb-math { font-size:31px; margin:0; }
+.slide.cs336-b.csb-repetition-curve .repetition-curve-layout { display:grid; grid-template-columns:minmax(0,2.25fr) minmax(0,1fr); gap:32px; align-items:center; }
+.slide.cs336-b.csb-repetition-curve .repetition-curve { display:block; width:100%; height:auto; max-height:365px; }
+.slide.cs336-b.csb-repetition-curve .repetition-definitions p { font-size:25px; line-height:1.3; margin:0 0 14px; }
+.slide.cs336-b.csb-repetition-curve .repetition-settings { font-size:23px; line-height:1.45; padding:12px 14px; margin-top:16px; background:var(--panel); border-left:3px solid var(--orange); }
+.slide.cs336-b.csb-repetition-curve .repetition-takeaway { font-size:25px; line-height:1.3; background:var(--panel); padding:10px 16px; border-left:3px solid var(--orange); }
+
+/* Source p23: explain the mixing-law pipeline and separate it from empirical evidence. */
+.slide.cs336-b.csb-mixture-explained .slide-body > .fit { gap: 12px; }
+.slide.cs336-b.csb-mixture-explained .fit > .mixture-read { font-size: 25px; line-height: 1.28; }
+.slide.cs336-b.csb-mixture-explained .mixture-diagram-frame { position: relative; overflow: hidden; width: 1100px; max-width: 100%; height: 328px; margin: 0 auto; }
+.slide.cs336-b.csb-mixture-explained .mixture-diagram-frame .csb-figure { position: absolute; width: 100%; height: auto; max-height: none; top: -270px; }
+.slide.cs336-b.csb-mixture-explained .fit > .mixture-challenge { font-size: 26px; line-height: 1.28; padding: 12px 16px; background: #f7f0e6; border-left: 3px solid var(--orange); }
+.slide.cs336-b.csb-mixture-explained .fit > .mixture-evidence { font-size: 23px; line-height: 1.28; }
+
+/* Source p23 second figure: read decision accuracy and the compute tradeoff. */
+.slide.cs336-b.csb-datadecide-explained .slide-body > .fit { gap: 12px; }
+.slide.cs336-b.csb-datadecide-explained .datadecide-layout { display: grid; grid-template-columns: minmax(0,1.65fr) minmax(0,1fr); gap: 28px; align-items: center; }
+.slide.cs336-b.csb-datadecide-explained .datadecide-frame { position: relative; overflow: hidden; width: 100%; height: auto; aspect-ratio: 965 / 500; }
+.slide.cs336-b.csb-datadecide-explained .datadecide-frame .csb-figure { position: absolute; width: 100%; height: auto; max-height: none; top: 0; transform: translateY(-35%); }
+.slide.cs336-b.csb-datadecide-explained .datadecide-reading p { font-size: 24px; line-height: 1.3; margin-bottom: 16px; }
+.slide.cs336-b.csb-datadecide-explained .datadecide-reading p:last-child { margin-bottom: 0; }
+.slide.cs336-b.csb-datadecide-explained .datadecide-stars { color: #3b8e28; }
+.slide.cs336-b.csb-datadecide-explained figcaption { font-size: 22px; margin-top: 10px; }
+.slide.cs336-b.csb-datadecide-explained .fit > .datadecide-takeaway { font-size: 26px; line-height: 1.3; padding: 14px 16px; background: #f7f0e6; border-left: 3px solid var(--orange); }
+
+/* Explain the shared green Transformer baseline in the architecture comparison. */
+.slide.cs336-b.csb-architecture-legend .slide-body > .fit { gap: 24px; }
+.slide.cs336-b.csb-architecture-legend .architecture-legend { padding: 16px 20px; background: var(--panel); border-left: 3px solid var(--blue); }
+.slide.cs336-b.csb-architecture-legend .architecture-legend p { font-size: 26px; line-height: 1.3; margin: 0 0 12px; }
+.slide.cs336-b.csb-architecture-legend .architecture-legend .architecture-baseline-detail { font-size: 24px; margin: 16px 0 0; }
+.slide.cs336-b.csb-architecture-legend .architecture-line { display: inline-block; width: 44px; height: 4px; vertical-align: middle; margin-right: 12px; }
+.slide.cs336-b.csb-architecture-legend .architecture-green { background: #69aa6b; }
+.slide.cs336-b.csb-architecture-legend .architecture-red { background: #f47179; }
+
+/* Instructor-supplied xkcd interlude after the Part B opener. */
+.slide.cs336-b.csb-meme .slide-body > .fit { height:100%; display:flex; align-items:center; justify-content:center; }
+.slide.cs336-b.csb-meme figure { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
+.slide.cs336-b.csb-meme .csb-meme-image { display:block; width:auto; height:580px; max-height:100%; object-fit:contain; }

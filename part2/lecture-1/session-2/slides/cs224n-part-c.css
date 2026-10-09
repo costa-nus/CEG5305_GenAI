@@ -1,0 +1,190 @@
+/* Stanford CS224N Part C: scoped to the rebuilt section. Course canvas 1280x720. */
+.slide.c224 > h2 { margin-bottom: 24px; }
+.slide.c224 .fit { gap: 20px !important; }
+.slide.c224 p, .slide.c224 li { font-size: 29px; line-height: 1.32; }
+.slide.c224 li { margin-bottom: 12px; }
+.slide.c224 li ul { margin-top: 12px; }
+.slide.c224 .c224-cols { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 38px; align-items: center; }
+.slide.c224 .c224-cols > div { min-width: 0; }
+.slide.c224 .c224-cols p:last-child, .slide.c224 .c224-cols ul:last-child { margin-bottom: 0; }
+.slide.c224 .c224-figure { margin: 0; display: flex; align-items: center; justify-content: center; }
+.slide.c224 .c224-figure img { display: block; max-width: 100%; max-height: 430px; width: auto; height: auto; object-fit: contain; }
+.slide.c224 .fit > .c224-figure img { max-width: 1050px; max-height: 425px; }
+.slide.c224 .c224-cols .c224-figure img { max-height: 390px; }
+.slide.c224 .c224-source { margin: 12px 0 0; padding-top: 8px; border-top: 1px solid var(--line); font-size: 15px; line-height: 1.28; color: var(--muted); }
+.slide.c224 .c224-source a { color: inherit; }
+.slide.c224 .c224-answer { color: var(--orange-2); }
+.slide.c224 .c224-table { width: 100%; border-collapse: collapse; font-size: 26px; line-height: 1.24; }
+.slide.c224 .c224-table th, .slide.c224 .c224-table td { padding: 9px 13px; border-bottom: 1px solid var(--line); }
+.slide.c224 .c224-table th { color: var(--blue); font-size: 22px; border-bottom: 2px solid var(--blue); }
+.slide.c224 .c224-table td:not(:first-child), .slide.c224 .c224-table th:not(:first-child) { text-align: center; }
+.slide.c224 .c224-table.c224-small-table { font-size: 21px; }
+.slide.c224 .c224-small-table th, .slide.c224 .c224-small-table td { padding: 6px 10px; }
+.slide.c224 .c224-small-table td:nth-child(3) { text-align: left; }
+.slide.c224 .c224-table.c224-results { font-size: 23px; }
+.slide.c224 .c224-results th { font-size: 20px; }
+.slide.c224 .c224-results th, .slide.c224 .c224-results td { padding: 8px 10px; }
+.slide.c224 .c224-math { font-size: 29px; }
+.slide.c224 .c224-math .katex-display { margin: 12px 0; }
+.slide.c224 .c224-transcript { white-space: pre-wrap; font-size: 25px; line-height: 1.38; padding: 20px 24px; background: var(--panel); border-left: 3px solid var(--orange); }
+.slide.c224 .c224-code { margin: 0; padding: 22px 28px; background: var(--code); font-size: 22px; line-height: 1.35; overflow: visible; }
+.slide.c224 .c224-code code { font-size: inherit; white-space: pre-wrap; }
+.slide.c224.c224-dense .slide-body p, .slide.c224.c224-dense .slide-body li { font-size: 27px; line-height: 1.28; }
+.slide.c224.c224-caption .c224-cols p { font-size: 23px; line-height: 1.3; margin-top: 12px; }
+.slide.c224.c224-example .c224-cols p { font-size: 27px; }
+.slide.c224.c224-long-title > h2 { font-size: 38px; }
+.slide.c224.c224-chart-left-small .c224-cols { grid-template-columns: 280px minmax(0,1fr); }
+.slide.c224.c224-wide-copy .c224-cols { grid-template-columns: minmax(0,1fr) 290px; }
+.slide.c224 .c224-pair { gap: 24px; text-align: center; }
+.slide.c224 .c224-pair .c224-figure img { height: 235px; width: auto; }
+.slide.c224 .c224-pair p { font-size: 23px; margin-top: 12px; }
+.slide.c224.c224-diagram-pair > h2 { font-size: 37px; }
+.slide.c224.c224-diagram-pair .c224-cols:not(.c224-pair) { grid-template-columns: 510px minmax(0,1fr); }
+.slide.c224.c224-two-screens .c224-figure:first-child img { max-height: 310px; }
+.slide.c224.c224-two-screens .c224-figure:last-child img { max-height: 110px; }
+.slide.c224 .c224-comparison { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 20px; }
+.slide.c224 .c224-comparison .c224-figure img { height: 140px; width: auto; }
+.slide.c224 .c224-comparison p { text-align: center; font-size: 24px; margin-top: 12px; }
+.slide.c224.c224-comparison-chart .c224-cols { grid-template-columns: 650px minmax(0,1fr); }
+.slide.c224 .c224-native-chart { display: block; width: 650px; height: 445px; }
+.slide.c224 .c224-native-chart text { fill: var(--text); font-family: var(--font); font-size: 20px; }
+.slide.c224 .c224-scaling-chart { display: block; width: 100%; height: 345px; }
+.slide.c224 .c224-scaling-chart text { fill: var(--text); font-family: var(--font); font-size: 20px; }
+.slide.c224 .c224-scaling-chart .ttl { font-size: 24px; font-weight: 650; }
+.slide.c224 .c224-chart-legend { font-size: 22px; text-align: center; margin: 0; }
+.slide.c224 .c224-chart-legend .ft { color: var(--good); }
+.slide.c224 .c224-chart-legend .pre { color: var(--orange); }
+.slide.c224 .c224-chart-legend .layer { color: var(--muted); }
+.slide.c224 .c224-chart-legend .lora { color: var(--blue); }
+.slide.c224.c224-open { padding-top: 52px; }
+.slide.c224.c224-open h1 { font-size: 54px; margin: 14px 0 22px; }
+.slide.c224.c224-open .seg { padding: 12px 0; grid-template-columns: 46px minmax(0,1fr) 20px; font-size: 28px; }
+.slide.c224.c224-open .seg a { color: #fcfcfa; text-decoration-color: #b5c7d3; }
+.slide.c224.c224-open .c224-source { color: #b5c7d3; border-color: rgba(255,255,255,.16); font-size: 15px; }
+
+.slide.c224.c224-prompt-diagram .c224-figure img { max-height: 340px; }
+.slide.c224.c224-green .c224-figure img { max-height: 340px; }
+.slide.c224.c224-distill .c224-figure img { max-height: 300px; }
+
+/* Explain the summarization metrics alongside the source results. */
+.slide.c224.c224-rouge .c224-table { font-size: 25px; }
+.slide.c224.c224-rouge .c224-table th { font-size: 23px; letter-spacing: 0; text-transform: none; }
+.slide.c224.c224-rouge .c224-table th small { display: block; margin-top: 5px; font-size: 20px; font-weight: 400; line-height: 1.2; color: var(--text); }
+.slide.c224.c224-rouge .c224-table th:first-child { width: 49%; text-align: left; }
+.slide.c224.c224-rouge .c224-rouge-metrics { font-size: 22px; line-height: 1.3; margin: 14px 0 12px; }
+.slide.c224.c224-rouge .c224-rouge-insight { font-size: 26px; line-height: 1.3; padding: 12px 16px; margin: 0; background: var(--panel); border-left: 3px solid var(--orange); }
+
+.slide.c224 .c224-title-underline { text-decoration-thickness: 3px; text-underline-offset: 7px; }
+
+/* Repeated PEFT roadmap: the same overview highlights the next method. */
+.slide.c224-peft-map .slide-body > .fit { gap: 12px; }
+.slide.c224-peft-map .peft-methods { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; width:760px; max-width:100%; margin:0 auto; }
+.slide.c224-peft-map .peft-method { padding:10px 14px; border-top:3px solid var(--line); color:var(--muted); }
+.slide.c224-peft-map .peft-method b { display:block; font-size:28px; line-height:1.2; }
+.slide.c224-peft-map .peft-method span { display:block; font-size:22px; margin-top:4px; }
+.slide.c224-peft-map .peft-method.current { border-color:var(--orange); background:var(--tint); color:var(--deep); }
+.slide.c224-peft-map .peft-map-image { position:relative; margin:0 auto; width:510px; max-width:100%; overflow:hidden; }
+.slide.c224-peft-map .peft-map-image img { display:block; width:150%; max-width:none; height:auto; }
+.slide.c224-peft-map .peft-focus { position:absolute; top:0; bottom:0; width:50%; border:3px solid var(--orange); border-radius:4px; pointer-events:none; }
+.slide.c224-peft-map .peft-focus-lora { left:0; }
+.slide.c224-peft-map .peft-focus-prompt { left:50%; }
+.slide.c224-peft-map .peft-map-takeaway { margin:0; font-size:27px; line-height:1.3; }
+
+/* Introduce every method before showing its accuracy/parameter tradeoff. */
+.slide.c224-method-definitions .peft-method-table { font-size:25px; line-height:1.26; }
+.slide.c224-method-definitions .peft-method-table th { font-size:19px; }
+.slide.c224-method-definitions .peft-method-table td { padding:12px 14px; vertical-align:top; }
+.slide.c224-method-definitions .peft-method-table td:first-child { width:27%; }
+.slide.c224-method-definitions .peft-lora-row { background:var(--tint); }
+.slide.c224-comparison-chart .peft-chart-guide p { font-size:26px; line-height:1.35; margin:0 0 24px; }
+.slide.c224-comparison-chart .peft-chart-note { padding:12px 14px; border-left:3px solid var(--orange); background:var(--tint); }
+
+.slide.c224-method-definitions .peft-method-table th, .slide.c224-method-definitions .peft-method-table td { text-align:left; }
+
+/* Distinguish the Winograd example's text input from LM probability scores. */
+.slide.c224-winograd-example .slide-body > .fit { gap:14px; }
+.slide.c224-winograd-example .wsc-intro { margin:0; font-size:27px; }
+.slide.c224-winograd-example .wsc-label { font-size:18px; line-height:1.3; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.slide.c224-winograd-example .wsc-input { padding:15px 20px; border:1px solid var(--line); border-left:4px solid var(--blue); background:var(--panel); }
+.slide.c224-winograd-example .wsc-input p { margin:0; font-size:28px; line-height:1.32; }
+.slide.c224-winograd-example .wsc-input .wsc-question { margin-top:8px; font-size:25px; }
+.slide.c224-winograd-example .wsc-scoring { display:grid; grid-template-columns:1.1fr 1fr; gap:20px; }
+.slide.c224-winograd-example .wsc-candidates, .slide.c224-winograd-example .wsc-output { padding:15px 18px; border:1px solid var(--line); }
+.slide.c224-winograd-example .wsc-output { border-left:4px solid var(--orange); }
+.slide.c224-winograd-example .wsc-scoring p { margin:0 0 14px; font-size:25px; line-height:1.3; }
+.slide.c224-winograd-example .wsc-scoring p:last-child { margin-bottom:0; }
+.slide.c224-winograd-example .c224-math { margin:0 0 12px; font-size:29px; }
+.slide.c224-winograd-example .wsc-output .wsc-score-note { font-size:22px; color:var(--muted); }
+.slide.c224-winograd-example .wsc-decision { margin:0; padding:12px 18px; background:var(--tint); font-size:25px; line-height:1.3; }
+
+/* Explain the summarization dataset, prompt and generation procedure separately. */
+.slide.c224-summary-example .slide-body > .fit { gap:18px; }
+.slide.c224-summary-example .summary-dataset { font-size:27px; line-height:1.35; margin:0; }
+.slide.c224-summary-example .summary-flow { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.slide.c224-summary-example .summary-input, .slide.c224-summary-example .summary-generation { padding:18px 20px; border:1px solid var(--line); }
+.slide.c224-summary-example .summary-input { border-left:4px solid var(--blue); background:var(--panel); }
+.slide.c224-summary-example .summary-generation { border-left:4px solid var(--orange); }
+.slide.c224-summary-example .summary-label { font-size:18px; font-weight:700; letter-spacing:.04em; line-height:1.3; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+.slide.c224-summary-example .summary-input pre { font-size:25px; line-height:1.38; white-space:pre-wrap; overflow-wrap:anywhere; padding:0; margin:0 0 18px; background:transparent; border:0; }
+.slide.c224-summary-example .summary-cue { margin:0; font-size:27px; line-height:1.35; }
+.slide.c224-summary-example .summary-cue code { color:var(--orange-2); font-weight:700; }
+.slide.c224-summary-example .summary-cue span { font-size:23px; }
+.slide.c224-summary-example .summary-cue-definition { margin:8px 0 0; font-size:23px; color:var(--muted); }
+.slide.c224-summary-example .summary-generation p { font-size:26px; line-height:1.35; margin:0 0 18px; }
+.slide.c224-summary-example .summary-generation p:last-child { margin-bottom:0; }
+.slide.c224-summary-example .summary-insight { margin:0; padding:14px 18px; background:var(--tint); font-size:27px; line-height:1.35; }
+
+/* GPT-2 Table 4: show the no-hint control and the weak random baseline comparison. */
+.slide.c224.c224-rouge .fit { gap: 12px !important; }
+.slide.c224.c224-rouge .c224-table { font-size: 24px; }
+.slide.c224.c224-rouge .c224-table th { font-size: 22px; }
+.slide.c224.c224-rouge .c224-table th:first-child { width: 37%; }
+.slide.c224.c224-rouge .c224-table th small { font-size: 18px; }
+.slide.c224.c224-rouge .c224-table th, .slide.c224.c224-rouge .c224-table td { padding: 7px 10px; }
+.slide.c224.c224-rouge .rouge-prompt { background: var(--panel); }
+.slide.c224.c224-rouge .rouge-prompt td:first-child { border-left: 3px solid var(--orange); font-weight: 650; }
+.slide.c224.c224-rouge .c224-rouge-metrics { font-size: 21px; margin: 0; }
+.slide.c224.c224-rouge .c224-rouge-insight { font-size: 24px; }
+
+/* One model, two live in-context-learning tasks. Model loading remains explicit. */
+.slide.c224-icl-demo .fit { gap:10px !important; }
+.slide.c224-icl-demo .icl-demo-instructions { font-size:23px; margin:0; }
+.slide.c224-icl-demo .icl-demo-instructions a { float:right; font-size:21px; }
+.slide.c224-icl-demo .icl-demo-frame { display:block; width:100%; height:385px; box-sizing:border-box; border:1px solid var(--line); }
+.slide.c224-icl-demo .icl-class-question { font-size:26px; line-height:1.25; margin:0; border-left:3px solid var(--orange); padding:8px 12px; background:var(--tint); }
+.slide.c224-icl-demo .icl-discussion { font-size:20px; color:var(--muted); }
+.slide.c224-icl-demo .icl-discussion p { font-size:22px; margin:6px 0 0; }
+
+/* Large vector verdicts, separate from the model's generated answer. */
+.slide.c224 .answer-verdict { display:flex; align-items:center; gap:14px; margin-top:18px; font-size:28px; font-weight:700; line-height:1.2; }
+.slide.c224 .answer-verdict svg { display:block; width:76px; height:76px; flex:none; }
+.slide.c224 .answer-verdict-incorrect { color:#b42318; }
+.slide.c224 .answer-verdict-incorrect .verdict-disc { fill:#fff0ec; }
+.slide.c224 .answer-verdict-correct { color:#247045; }
+.slide.c224 .answer-verdict-correct .verdict-disc { fill:#eaf5ee; }
+.slide.c224 .readable-output:has(.answer-verdict-incorrect) { border-left-color:#b42318; }
+.slide.c224 .readable-output:has(.answer-verdict-incorrect) h3 { color:#b42318; }
+
+/* Annotate the intermediate reasoning independently of the final answer. */
+.slide.c224 .cot-thinking { display:block; padding:10px 12px; background:#fff4df; border-left:3px solid var(--orange); }
+.slide.c224 .cot-thinking-label { display:block; margin-bottom:6px; color:#925917; font-size:18px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+.slide.c224 .cot-final-answer { display:block; margin-top:10px; font-weight:700; color:var(--blue); }
+
+/* Keep classroom discussion outside the prompt; highlight supplied examples. */
+.slide.c224.c224-prompt-boundaries > h2 { margin-bottom:18px; }
+.slide.c224.c224-prompt-boundaries .fit { gap:16px !important; }
+.slide.c224.c224-prompt-boundaries .cot-boundaries { grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:26px; }
+.slide.c224.c224-prompt-boundaries .cot-boundaries h3 { font-size:19px; margin:0 0 10px; }
+.slide.c224.c224-prompt-boundaries .cot-boundaries p { font-size:24px; line-height:1.28; margin:0 0 10px; }
+.slide.c224.c224-prompt-boundaries .cot-boundaries p:last-child { margin-bottom:0; }
+.slide.c224-prompt-boundaries .cot-boundaries h4 { font-size:17px; line-height:1.2; margin:0 0 8px; font-weight:700; text-transform:uppercase; letter-spacing:.035em; color:var(--muted); }
+.slide.c224-prompt-boundaries .cot-worked-example { padding:12px 16px; background:#fff4df; border:2px solid #b77a28; border-left-width:5px; margin-bottom:14px; }
+.slide.c224-prompt-boundaries .cot-worked-example h4 { color:#925917; }
+.slide.c224-prompt-boundaries .cot-new-question { padding:12px 16px; border:1px solid var(--line); background:var(--panel); }
+.slide.c224-prompt-boundaries .cot-reasoning-cue { padding:14px 16px; margin-top:16px; background:#fff4df; border-left:5px solid #b77a28; }
+.slide.c224-prompt-boundaries .cot-reasoning-cue h4 { color:#925917; }
+.slide.c224.c224-prompt-boundaries .cot-answer-prefix { margin-top:6px; }
+.slide.c224-prompt-boundaries .cot-student-question { padding:12px 18px; border:2px solid var(--blue); background:#edf3f7; }
+.slide.c224-prompt-boundaries .cot-student-question h3 { font-size:18px; margin:0 0 6px; color:var(--blue); text-transform:uppercase; letter-spacing:.035em; }
+.slide.c224.c224-prompt-boundaries .cot-student-question p { font-size:25px; line-height:1.25; font-weight:600; margin:0; }
+.slide.c224.c224-prompt-boundaries .cot-zero-shot { grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); }
