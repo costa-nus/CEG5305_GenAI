@@ -4,6 +4,28 @@ The version shown on slide 1 is `YYYY.MM.DDvN`. The newest version is at the top
 marked *not yet published* is still being edited and becomes final when it is pushed; its
 number is the date of that push.
 
+## 2026.10.10v1
+
+Corrections; no slide added or removed.
+
+- Slide 4: GPT (2018) was trained on books (BooksCorpus), not web data; o1 now cites OpenAI (2024).
+- Slides 38, 42 and 45: the source links now go to ZeRO (Rajbhandari et al., 2020) and
+  Megatron-LM (Shoeybi et al., 2019); before, both names linked to Narayanan et al. (2021).
+- Slides 56, 93, 94, 95 and 96: source lines added (Brown et al., 2020; Hestness et al., 2017;
+  Kaplan et al., 2020, Figs. 5 and 6).
+- Slide 69: the source line now names the works shown, Ruan et al. (2024) and the Epoch
+  Capabilities Index, instead of Kaplan et al. (2020).
+- Slide 80: the horizontal axis is a fraction of the target compute, not a percentage.
+- Slide 111: Chinchilla's joint fit uses a Huber loss, not least squares.
+- Slide 123: GPT-3's filtered Common Crawl is 570 GB; "over 600 GB" was not in the paper.
+- Slide 134: GSM8K is grade-school math, not middle-school math.
+- Slide 138: two GSM8K cells now show "–", as in Kojima et al. (2022), Table 2. The values
+  46.4 and 47.3 shown before were not in the paper.
+- Slide 143: the prompt-injection example translates English to French, and the injected text
+  is "Haha pwned!!", as in the original example.
+- Slides 151 and 154: the LoRA update is scaled by α/r, not α (Hu et al., 2022, §4.1).
+- Slide 166: prompt tuning avoids *storing* a copy of the model for each task.
+
 ## 2026.10.09v1
 
 First published version, for the class of 7 Oct 2026: 173 slides. Earlier drafts (91 slides on
