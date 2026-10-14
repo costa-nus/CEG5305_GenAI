@@ -18,7 +18,7 @@ export function demos(scope = document) {
     d.append(
       h("div", { class: "demo-head" }, h("span", { class: "t" }, title), h("span", { class: "by" }, by), h("span", { class: "act" }, full, unload, open)),
       stage,
-      note ? h("div", { class: "demo-foot", html: note }) : null);
+      note ? h("div", { class: "demo-foot", html: note }) : "");
     load.addEventListener("click", () => {
       gate.hidden = true;
       const f = h("iframe", { src, title, allow: "fullscreen; clipboard-write" });

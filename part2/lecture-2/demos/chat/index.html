@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPT-2 before and after instruction tuning — CEG5305</title>
+<link rel="stylesheet" href="../../../../assets/css/site.css">
+<style>
+  html, body { height: 100%; }
+  body { font-size: 17px; }
+  main { box-sizing: border-box; height: 100%; max-width: 1100px; margin: 0 auto; padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: .55rem; }
+  h1 { font-size: 1.3rem; margin: 0; }
+  .sub { margin: 0; color: var(--muted); font-size: .92rem; }
+  #log { flex: 1; min-height: 6em; overflow: auto; padding: .7rem .8rem; border: 1px solid var(--line); border-radius: 8px; background: var(--card); display: flex; flex-direction: column; gap: .6rem; }
+  #log .empty { margin: auto; color: var(--muted); font-size: 1rem; text-align: center; }
+  .msg { max-width: 88%; padding: .5rem .8rem; border-radius: 12px; font-size: 1.2rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .msg .who { display: block; font-size: .78rem; font-weight: 600; letter-spacing: .02em; color: var(--muted); margin-bottom: .15rem; white-space: normal; }
+  .msg.user { align-self: flex-end; background: var(--panel-2); }
+  .msg.bot { align-self: flex-start; background: var(--tint); border: 1px solid var(--line); }
+  .bar { display: flex; gap: .6rem; align-items: stretch; }
+  textarea { flex: 1; font: 1.1rem/1.45 var(--font); padding: .45rem .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--text); resize: none; }
+  .bar button { min-width: 8.5em; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 1.1rem; }
+  .row label { display: flex; align-items: center; gap: .4rem; font-size: .88rem; color: var(--muted); }
+  .row output { min-width: 2.2em; font-family: var(--mono); font-size: .86rem; color: var(--text); }
+  .row select { font: inherit; font-size: .88rem; color: var(--text); background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: .1rem .3rem; }
+  #status { font-size: .88rem; color: var(--muted); }
+  #status.err { color: var(--bad); }
+  details { font-size: .88rem; color: var(--muted); }
+  details pre { margin: .3rem 0 0; max-height: 9em; overflow: auto; padding: .4rem .6rem; border: 1px solid var(--line); border-radius: 6px; background: var(--code); color: var(--text); font: .85rem/1.4 var(--mono); white-space: pre-wrap; }
+  /* inside a slide the frame is small: drop the header and the input view, keep the chat large */
+  @media (max-height: 520px) {
+    main { padding: .45rem .7rem; gap: .4rem; }
+    header, details { display: none; }
+    .msg { font-size: 1.1rem; }
+  }
+  /* on a slide (about 600 × 370): keep the chat, the input, Clear and the status line */
+  @media (max-height: 420px) {
+    main { padding: .35rem .5rem; gap: .3rem; }
+    #log { padding: .4rem .5rem; gap: .4rem; }
+    .msg { font-size: 1rem; padding: .35rem .6rem; }
+    .row label { display: none; }
+    .row { flex-wrap: nowrap; }
+    #status { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    textarea { font-size: 1rem; padding: .3rem .55rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 id="h1">Chat with a small model</h1>
+    <p class="sub" id="sub"></p>
+  </header>
+  <div id="log" aria-live="polite"><p class="empty">Load the model, then send a message.</p></div>
+  <div class="bar">
+    <textarea id="prompt" rows="1" aria-label="Your message">Give me three ideas for a weekend in Singapore.</textarea>
+    <button id="go" class="primary" disabled>Load the model</button>
+  </div>
+  <div class="row">
+    <label>Model <select id="model"></select></label>
+    <label>Max tokens <input id="len" type="range" min="16" max="512" step="16"><output id="lenv"></output></label>
+    <label>Temperature <input id="temp" type="range" min="0" max="1.5" step="0.1"><output id="tempv"></output></label>
+    <button id="reset" type="button">Clear</button>
+    <span id="status"></span>
+  </div>
+  <details><summary>What the model reads</summary><pre id="seen">(nothing sent yet)</pre></details>
+</main>
+<script type="module">
+// One chat page for two slides of L2·01: ?model=gpt2 (GPT-2 small, pre-trained only) and
+// ?model=lamini-gpt-124m (the same GPT-2 small after instruction tuning). Same size, same box,
+// same input; only post-training differs. Each message is a new input: these models were not
+// trained on conversations. Transformers.js runs the ONNX weights with WebAssembly in this
+// browser; nothing is sent to a server. Pinned so the demo does not change under the lecture
+// (same version as Lecture 1's GPT-2 page).
+const LIB = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1";
+const MODELS = {
+  "gpt2": {
+    id: "Xenova/gpt2", name: "GPT-2 small", size: "about 130 MB", len: 512, temp: 0.8,
+    label: "GPT-2 small (124M, pre-trained only)", says: "writes what comes next",
+    sub: "GPT-2 small, 124M parameters, pre-trained only (Radford et al., 2019). It gets your text as it is and writes what comes next. Strong swear words are masked on screen.",
+    wrap: t => t,
+    // Web text ends with <|endoftext|>, and GPT-2 often writes it early. Here it may not end before
+    // "Max tokens": after the end of one text it starts writing another, as a base model does.
+    fill: true,
+    // Forced past its end, GPT-2 falls into loops ("SASIN SASIN …"); no 3-word sequence may repeat.
+    extra: { no_repeat_ngram_size: 3 },
+  },
+  "lamini-gpt-124m": {
+    id: "Xenova/LaMini-GPT-124M", name: "LaMini-GPT-124M", size: "about 130 MB", len: 128, temp: 0.7,
+    label: "LaMini-GPT-124M (the same GPT-2, instruction-tuned)", says: "answers",
+    sub: "GPT-2 small after instruction tuning (SFT) on 2.58M instructions with answers from gpt-3.5-turbo (Wu et al., 2024). Same 124M parameters. It gets your text inside the instruction format it was trained on.",
+    // The wrapper text from the model card (MBZUAI/LaMini-GPT-124M), used in its fine-tuning.
+    wrap: t => `Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n${t}\n\n### Response:`,
+  },
+};
+const $ = id => document.getElementById(id);
+const go = $("go"), status = $("status"), log = $("log"), sel = $("model");
+const params = new URLSearchParams(location.search);
+let key = MODELS[params.get("model")] ? params.get("model") : "gpt2";
+let gen = null, T = null, busy = false;
+
+for (const [k, m] of Object.entries(MODELS)) sel.append(new Option(m.label, k, false, k === key));
+for (const [k, v] of [["len", "lenv"], ["temp", "tempv"]]) $(k).addEventListener("input", () => { $(v).value = $(k).value; });
+$("prompt").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!go.disabled) go.click(); } });
+
+function say(msg, err = false) { status.textContent = msg; status.classList.toggle("err", err); }
+function lock(on) { busy = on; go.disabled = sel.disabled = $("reset").disabled = on; }
+function setModel(k) {
+  key = k; gen = null;
+  const m = MODELS[k];
+  $("h1").textContent = `Chat with ${m.name}`;
+  $("sub").textContent = m.sub;
+  $("len").value = $("lenv").value = m.len;
+  $("temp").value = $("tempv").value = m.temp;
+  go.textContent = "Load the model";
+  say(`Model not loaded. First load: ${m.size}, cached afterwards.`);
+  reset();
+}
+function reset() {
+  log.innerHTML = '<p class="empty">' + (gen ? "Send a message." : "Load the model, then send a message.") + "</p>";
+  $("seen").textContent = "(nothing sent yet)";
+}
+// GPT-2 learned from web text and can write strong swear words; in a classroom they are masked
+// on screen only.
+const RUDE = /\b(\w*fuck\w*|shit\w*|cunts?|bitch\w*|bastards?|assholes?|nigg(?:er|a)s?|fags?|faggots?|whores?|sluts?|dicks?|dickheads?|cocks?|cocksuck\w*|pussy|pussies)\b/gi;
+const mask = t => t.replace(RUDE, w => w[0] + "•".repeat(w.length - 1));
+function bubble(role, text) {
+  log.querySelector(".empty")?.remove();
+  const d = document.createElement("div"), who = document.createElement("span"), body = document.createElement("span");
+  d.className = `msg ${role === "user" ? "user" : "bot"}`;
+  who.className = "who";
+  who.textContent = role === "user" ? "You" : `${MODELS[key].name} ${MODELS[key].says}`;
+  body.textContent = text;
+  d.append(who, body);
+  log.append(d);
+  log.scrollTop = log.scrollHeight;
+  return body;
+}
+
+async function load() {
+  lock(true);
+  const m = MODELS[key];
+  say("Loading the library…");
+  T ??= await import(LIB);
+  const files = {};
+  gen = await T.pipeline("text-generation", m.id, {
+    dtype: "q8", model_file_name: "decoder_model_merged", device: "wasm",
+    progress_callback: p => {
+      if (p.status !== "progress" || !p.total) return;
+      files[p.file] = [p.loaded, p.total];
+      const [a, b] = Object.values(files).reduce(([x, y], [l, t]) => [x + l, y + t], [0, 0]);
+      say(`Downloading ${m.name}: ${(a / 1e6).toFixed(0)} of ${(b / 1e6).toFixed(0)} MB`);
+    },
+  });
+  go.textContent = "Send";
+  lock(false);
+  if (!log.querySelector(".msg")) reset();
+  say("Ready. Type a message and press Send (or Enter).");
+}
+
+async function send() {
+  const text = $("prompt").value.trim();
+  if (!text) return say("Type a message first.", true);
+  lock(true);
+  bubble("user", text);
+  $("prompt").value = "";
+  const input = MODELS[key].wrap(text);
+  $("seen").textContent = input;
+  const out = bubble("assistant", "");
+  const n = +$("len").value, temp = +$("temp").value;
+  say("Writing…");
+  const t0 = performance.now();
+  let count = 0, raw = "";
+  const streamer = new T.TextStreamer(gen.tokenizer, {
+    skip_prompt: true, skip_special_tokens: true,
+    callback_function: s => { raw += s; out.textContent = mask(raw.replace(/^\s+/, "")); log.scrollTop = log.scrollHeight; },
+    token_callback_function: () => { count++; },
+  });
+  await gen(input, {
+    max_new_tokens: n,
+    ...(MODELS[key].fill ? { min_new_tokens: n } : {}),
+    ...(MODELS[key].extra || {}),
+    ...(temp > 0 ? { do_sample: true, temperature: temp, top_k: 40 } : { do_sample: false }),
+    streamer,
+  });
+  out.textContent = mask(raw.trim());
+  const s = (performance.now() - t0) / 1000;
+  say(`${count} tokens in ${s.toFixed(1)} s. ${temp > 0 ? "Sampled, so each run differs." : "Temperature 0: always the most likely token."}`);
+  lock(false);
+}
+
+go.addEventListener("click", () => (gen ? send() : load()).catch(e => { say(`Error: ${e.message}`, true); lock(false); }));
+$("reset").addEventListener("click", () => { if (!busy) reset(); });
+sel.addEventListener("change", () => {
+  const u = new URL(location.href); u.searchParams.set("model", sel.value); history.replaceState(null, "", u);
+  setModel(sel.value);
+});
+setModel(key);
+go.disabled = false;
+</script>
+</body>
+</html>

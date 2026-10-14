@@ -113,14 +113,14 @@ export function baseVsChat(root) {
 export function instructPipeline(root) {
   const body = frame(root, "InstructGPT: three steps, three kinds of data",
     "Click a step. The label on each column's first arrow is the data that step consumes. Orange arrows train a model; grey arrows only pass data.",
-    "Structure after <a data-ref=\"ouyang2022\">Ouyang et al. (2022)</a>, Fig. 2 — redrawn. Prompt counts from §3.3; K and the reward model's size and initialisation from §3.5; compute from §5.1. Percentages computed here.");
+    "Structure after <a data-ref=\"ouyang2022\">Ouyang et al. (2022)</a>, Fig. 2 — redrawn. Prompt counts from §3.2; K and the reward model's size and initialisation from §3.5; compute from §5.1. Percentages computed here.");
   const STEPS = [
     { t: "Step 1 · SFT", d: "demonstrations", d2: ["prompt + a response", "written by a labeler"], n: "≈ 13k prompts",
-      r: "Step 1 · SFT. Labelers write the desired response to a prompt. About 13k training prompts, from the API and written by labelers (§3.3).\nGPT-3 is fine-tuned on these demonstrations with the language-modelling loss on the response tokens: Board 1." },
+      r: "Step 1 · SFT. Labelers write the desired response to a prompt. About 13k training prompts, from the API and written by labelers (§3.2).\nGPT-3 is fine-tuned on these demonstrations with the language-modelling loss on the response tokens." },
     { t: "Step 2 · reward model", d: "rankings", d2: ["K = 4 to 9 sampled responses", "ordered by a labeler"], n: "≈ 33k prompts",
-      r: "Step 2 · reward model. The SFT model samples K = 4 to 9 responses per prompt and a labeler ranks them: K(K−1)/2 comparisons per prompt. About 33k training prompts (§3.3, §3.5).\nA 6B reward model, initialised from the SFT model with the unembedding layer removed, learns to score them: Board 2." },
+      r: "Step 2 · reward model. The SFT model samples K = 4 to 9 responses per prompt and a labeler ranks them: K(K−1)/2 comparisons per prompt. About 33k training prompts (§3.2, §3.5).\nA 6B reward model, initialised from the SFT model with the unembedding layer removed, learns to score them with the Bradley–Terry loss." },
     { t: "Step 3 · RL", d: "prompts only", d2: ["no human label;", "the reward model scores"], n: "≈ 31k prompts, API only",
-      r: "Step 3 · RL. Prompts only, about 31k, all from the API (§3.3). No human labels: the policy writes a response and the frozen reward model scores it.\nPPO updates the policy, initialised from the SFT model, with a per-token KL penalty to the SFT model: Board 3 and PPO below." },
+      r: "Step 3 · RL. Prompts only, about 31k, all from the API (§3.2). No human labels: the policy writes a response and the frozen reward model scores it.\nPPO updates the policy, initialised from the SFT model, with a per-token KL penalty to the SFT model." },
   ];
   let sel = 0;
   const tabs = STEPS.map((st, i) => h("button", { onclick: () => { sel = i; draw(); } }, st.t));
@@ -182,7 +182,7 @@ export function instructPipeline(root) {
 
 // ── A.3 Board 1: loss masking ────────────────────────────────────────────────
 export function sftMask(root) {
-  const body = frame(root, "Board 1 — loss masking on one example",
+  const body = frame(root, "Loss masking on one example",
     "Grey tokens carry no loss (m = 0). Toggle what is trained and watch the sum and the loss.",
     "Toy example written for this page. &lt;user&gt;, &lt;assistant&gt; and &lt;end&gt; stand for a model's role-header and end-of-turn tokens. Per-token losses −log p are random numbers, not a model's; the sum and the loss are computed here. Dividing by the number of kept tokens is one convention; implementations differ.");
   const ROWS = [
@@ -230,6 +230,76 @@ export function sftMask(root) {
     if (onPrompt) msg += "\nPrompt tokens are trained too: the model also learns to write the user's turn.";
     if (maskEnd) msg += "\nThe final <end> carries no loss: nothing trains the model to stop.";
     read.textContent = msg;
+  }
+  draw();
+}
+
+// The deck's version of sftMask (slide "SFT loss · mask"; JH, 13 Oct 2026): the per-token losses are joined by "+"
+// and end in "= sum / kept", and a side panel shows what a model trained with each setting would then write. The
+// tokens and the random losses are the same as sftMask's (seed 305). The completions are toy text written for the
+// slide, not a model's output.
+const SFT_COMPLETIONS = {
+  // [answer to the user's request, a probe that starts a user turn] for each setting
+  base: { note: "It answers, then writes <end> and stops.",
+    a: ["A rocket carried people to the Moon and back.", " <end>"], b: null },
+  prompt: { note: "It answers and stops. It also learned to write the user's turn.",
+    a: ["A rocket carried people to the Moon and back.", " <end>"], b: ["moon landing to a 6 year old", " <end>"] },
+  end: { note: "Nothing trained it to stop: it keeps writing until the length limit.",
+    a: ["A rocket carried people to the Moon and back. They walked on the Moon and took photos. Then they flew home, and then …", ""], b: null },
+  both: { note: "It does not stop, and it writes the next user turn itself.",
+    a: ["A rocket carried people to the Moon and back. <user> Explain the big bang to a 6 year old <end> <assistant> The universe …", ""], b: ["moon landing to a 6 year old", " <end>"] },
+};
+export function sftMaskSum(root) {
+  const body = frame(root, "Loss masking on one example",
+    null,
+    "Toy example written for this diagram. &lt;user&gt;, &lt;assistant&gt; and &lt;end&gt; stand for a model's role-header and end-of-turn tokens. Per-token losses −log p are random numbers, not a model's; the sum and the loss are computed here. The completions on the right are written by hand to show what each setting trains; they are not a model's output.");
+  const ROWS = [
+    { toks: ["<user>", "Explain", "the", "moon", "landing", "to", "a", "6", "year", "old", "<end>"], resp: false },
+    { toks: ["<assistant>", "A", "rocket", "carried", "people", "to", "the", "Moon", "and", "back", ".", "<end>"], resp: true },
+  ];
+  const r = rng(305); // the same losses as sftMask
+  const LOSS = ROWS.map(R => R.toks.map(() => 0.15 + 3.2 * r()));
+  let onPrompt = false, maskEnd = false;
+  const bP = h("button", { "aria-pressed": "false" }, "Train on prompt tokens too");
+  const bE = h("button", { "aria-pressed": "false" }, "Mask the final <end> too");
+  const strip = h("div", { class: "smx-strip" });
+  const read = h("div", { class: "readout" });
+  const side = h("div", { class: "smx-side" });
+  body.append(h("div", { class: "smx" }, h("div", { class: "smx-left" }, h("div", { class: "controls" }, bP, bE), strip, read), side));
+  bP.addEventListener("click", () => { onPrompt = !onPrompt; draw(); });
+  bE.addEventListener("click", () => { maskEnd = !maskEnd; draw(); });
+  const kept = (ri, j) => {
+    const R = ROWS[ri];
+    if (onPrompt) return !(R.resp && j === R.toks.length - 1 && maskEnd);
+    if (!R.resp || j === 0) return false;
+    return !(j === R.toks.length - 1 && maskEnd);
+  };
+  const tok = t => h("span", { class: t.startsWith("<") ? "smx-sp" : null }, t);
+  function draw() {
+    bP.setAttribute("aria-pressed", String(onPrompt)); bE.setAttribute("aria-pressed", String(maskEnd));
+    strip.innerHTML = "";
+    let sum = 0, n = 0;
+    ROWS.forEach((R, ri) => {
+      strip.append(h("p", { class: "smx-lab" }, R.resp ? "response y: trained (m = 1); its role header is given, not generated" : "prompt x: no loss (m = 0) unless you train on it"));
+      const row = h("div", { class: "smx-row" });
+      R.toks.forEach((t, j) => {
+        const k = kept(ri, j);
+        if (k) { sum += LOSS[ri][j]; n++; }
+        if (ri || j) row.append(h("span", { class: "smx-plus" }, "+"));
+        row.append(h("span", { class: `smx-t ${k ? "on" : ""}` }, h("b", {}, tok(t)), h("i", {}, k ? LOSS[ri][j].toFixed(2) : "0")));
+      });
+      if (R.resp) row.append(h("span", { class: "smx-eq" }, `= ${sum.toFixed(2)} / ${n}`));
+      strip.append(row);
+    });
+    read.textContent = `loss = ${sum.toFixed(2)} / ${n} = ${(sum / n).toFixed(3)}   (kept tokens: ${n} of 23)`;
+    const c = SFT_COMPLETIONS[onPrompt ? (maskEnd ? "both" : "prompt") : (maskEnd ? "end" : "base")];
+    const line = (inp, out) => h("p", { class: "smx-gen" }, h("span", { class: "smx-in" }, inp), " ", h("span", { class: "smx-out" }, out[0], out[1] ? h("span", { class: "smx-sp" }, out[1]) : null));
+    side.innerHTML = "";
+    side.append(...[h("p", { class: "smx-head" }, "What the tuned model then writes (toy)"),
+      h("p", { class: "smx-key" }, h("span", { class: "smx-in" }, "input"), " · ", h("span", { class: "smx-out" }, "generated")),
+      line("<user> Explain the moon landing to a 6 year old <end> <assistant>", c.a),
+      c.b ? line("<user> Explain the", c.b) : null,
+      h("p", { class: "smx-note" }, c.note)].filter(Boolean));
   }
   draw();
 }
@@ -298,8 +368,40 @@ export function flanClusters(root) {
 }
 
 // ── B.2 Board 2: the reward model ────────────────────────────────────────────
+// The deck's answer to the reward-model check-in (JH, 13 Oct 2026: use the check-in's symbols and show where +100
+// goes). Same numbers as the check-in: r_A = 2.1, r_B = 1.4. One button adds 100 to both scores inside the
+// Bradley–Terry formula; the e^100 then appears in the top and the bottom and cancels. Formulas are typeset with KaTeX.
+export function btShift(root) {
+  const body = frame(root, "Where the +100 goes", null,
+    "Formula from <a data-ref=\"bradley1952\">Bradley &amp; Terry (1952)</a>. Scores 2.1 and 1.4 are toy values; σ(0.7) is computed here.");
+  const rA = 2.1, rB = 1.4, ORANGE = "#b67930";
+  let c = 0;
+  const b0 = h("button", { "aria-pressed": "true" }, "Scores as given");
+  const b1 = h("button", { "aria-pressed": "false" }, "Add 100 to both scores");
+  const lines = [0, 1, 2].map(() => h("div", { class: "bts-eq" }));
+  const note = h("p", { class: "bts-note" });
+  body.append(h("div", { class: "controls" }, b0, b1), ...lines, note);
+  b0.addEventListener("click", () => { c = 0; draw(); });
+  b1.addEventListener("click", () => { c = 100; draw(); });
+  const K = (node, tex) => { try { window.katex.render(tex, node, { displayMode: true, throwOnError: false }); } catch { node.textContent = tex; } };
+  function draw() {
+    b0.setAttribute("aria-pressed", String(!c)); b1.setAttribute("aria-pressed", String(!!c));
+    const add = c ? `\\textcolor{${ORANGE}}{\\,+\\,${c}}` : "";
+    K(lines[0], `P(A \\succ B) = \\frac{e^{\\,r_A}}{e^{\\,r_A} + e^{\\,r_B}} = \\frac{e^{\\,${rA}${add}}}{e^{\\,${rA}${add}} + e^{\\,${rB}${add}}}`);
+    K(lines[1], c
+      ? `= \\frac{\\textcolor{${ORANGE}}{\\cancel{e^{${c}}}}\\cdot e^{${rA}}}{\\textcolor{${ORANGE}}{\\cancel{e^{${c}}}}\\cdot\\big(e^{${rA}} + e^{${rB}}\\big)} = \\frac{1}{1 + e^{-(${rA} - ${rB})}}`
+      : `= \\frac{1}{1 + e^{-(${rA} - ${rB})}} \\qquad \\text{(divide the top and the bottom by } e^{${rA}}\\text{)}`);
+    K(lines[2], `= \\sigma(r_A - r_B) = \\sigma(${(rA - rB).toFixed(1)}) \\approx ${sig(rA - rB).toFixed(3)}`);
+    const d = "<i>r</i><sub>A</sub> − <i>r</i><sub>B</sub>";
+    note.innerHTML = c
+      ? `+${c} is added to both scores. It becomes a factor <i>e</i><sup>${c}</sup> in the top and in the bottom, and cancels. P(A ≻ B) is still ${sig(rA - rB).toFixed(3)}, and the loss −log σ(${d}) does not change.`
+      : `Only the difference ${d} = ${(rA - rB).toFixed(1)} enters σ.`;
+  }
+  draw();
+}
+
 export function rewardModelBT(root) {
-  const body = frame(root, "Board 2 — a reward model scores both responses; only the difference reaches the loss",
+  const body = frame(root, "A reward model scores both responses; only the difference reaches the loss",
     "Move r_w and r_l. Then add the same constant c to both: nothing below the diagram changes.",
     "Architecture after <a data-ref=\"ouyang2022\">Ouyang et al. (2022)</a>, §3.5; loss from <a data-ref=\"bradley1952\">Bradley &amp; Terry (1952)</a> as written in <a data-ref=\"rafailov2023\">Rafailov et al. (2023)</a>, eq. 2 — redrawn. Scores are set by you; σ, the loss and the weight are computed here.");
   let rw = 2.1, rl = 1.4, c = 0;
@@ -423,9 +525,9 @@ export function rlEpisode(root) {
 
 // ── B.4 Board 3: REINFORCE with and without a baseline ───────────────────────
 export function pgBaseline(root) {
-  const body = frame(root, "Board 3 — REINFORCE on a toy policy, with and without a baseline",
+  const body = frame(root, "REINFORCE on a toy policy, with and without a baseline",
     "Three responses with rewards 5, 6 and 7 under a uniform policy. Draw batches, then move the baseline b.",
-    "Toy policy and rewards from the Step 4 example in Board 3. Gradients are with respect to the policy's three logits: (r − b)(one-hot − π) per sample, averaged over the batch. The 300 batches use the same samples for both rows; all numbers computed here.");
+    "Toy policy and rewards. Gradients are with respect to the policy's three logits: (r − b)(one-hot − π) per sample, averaged over the batch. The 300 batches use the same samples for both rows; all numbers computed here.");
   const R = [5, 6, 7], LAB = ["A", "B", "C"], PI = [1 / 3, 1 / 3, 1 / 3];
   let K = 4, b = 6, draws = 0;
   const sK = slider("batch size K", 1, 8, 1, K, v => { K = v; draw(); });
@@ -484,9 +586,15 @@ export function pgBaseline(root) {
 
 // ── B.4 Board 3: the KL leash ────────────────────────────────────────────────
 export function klLeash(root) {
-  const body = frame(root, "Board 3 — the KL leash on four responses",
-    "Move β. The orange bars are the policy that maximises expected reward minus β·KL; grey is the reference.",
-    "Toy values from the script: π_ref = 0.25 each; rewards 1.0, 0.5, 0, −1.0. The maximiser π* = π_ref·e^(r/β)/Z is proved in Board 4 (<a data-ref=\"rafailov2023\">Rafailov et al., 2023</a>, eq. 4). All values computed here.");
+  // data-notation="rlhf" (slides, 14 Oct 2026): the symbols of the RLHF slide before it, p^RL_θ, p^PT and RM_φ,
+  // instead of π_θ, π_ref and r (the lecture page keeps π).
+  const RLN = root.dataset.notation === "rlhf";
+  const SUP = (t) => `<tspan baseline-shift="super" font-size="70%">${t}</tspan>`, SUB = (t) => `<tspan baseline-shift="sub" font-size="70%">${t}</tspan>`;
+  const body = frame(root, "The KL penalty on four responses",
+    "Move β. The orange bars are the policy that maximizes expected reward minus β·KL; gray is the reference.",
+    RLN
+      ? "Toy values: p<sup>PT</sup> = 0.25 for each response; rewards 1.0, 0.5, 0, −1.0. The best policy p* = p<sup>PT</sup>·e<sup>RM<sub>φ</sub>/β</sup>/Z is derived in the DPO section (<a data-ref=\"rafailov2023\">Rafailov et al., 2023</a>, eq. 4). All values computed here."
+      : "Toy values: π_ref = 0.25 each; rewards 1.0, 0.5, 0, −1.0. The maximiser π* = π_ref·e^(r/β)/Z is derived in the DPO section (<a data-ref=\"rafailov2023\">Rafailov et al., 2023</a>, eq. 4). All values computed here.");
   const REW = [1, 0.5, 0, -1], REF = [0.25, 0.25, 0.25, 0.25];
   let lb = 0;
   const sBeta = slider("β", -1.3, 1.3, 0.01, lb, v => { lb = v; draw(); }, v => (10 ** v).toPrecision(2));
@@ -512,13 +620,18 @@ export function klLeash(root) {
     });
     el("rect", { x: 60, y: 253, width: 22, height: 14, rx: 2, fill: "var(--panel-2)", stroke: "var(--muted)", "stroke-dasharray": "4 3" }, s);
     const lt = text(s, 88, 264, "π_ref, the reference", "m", "start");
+    if (RLN) lt.innerHTML = `p${SUP("PT")}, the reference`;
     const lx = 88 + tlen(lt, 120) + 24;
     el("rect", { x: lx, y: 253, width: 22, height: 14, rx: 2, class: "s-bar on" }, s);
-    text(s, lx + 28, 264, "π* = π_ref·e^(r/β) / Z", "m", "start");
+    const bt = text(s, lx + 28, 264, "π* = π_ref·e^(r/β) / Z", "m", "start");
+    if (RLN) bt.innerHTML = `best p${SUP("RL")}${SUB("θ")} = p${SUP("PT")}·e^(RM${SUB("φ")}/β) / Z`;
     const Er = pi.reduce((a, p, i) => a + p * REW[i], 0);
     const KL = pi.reduce((a, p, i) => a + (p > 0 ? p * Math.log(p / REF[i]) : 0), 0);
-    read.innerHTML = `β = ${beta.toPrecision(3)}   π* = (${pi.map(p => p.toFixed(3)).join(", ")})\n` +
-      `E[r] = ${Er.toFixed(3)}   KL(π* ‖ π_ref) = ${KL.toFixed(3)}   J_β = E[r] − β·KL = <b>${(Er - beta * KL).toFixed(3)}</b> = β·log Z = ${(beta * Math.log(Z)).toFixed(3)}   (computed here)\n` +
+    read.innerHTML = (RLN
+      ? `β = ${beta.toPrecision(3)}   best p<sup>RL</sup><sub>θ</sub> = (${pi.map(p => p.toFixed(3)).join(", ")})\n` +
+        `E[RM<sub>φ</sub>] = ${Er.toFixed(3)}   KL(p<sup>RL</sup><sub>θ</sub> ‖ p<sup>PT</sup>) = ${KL.toFixed(3)}   J<sub>β</sub> = E[RM<sub>φ</sub>] − β·KL = <b>${(Er - beta * KL).toFixed(3)}</b> = β·log Z = ${(beta * Math.log(Z)).toFixed(3)}   (computed here)\n`
+      : `β = ${beta.toPrecision(3)}   π* = (${pi.map(p => p.toFixed(3)).join(", ")})\n` +
+        `E[r] = ${Er.toFixed(3)}   KL(π* ‖ π_ref) = ${KL.toFixed(3)}   J_β = E[r] − β·KL = <b>${(Er - beta * KL).toFixed(3)}</b> = β·log Z = ${(beta * Math.log(Z)).toFixed(3)}   (computed here)\n`) +
       (beta > 3 ? "Large β: the policy stays close to the reference." : beta < 0.2 ? "Small β: nearly all mass on the highest reward, far from the reference." : "In between: more mass on higher rewards, but every response keeps some.");
   }
   draw();
@@ -671,7 +784,7 @@ export function overOptimisation(root) {
 
 // ── C.1 Board 4: what DPO does to probabilities ──────────────────────────────
 export function dpoProbs(root) {
-  const body = frame(root, "Board 4 — DPO on toy log-probabilities",
+  const body = frame(root, "DPO on toy log-probabilities",
     "Press Train step. Mass moves towards y_w and away from y_l, measured against the frozen reference; the pair's weight shrinks as the pair becomes correctly ordered.",
     "Toy policy: one softmax over five whole responses, starting at π_ref. Each step applies the DPO gradient of <a data-ref=\"rafailov2023\">Rafailov et al. (2023)</a>, §4, to the logits with learning rate 1; for this toy it changes only the logits of y_w and y_l, and the other responses lose mass through the softmax. β = 0.5 is a toy setting chosen so that a few steps show the effect. All values computed here.");
   const ZREF = [0.6, 0.3, 0.0, -0.3, -0.6], W = 1, L = 0;
@@ -846,8 +959,8 @@ export function r1ZeroCurves(root) {
     const yb = 196, yt = 36;
     // accuracy
     const X = linS(0, 1, 60, 330), Y = linS(0, 100, yb, yt);
-    const ta = text(s, 20, 18, "AIME 2024 pass@1 (%)", "b", "start");
-    text(s, 20 + tlen(ta, 140) + 8, 18, "shape only between endpoints", "m", "start");
+    text(s, 20, 18, "AIME 2024 pass@1 (%)", "b", "start");
+    text(s, 196, 18, "· shape only between endpoints", "m", "start");
     [0, 25, 50, 75, 100].forEach(v => { el("line", { x1: 60, y1: Y(v), x2: 330, y2: Y(v), class: "s-axis" }, s); text(s, 52, Y(v) + 4, String(v), "m", "end"); });
     const pa = []; for (let k = 0; k <= 120; k++) pa.push([X(k / 120), Y(acc(k / 120))]);
     el("path", { d: path(pa), class: "s-line", stroke: "var(--orange)" }, s);
@@ -1025,7 +1138,7 @@ export function postTrainingGrid(root) {
   const COLS = ["SFT (demonstrations)", "RLHF / DPO (comparisons)", "RLVR (checks)"];
   const P = "purpose", L = "limit", N = "none";
   const GRID = [
-    ["Format", [[P, "its main effect", "SFT on a chat template with the loss on response tokens teaches the turn structure and when to stop (Board 1).", "#board1"], [N], [P, "format reward in R1-Zero", "DeepSeek-R1-Zero's rule-based reward includes a format reward: the reasoning must sit inside think tags (<a data-ref=\"guo2025\">Guo et al., 2025</a>).", "#rlvr"]]],
+    ["Format", [[P, "its main effect", "SFT on a chat template with the loss on response tokens teaches the turn structure and when to stop.", "#board1"], [N], [P, "format reward in R1-Zero", "DeepSeek-R1-Zero's rule-based reward includes a format reward: the reasoning must sit inside think tags (<a data-ref=\"guo2025\">Guo et al., 2025</a>).", "#rlvr"]]],
     ["Preference", [[L, "imitates one answer per prompt", "SFT raises the probability of the demonstrated response. It has no term for a response better than the demonstration, and no notion of how much better.", "#sft-limits"], [P, "its purpose; gamed by length and sycophancy", "Comparisons are what the reward model and DPO learn from. Optimised hard, the proxy rewards length (<a data-ref=\"singhal2024\">Singhal et al., 2024</a>) and agreeing with the user (<a data-ref=\"sharma2024\">Sharma et al., 2024</a>).", "#overopt"], [N]]],
     ["Safety", [[L, "part of safety training; shallow", "Safety training mixes SFT and preference optimisation, and its effect sits mostly in the first few output tokens (<a data-ref=\"qi2025\">Qi et al., 2025</a>). Fine-tuning on ten examples removed it from GPT-3.5 Turbo (<a data-ref=\"qi2024\">Qi et al., 2024</a>).", "#limits"], [L, "part of safety training; shallow", "The same finding applies: preference optimisation is part of safety training, and the result is shallow (<a data-ref=\"qi2025\">Qi et al., 2025</a>).", "#limits"], [N]]],
     ["Verifiable correctness", [[N], [N], [P, "its purpose; better pass@1, not shown to widen pass@k", "A verifier replaces the reward model. pass@1 rises (<a data-ref=\"guo2025\">Guo et al., 2025</a>), but at large k base models solve more problems (<a data-ref=\"yue2025\">Yue et al., 2025</a>).", "#rlvr"]]],
@@ -1059,4 +1172,83 @@ export function postTrainingGrid(root) {
     linkCites(read);
   }
   draw();
+}
+
+// ── Opening, slide 3: switch GPT and ChatGPT between the web view and the code behind it ──
+// Static HTML in the deck; this only toggles .code-on on the slide (the CSS animates the change).
+export function gptChatSwitch(root) {
+  const slide = root.closest(".slide");
+  const buttons = [...root.querySelectorAll("button[data-mode]")];
+  const set = mode => { slide.classList.toggle("code-on", mode === "code"); press(buttons, (i, b) => b.dataset.mode === mode); };
+  buttons.forEach(b => b.addEventListener("click", () => set(b.dataset.mode)));
+  set("web");
+}
+
+// ── Step-by-step diagrams (13 Oct 2026: Part B overview, Part C training steps) ──────────────────
+// <div data-viz="stepFlow"> keeps the slide's own HTML. An element with data-step="k" appears at step k;
+// the newest step is outlined. The forward keys of the deck (→ ↓ PageDown Space, so also a clicker) show
+// the next step before the deck moves on; the back keys (← ↑ PageUp) hide the newest step. Arriving from
+// a later slide shows every step; arriving from an earlier one starts at step 1. Print shows every step.
+const STEPPED = [];
+let lastSlide = -1;
+function stepKeys(e) {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const t = document.activeElement;
+  if (t && (t.matches("input, select, textarea, [contenteditable]") || t.tagName === "IFRAME")) return;
+  if (document.querySelector(".overview.on")) return;
+  const f = STEPPED.find(x => x.slide.classList.contains("active"));
+  if (!f) return;
+  const onButton = t && t.tagName === "BUTTON";
+  const fwd = ["ArrowRight", "ArrowDown", "PageDown"].includes(e.key) || (e.key === " " && !e.shiftKey && !onButton);
+  const back = ["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key) || (e.key === " " && e.shiftKey && !onButton);
+  if (fwd && f.k < f.n) f.set(f.k + 1);
+  else if (back && f.k > 1) f.set(f.k - 1);
+  else return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+}
+function watchSteppedSlides() {
+  const all = [...document.querySelectorAll(".deck > .slide")];
+  lastSlide = all.findIndex(s => s.classList.contains("active"));
+  const mo = new MutationObserver(() => {
+    const i = all.findIndex(s => s.classList.contains("active"));
+    if (i < 0 || i === lastSlide) return;
+    const f = STEPPED.find(x => x.slide === all[i]);
+    if (f) f.set(lastSlide > i ? f.n : 1);
+    lastSlide = i;
+  });
+  all.forEach(s => mo.observe(s, { attributes: true, attributeFilter: ["class"] }));
+  window.addEventListener("keydown", stepKeys, true);
+  window.addEventListener("beforeprint", () => STEPPED.forEach(f => f.set(f.n)));
+}
+export function stepFlow(root) {
+  const items = [...root.querySelectorAll("[data-step]")];
+  const n = Math.max(1, ...items.map(e => +e.dataset.step || 1));
+  const slide = root.closest(".slide");
+  root.classList.add("sf-on");
+  const label = h("span", { class: "sf-n" });
+  const bPrev = h("button", { "aria-label": "previous step" }, "◀");
+  const bNext = h("button", { "aria-label": "next step" }, "▶");
+  const bAll = h("button", { "aria-label": "show all steps" }, "all");
+  const bar = h("div", { class: "sf-bar" }, bPrev, label, bNext, bAll);
+  root.appendChild(bar);
+  const f = {
+    slide, n, k: 1,
+    set(k) {
+      f.k = Math.max(1, Math.min(n, k));
+      items.forEach(e => {
+        const s = +e.dataset.step || 1;
+        e.classList.toggle("sf-show", s <= f.k);
+        e.classList.toggle("sf-now", s === f.k && f.k > 1);
+      });
+      label.textContent = `step ${f.k} of ${n}`;
+      bPrev.disabled = f.k === 1; bNext.disabled = f.k === n;
+    },
+  };
+  bPrev.addEventListener("click", () => f.set(f.k - 1));
+  bNext.addEventListener("click", () => f.set(f.k + 1));
+  bAll.addEventListener("click", () => f.set(n));
+  if (!STEPPED.length && slide) watchSteppedSlides();
+  if (slide) STEPPED.push(f);
+  f.set(1);
 }

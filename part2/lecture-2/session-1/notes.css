@@ -1,0 +1,32 @@
+/* Lecture notes page, L2 session 01: styles added by the 14 Oct 2026 rebuild (scoped to main). */
+/* OA1: marks for the input (blue underline) and the output (orange) in the code blocks of the opening. */
+main .oa-in { border-bottom: 2px solid var(--blue-2); }
+main .oa-out { background: var(--tint); border-bottom: 2px solid var(--orange); }
+main pre.cmd.oa-wrap { white-space: pre-wrap; }
+/* B1: the loss-mask visualization (sftMaskSum) draws HTML, and the deck styles it in slides/polish.css (.slide.pB .smx-*).
+   The same rules for the page, scoped to main, in the page's own sizes and colours. */
+main .smx { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+main .smx p { margin: 0; }
+main .smx p.smx-lab { margin: .4rem 0 .2rem; font-size: .85rem; line-height: 1.25; color: var(--muted); }
+main .smx-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .25rem 1px; margin-bottom: .5rem; }
+main .smx-t { display: inline-flex; flex-direction: column; align-items: center; }
+main .smx-t b { font-weight: 500; font-size: .85rem; line-height: 1.2; padding: 2px 4px; border: 1.5px solid var(--line); border-radius: 5px; color: var(--muted); }
+main .smx-t.on b { border-color: var(--orange); color: var(--text); background: var(--tint); }
+main .smx-t i { font-style: normal; font-size: .8rem; line-height: 1.2; margin-top: 2px; color: var(--muted); }
+main .smx-t.on i { color: var(--text); font-weight: 600; }
+main .smx-plus { font-size: .8rem; line-height: 1.25; color: var(--muted); }
+main .smx-eq { font-size: .95rem; line-height: 1.2; font-weight: 700; color: var(--deep); padding-left: 4px; white-space: nowrap; }
+main .smx-sp { font-family: var(--mono); font-size: .92em; }
+main .smx-side { border-left: 3px solid var(--line); padding-left: .8rem; min-height: 12rem; }
+main .smx-side p { margin: 0 0 .4rem; font-size: .88rem; line-height: 1.3; }
+main .smx-side p.smx-head { font-weight: 700; color: var(--deep); }
+main .smx-side p.smx-gen { padding: 5px 8px; background: var(--panel); border-radius: 4px; }
+main .smx-in { color: var(--blue-2); }
+main .smx-out { color: var(--orange-2); font-weight: 600; }
+main .smx-side p.smx-note { font-style: italic; color: var(--muted); }
+@media (max-width: 720px) {
+  main .smx { grid-template-columns: minmax(0, 1fr); }
+  main .smx-side { border-left: 0; border-top: 3px solid var(--line); padding: .6rem 0 0; min-height: 0; }
+}
+/* B2 (14 Oct 2026): no page-specific rules. The strings B2 hid were fixed in posttraining.js (lead, 14 Oct 2026). */
+/* B3 (14 Oct 2026): no page-specific rules. The dpoProbs title was renamed in posttraining.js (lead, 14 Oct 2026). */
