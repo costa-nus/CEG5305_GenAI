@@ -28,7 +28,22 @@
   <p>Session 01 of 2 · Post-training <span>(session 02: 21 Oct)</span></p>
   <p>CEG5305 Introduction to Generative AI with Foundation Models<br>Junyuan Hong · AY2026/27 Semester 1</p>
   <div class="copyright">© 2026 Junyuan Hong. All rights reserved.</div>
-  <div class="version">2026.10.14v1</div>
+  <div class="version">2026.10.14v2</div>
+</section>
+
+<section class="slide about-deck" data-title="About these slides" data-refs="ouyang2022 stiennon2020 rafailov2023 shao2024 guo2025 bai2022b">
+  <p class="eb">Before we start</p>
+  <h2>About these slides</h2>
+  <div class="slide-body">
+    <p class="ad-ai">These slides were prepared with the help of AI tools (Claude, by Anthropic), working from the reference slides and papers listed here. Junyuan Hong chose the content, checked it and is responsible for any errors. If you find one, please report it on Canvas.</p>
+    <p class="ad-h">Reference slides</p>
+    <ul class="ad-list">
+      <li><a href="https://web.stanford.edu/class/cs224n/slides_w26/cs224n-2026-lecture08-posttraining.pdf" target="_blank" rel="noopener">Stanford CS224N: <i>Post-training (RLHF, SFT, DPO)</i></a>, Diyi Yang, Winter 2026</li>
+      <li><a href="https://rlhfbook.com/teach/course/lec1-chap1-3/slides.pdf" target="_blank" rel="noopener">RLHF Book course, Lecture 1: <i>Overview</i></a>, Nathan Lambert, 2026</li>
+      <li><a href="https://rlhfbook.com/teach/course/lec11-chap13-tools/slides.pdf" target="_blank" rel="noopener">RLHF Book course, Lecture 11: <i>Basics of LLM tool use and the road to today's agents</i></a>, Nathan Lambert, 2026</li>
+    </ul>
+    <p class="ad-h">Key papers <span>in APA at the bottom of this slide; the full list is on the lecture page</span></p>
+  </div>
 </section>
 
 <section class="slide recap" data-title="Recap: Lecture 1 session 02" data-refs="hu2022">
@@ -97,7 +112,7 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
 
 <section class="slide lifecycle" data-title="Where post-training fits" data-refs="openai2023 wiggers2025 briski2025">
   <p class="eb">Today's question · where post-training fits</p>
-  <h2>Post-training comes between pre-training and release</h2>
+  <h2>GPT → ChatGPT by post-training</h2>
   <div class="slide-body">
     <div class="lc">
       <figure class="lc-gantt">
@@ -134,6 +149,7 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
       <div class="seg"><b>B</b><span><a data-goto="Part B">How to do post-training</a></span><span>50 min</span></div>
       <div class="seg"><b>☕</b><span>Break</span><span>10 min</span></div>
       <div class="seg"><b>C</b><span><a data-goto="Part C">What post-training enables</a></span><span>50 min</span></div>
+      <div class="seg"><b>D</b><span><a data-goto="Part D">Assignment 3, for credit: its two parts, their phases and how they are marked</a></span><span>10 min</span></div>
     </div>
     <div class="card">
       <div class="tag">Session 02 · 21 Oct · 3 h</div>
@@ -161,8 +177,8 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
         <figcaption><b>The life of an LLM</b>, with GPT-4’s dates (not to scale)</figcaption>
         <div class="gantt">
           <div class="g-row"><span class="g-lab">Design arch</span><span class="g-track"><i class="g-bar" style="--a:0;--b:13"></i><span class="g-ico" style="--a:13" role="img" aria-label="DNA">🧬</span></span></div>
-          <div class="g-row"><span class="g-lab">Pre-training</span><span class="g-track"><i class="g-bar" style="--a:11;--b:30"></i><span class="g-ico" style="--a:11" role="img" aria-label="baby">👶</span><span class="g-ms m-base" style="--a:30" aria-hidden="true"></span><span class="g-out m-base" style="--a:30">Base model</span></span></div>
-          <div class="g-row now"><span class="g-lab">Post-training</span><span class="g-track"><i class="g-bar" style="--a:30;--b:50"></i><span class="g-ico" style="--a:40" role="img" aria-label="school">🏫</span><span class="g-ms m-chat" style="--a:50" aria-hidden="true"></span><span class="g-out m-chat" style="--a:50">Chat (instruct) model</span></span></div>
+          <div class="g-row"><span class="g-lab">Pre-training</span><span class="g-track"><i class="g-bar" style="--a:11;--b:30"></i><span class="g-ico" style="--a:11" role="img" aria-label="baby">👶</span><span class="g-ms m-base" style="--a:30" aria-hidden="true"></span><span class="g-out m-base" style="--a:30">Base model (GPT)</span></span></div>
+          <div class="g-row now"><span class="g-lab">Post-training</span><span class="g-track"><i class="g-bar" style="--a:30;--b:50"></i><span class="g-ico" style="--a:40" role="img" aria-label="school">🏫</span><span class="g-ms m-chat" style="--a:50" aria-hidden="true"></span><span class="g-out m-chat" style="--a:50">Chat (instruct) model (ChatGPT)</span></span></div>
           <div class="g-row"><span class="g-lab">Benchmarks</span><span class="g-track"><i class="g-bar" style="--a:33;--b:55"></i></span></div>
           <div class="g-row"><span class="g-lab">Security review</span><span class="g-track"><i class="g-bar" style="--a:33;--b:58"></i></span></div>
           <div class="g-row"><span class="g-lab">Go public</span><span class="g-track"><i class="g-bar use" style="--a:58;--b:95"></i><span class="g-ico" style="--a:58" role="img" aria-label="celebration">🎉</span></span></div>
@@ -171,8 +187,8 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
         </div>
       </figure>
       <div class="lc-keys">
-        <div class="lc-key m-base"><b>Base model</b>: the model at the end of pre-training. It predicts the next token, so it continues the text.</div>
-        <div class="lc-key m-chat"><b>Chat (instruct) model</b>: the same model at the end of post-training. It follows instructions and answers.</div>
+        <div class="lc-key m-base"><b>Base model (GPT)</b>: the model at the end of pre-training. It predicts the next token, so it continues the text.</div>
+        <div class="lc-key m-chat"><b>Chat (instruct) model (ChatGPT)</b>: the same model at the end of post-training. It follows instructions and answers.</div>
       </div>
     </div>
   </div>
@@ -326,13 +342,13 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
 
 <section class="slide pA" data-title="A · Prompting: rules in the prompt" data-refs="ouyang2022">
   <p class="eb">A · What post-training brings</p>
-  <h2 class="sm">(2) Post-training makes LLMs obey rules</h2>
+  <h2 class="sm">(2) Post-training makes LLMs follow instructions/rules</h2>
   <div class="slide-body">
     <div class="cols">
       <figure class="fig h360"><img src="./assets/partA/ouyang2022-fig4-left.png" alt="InstructGPT paper Figure 4, two left panels: the share of outputs that attempt the correct instruction and that follow explicit constraints, for GPT, GPT prompted, SFT, PPO and PPO-ptx; the post-trained models have higher bars"></figure>
       <div class="stack">
         <p>An <b>explicit constraint</b> is a rule in the prompt, such as "Write your answer in 2 paragraphs or less."</p>
-        <p>GPT-3 obeys it in about 20% of answers. <b>InstructGPT</b> (GPT-3 after post-training; bars PPO and PPO-ptx) obeys it in about 40%. A few-shot prompt helps GPT-3 only a little.</p>
+        <p>GPT-3 follows it in about 20% of answers. <b>InstructGPT</b> (GPT-3 after post-training; bars PPO and PPO-ptx) follows it in about 40%. A few-shot prompt helps GPT-3 only a little.</p>
         <div class="card own"><div class="tag">Try it in a chat model (WebLLM Chat)</div><p>Reply only in JSON with the keys city and country. Where is Marina Bay Sands?</p></div>
       </div>
     </div>
@@ -400,6 +416,13 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
     <figure class="fig"><img src="./assets/partA/tao2026-headline.jpg" alt="Photo of Terence Tao in a blue UCLA shirt in front of a blackboard with formulas. Caption: Fields Medalist Terence Tao says AI companies are actually just harming mathematics."></figure>
   </div>
   <p class="src">Headline picture shared on social media. Tao's own words, in an interview with IBM Think (<a data-ref="brodsky2026">Brodsky, 2026</a>, 10 Sep 2026): fast AI answers are "quite concerning", because mathematicians can lose the methods they find on the way.</p>
+</section>
+
+<section class="slide pA solo-shot ai-safety" data-title="A · AI safety: models escaped a test sandbox (Jul 2026)" data-refs="kahn2026 sinkewicz2026">
+  <div class="slide-body">
+    <figure class="fig"><img src="./assets/partA/openai2026-sandbox-graphic.jpg" alt="Graphic with the OpenAI logo and the headline: OpenAI admits AI escaped sandbox during security test. Subtitle: controlled evaluation incident involving Hugging Face infrastructure, no public attack. A glowing box labelled sandbox breaks open; a photo of Sam Altman with a quote attributed to him."></figure>
+  </div>
+  <p class="src">Graphic shared online; origin not traced. Its Altman quote is in no report. What happened: on 21 Jul 2026 OpenAI said that, in a cyber test without the usual safeguards, GPT-5.6 Sol and an unreleased model escaped their sandbox and hacked Hugging Face to find answers to the ExploitGym benchmark (<a data-ref="kahn2026">Kahn &amp; Forlini, 2026</a>). Altman wrote on X of "a significant security incident during evaluation of our models" (<a data-ref="sinkewicz2026">Sinkewicz, 2026</a>).</p>
 </section>
 
 <section class="slide blue seg-div" data-title="Part A · 2 · History">
@@ -780,7 +803,7 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
   <div class="slide-body">
     <div class="cols fig-narrow">
       <div class="stack">
-        <p>RL with checkable answers (slide 16) has no learned reward model to fool. So labs can keep adding RL compute.</p>
+        <p>RL with checkable answers (slide 17) has no learned reward model to fool. So labs can keep adding RL compute.</p>
         <ul class="dk">
           <li><b>o1</b>: accuracy keeps rising as RL training compute grows.</li>
           <li><b>Olmo 3.1</b>, an open 32B model: still improving after <b>28 days</b> of RL on 224 GPUs.</li>
@@ -1255,6 +1278,14 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
       </div>
     </div>
   </div>
+  <aside class="poll-steps ps-corner" aria-label="Instructor steps, poll 1">
+    <p class="ps-h">Instructor · poll 1</p>
+    <label><input type="checkbox" onchange="this.blur()"><span>Rating row: Open, Results, Full screen</span></label>
+    <label><input type="checkbox" onchange="this.blur()"><span>Wait about 90 s → <b>Close poll</b></span></label>
+    <label><input type="checkbox" onchange="this.blur()"><span><b>Show averages</b> (A and B only)</span></label>
+    <label><input type="checkbox" onchange="this.blur()"><span><b class="ps-no">Not yet:</b> agreement, order (slide 79)</span></label>
+    <label><input type="checkbox" onchange="this.blur()"><span>Esc → back to slide 70</span></label>
+  </aside>
   <p class="src">Paragraph: the facts of <a data-ref="cnn2007">CNN (2007)</a>, in our words. The poll is anonymous: no names are stored.</p>
 </section>
 
@@ -1268,13 +1299,13 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
     </ul>
     <div class="p25s">
       <p class="p25-t">SAN FRANCISCO,<br>California (CNN) --<br>A magnitude 4.2<br>earthquake shook the<br>San Francisco<br>...<br>overturn unstable<br>objects.</p>
-      <div><p class="p25-t">An earthquake hit<br>San Francisco.<br>There was minor<br>property damage,<br>but no injuries.</p><p class="p25-r">\(s_1\)<br>\(R(s_1) = 8.0\)</p></div>
-      <div><p class="p25-t">The Bay Area has<br>good weather but is<br>prone to<br>earthquakes and<br>wildfires.</p><p class="p25-r">\(s_2\)<br>\(R(s_2) = 1.2\)</p></div>
+      <div><p class="p25-t">An earthquake hit<br>San Francisco.<br>There was minor<br>property damage,<br>but no injuries.</p><p class="p25-r">\(s_1\)<br>\(R(s_1) =\) <input class="rs-in" data-rs="s1" inputmode="decimal" aria-label="R(s1): the class average of s1 from poll 1"></p></div>
+      <div><p class="p25-t">The Bay Area has<br>good weather but is<br>prone to<br>earthquakes and<br>wildfires.</p><p class="p25-r">\(s_2\)<br>\(R(s_2) =\) <input class="rs-in" data-rs="s2" inputmode="decimal" aria-label="R(s2): the class average of s2 from poll 1"></p></div>
     </div>
     <ul class="pts"><li>Now we want to maximize the expected reward of samples from our LM:</li></ul>
     <div class="p25b"><p class="p25-e">\(\displaystyle\max_\theta\; \mathbb{E}_{\hat s\sim p_\theta(s)}\big[R(\hat s)\big]\)</p><p class="ann">Note: for simplicity, we show the math<br>for a single prompt. In practice, we<br>average over many prompts</p></div>
   </div>
-  <p class="src">From <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 25.</p>
+  <p class="src">From <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 25. \(R(s_1)\) and \(R(s_2)\): type the class averages of poll 1 (CS224N gives 8.0 and 1.2); slides 76 and 77 show the same values.</p>
 </section>
 
 <section class="slide pB" data-title="CS224N 26 · RL to the rescue" data-refs="yang2026b">
@@ -1394,9 +1425,9 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
       <li>So far, we assume we have a mapping from \(s\) to its <i>human reward</i> \(R(s)\), where we assume there is a human to tell how good it is, and we maximize the expected reward of samples: \[\max_\theta\; \mathbb{E}_{\hat s\sim p_\theta(s)}\big[R(\hat s)\big]\]</li>
       <li>But, it is not so fast (why not?)</li>
     </ul>
-    <svg class="hr-svg" viewBox="0 0 1000 262" role="img" aria-label="Two summaries s1 and s2 go to a person with a clock, who gives them the human rewards R(s1) = 8.0 and R(s2) = 1.2"><rect x="40" y="14" width="372" height="96" rx="8" class="hr-card"/><text class="hr-mono" x="56" y="42"><tspan x="56" dy="0">An earthquake hit San</tspan><tspan x="56" dy="22">Francisco. There was minor</tspan><tspan x="56" dy="22">property damage, but no injuries.</tspan></text><text class="hr-lab" x="26" y="70" text-anchor="end">s<tspan dy="7" font-size="19">1</tspan><tspan dy="-7"></tspan></text><rect x="40" y="138" width="372" height="96" rx="8" class="hr-card"/><text class="hr-mono" x="56" y="166"><tspan x="56" dy="0">The Bay Area has good</tspan><tspan x="56" dy="22">weather but is prone to</tspan><tspan x="56" dy="22">earthquakes and wildfires.</tspan></text><text class="hr-lab" x="26" y="194" text-anchor="end">s<tspan dy="7" font-size="19">2</tspan><tspan dy="-7"></tspan></text><g class="hr-arr"><line x1="418" y1="62" x2="497.6" y2="104.4"/><polygon points="508,108 493.6,109.9 497.9,97.6"/><line x1="418" y1="186" x2="497.6" y2="143.6"/><polygon points="508,140 497.9,150.4 493.6,138.1"/><line x1="664" y1="118" x2="779.9" y2="66.5"/><polygon points="790,62 780.8,73.2 775.5,61.3"/><line x1="664" y1="134" x2="779.8" y2="181.8"/><polygon points="790,186 775.5,187.0 780.5,175.0"/></g><g class="hr-human"><circle cx="560" cy="86" r="24"/><path d="M516 170 Q516 118 560 118 Q604 118 604 170 Z"/></g><g class="hr-clock"><circle cx="628" cy="70" r="26"/><line x1="628" y1="70" x2="628" y2="52"/><line x1="628" y1="70" x2="642" y2="78"/></g><text class="hr-math" x="806" y="72">R(s<tspan dy="7" font-size="19">1</tspan><tspan dy="-7">) = 8.0</tspan></text><text class="hr-math" x="806" y="196">R(s<tspan dy="7" font-size="19">2</tspan><tspan dy="-7">) = 1.2</tspan></text><text class="hr-h" x="226" y="250" text-anchor="middle">samples s</text><text class="hr-h" x="584" y="206" text-anchor="middle">a person reads and scores</text><text class="hr-h" x="584" y="230" text-anchor="middle">each sample: it takes time</text><text class="hr-h" x="880" y="250" text-anchor="middle">human reward R(s)</text></svg>
+    <svg class="hr-svg" viewBox="0 0 1000 262" role="img" aria-label="Two summaries s1 and s2 go to a person with a clock, who gives them the human rewards R(s1) = 8.0 and R(s2) = 1.2"><rect x="40" y="14" width="372" height="96" rx="8" class="hr-card"/><text class="hr-mono" x="56" y="42"><tspan x="56" dy="0">An earthquake hit San</tspan><tspan x="56" dy="22">Francisco. There was minor</tspan><tspan x="56" dy="22">property damage, but no injuries.</tspan></text><text class="hr-lab" x="26" y="70" text-anchor="end">s<tspan dy="7" font-size="19">1</tspan><tspan dy="-7"></tspan></text><rect x="40" y="138" width="372" height="96" rx="8" class="hr-card"/><text class="hr-mono" x="56" y="166"><tspan x="56" dy="0">The Bay Area has good</tspan><tspan x="56" dy="22">weather but is prone to</tspan><tspan x="56" dy="22">earthquakes and wildfires.</tspan></text><text class="hr-lab" x="26" y="194" text-anchor="end">s<tspan dy="7" font-size="19">2</tspan><tspan dy="-7"></tspan></text><g class="hr-arr"><line x1="418" y1="62" x2="497.6" y2="104.4"/><polygon points="508,108 493.6,109.9 497.9,97.6"/><line x1="418" y1="186" x2="497.6" y2="143.6"/><polygon points="508,140 497.9,150.4 493.6,138.1"/><line x1="664" y1="118" x2="779.9" y2="66.5"/><polygon points="790,62 780.8,73.2 775.5,61.3"/><line x1="664" y1="134" x2="779.8" y2="181.8"/><polygon points="790,186 775.5,187.0 780.5,175.0"/></g><g class="hr-human"><circle cx="560" cy="86" r="24"/><path d="M516 170 Q516 118 560 118 Q604 118 604 170 Z"/></g><g class="hr-clock"><circle cx="628" cy="70" r="26"/><line x1="628" y1="70" x2="628" y2="52"/><line x1="628" y1="70" x2="642" y2="78"/></g><text class="hr-math" x="806" y="72">R(s<tspan dy="7" font-size="19">1</tspan><tspan dy="-7">) = <tspan class="rs-val" data-rs="s1">8.0</tspan></tspan></text><text class="hr-math" x="806" y="196">R(s<tspan dy="7" font-size="19">2</tspan><tspan dy="-7">) = <tspan class="rs-val" data-rs="s2">1.2</tspan></tspan></text><text class="hr-h" x="226" y="250" text-anchor="middle">samples s</text><text class="hr-h" x="584" y="206" text-anchor="middle">a person reads and scores</text><text class="hr-h" x="584" y="230" text-anchor="middle">each sample: it takes time</text><text class="hr-h" x="880" y="250" text-anchor="middle">human reward R(s)</text></svg>
   </div>
-  <p class="src">Ours (13 Oct 2026), before CS224N p. 31. The summaries and the rewards 8.0 and 1.2 are from <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 25.</p>
+  <p class="src">Ours (13 Oct 2026), before CS224N p. 31. Summaries: <a data-ref="yang2026b">Yang (2026)</a>, p. 25. Rewards: as typed on slide 70.</p>
 </section>
 
 <section class="slide pB" data-title="CS224N 31 · Model the preferences" data-refs="yang2026b knox2009">
@@ -1410,13 +1441,13 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
         <ul><li><b class="bad">Solution:</b> instead of directly asking humans for preferences, <b>model their preferences</b> as a separate (NLP) problem! [<a data-ref="knox2009">Knox and Stone, 2009</a>]</li></ul></li>
     </ul>
     <div class="p31">
-      <div><p class="p25-t">An earthquake hit<br>San Francisco.<br>There was minor<br>property damage,<br>but no injuries.</p><p class="p31-r"><span>\(s_1\)<br>\(R(s_1) = 8.0\)</span><svg class="p31-ic" viewBox="0 0 40 64" aria-hidden="true"><circle cx="20" cy="9" r="8" fill="#8f2d2d"/><path d="M4 30 Q4 19 20 19 Q36 19 36 30 Z" fill="#8f2d2d"/><rect x="3" y="38" width="34" height="22" rx="2" fill="#a8d08d" stroke="#222" stroke-width="2"/><circle cx="20" cy="49" r="6" fill="#fff" stroke="#3a7d2a" stroke-width="1.5"/><text x="20" y="53" font-size="10" text-anchor="middle" fill="#3a7d2a" font-weight="700">$</text></svg></p></div>
-      <div><p class="p25-t">The Bay Area has<br>good weather but is<br>prone to<br>earthquakes and<br>wildfires.</p><p class="p31-r"><span>\(s_2\)<br>\(R(s_2) = 1.2\)</span><svg class="p31-ic" viewBox="0 0 40 64" aria-hidden="true"><circle cx="20" cy="9" r="8" fill="#8f2d2d"/><path d="M4 30 Q4 19 20 19 Q36 19 36 30 Z" fill="#8f2d2d"/><rect x="3" y="38" width="34" height="22" rx="2" fill="#a8d08d" stroke="#222" stroke-width="2"/><circle cx="20" cy="49" r="6" fill="#fff" stroke="#3a7d2a" stroke-width="1.5"/><text x="20" y="53" font-size="10" text-anchor="middle" fill="#3a7d2a" font-weight="700">$</text></svg></p></div>
+      <div><p class="p25-t">An earthquake hit<br>San Francisco.<br>There was minor<br>property damage,<br>but no injuries.</p><p class="p31-r"><span>\(s_1\)<br>\(R(s_1) =\) <span class="rs-val" data-rs="s1">8.0</span></span><svg class="p31-ic" viewBox="0 0 40 64" aria-hidden="true"><circle cx="20" cy="9" r="8" fill="#8f2d2d"/><path d="M4 30 Q4 19 20 19 Q36 19 36 30 Z" fill="#8f2d2d"/><rect x="3" y="38" width="34" height="22" rx="2" fill="#a8d08d" stroke="#222" stroke-width="2"/><circle cx="20" cy="49" r="6" fill="#fff" stroke="#3a7d2a" stroke-width="1.5"/><text x="20" y="53" font-size="10" text-anchor="middle" fill="#3a7d2a" font-weight="700">$</text></svg></p></div>
+      <div><p class="p25-t">The Bay Area has<br>good weather but is<br>prone to<br>earthquakes and<br>wildfires.</p><p class="p31-r"><span>\(s_2\)<br>\(R(s_2) =\) <span class="rs-val" data-rs="s2">1.2</span></span><svg class="p31-ic" viewBox="0 0 40 64" aria-hidden="true"><circle cx="20" cy="9" r="8" fill="#8f2d2d"/><path d="M4 30 Q4 19 20 19 Q36 19 36 30 Z" fill="#8f2d2d"/><rect x="3" y="38" width="34" height="22" rx="2" fill="#a8d08d" stroke="#222" stroke-width="2"/><circle cx="20" cy="49" r="6" fill="#fff" stroke="#3a7d2a" stroke-width="1.5"/><text x="20" y="53" font-size="10" text-anchor="middle" fill="#3a7d2a" font-weight="700">$</text></svg></p></div>
       <p class="ann p31-n">Train an LM \(RM_\phi(s)\) to predict human preferences from an annotated dataset, then optimize for \(RM_\phi\) instead.</p>
     </div>
     <p class="p31-ls"><b>Least squares:</b>&nbsp; \(\min_\phi\; J_{RM}(\phi) = \mathbb{E}_{(s,\,R(s))\sim D}\big[\big(RM_\phi(s) - R(s)\big)^2\big]\)</p>
   </div>
-  <p class="src">From <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 31. The page's person and banknote icons are redrawn. The least-squares objective is ours, in the symbols of p. 33 (slide 78).</p>
+  <p class="src">From <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 31. The page's person and banknote icons are redrawn. The least-squares objective is ours, in the symbols of p. 33 (slide 81).</p>
 </section>
 
 <section class="slide pB" data-title="CS224N 32 · Scores are noisy" data-refs="yang2026b phelps2015 clark2018">
@@ -1441,7 +1472,19 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
   <h2>How do we model human preferences?</h2>
   <div class="slide-body">
     <div class="poll-row p2-row">
-      <p class="p2-big"><b>Problem 2:</b> human judgments are <span class="p2-red">noisy</span> and <span class="p2-red">miscalibrated</span>!</p>
+      <div class="p2-left">
+        <p class="p2-big"><b>Problem 2:</b> human judgments are <span class="p2-red">noisy</span> and <span class="p2-red">miscalibrated</span>!</p>
+        <aside class="poll-steps" aria-label="Instructor steps, poll 2">
+          <p class="ps-h">Instructor · poll 2</p>
+          <label><input type="checkbox" onchange="this.blur()"><span>Rating poll: <b>Show agreement</b> only. <b class="ps-no">No</b> Reveal order, <b class="ps-no">no</b> glass</span></label>
+          <label><input type="checkbox" onchange="this.blur()"><span>Esc → ranking row: Open → Results → Full screen</span></label>
+          <label><input type="checkbox" onchange="this.blur()"><span>Students reload; wait about 60 s → <b>Close poll</b></span></label>
+          <label><input type="checkbox" onchange="this.blur()"><span><b>Show agreement</b> (order stays blurred)</span></label>
+          <label><input type="checkbox" onchange="this.blur()"><span><b>Show top two orders</b></span></label>
+          <label><input type="checkbox" onchange="this.blur()"><span>Optional: Compare the two polls side by side</span></label>
+          <label><input type="checkbox" onchange="this.blur()"><span>Back to slide 80</span></label>
+        </aside>
+      </div>
       <div class="poll-join">
         <p class="poll-tag">Poll 2</p>
         <svg class="poll-qr" viewBox="0 0 41 41" role="img" aria-label="QR code: costa-nus.github.io/classroom-poll" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><path d="M4,4h1v1h-1zM5,4h1v1h-1zM6,4h1v1h-1zM7,4h1v1h-1zM8,4h1v1h-1zM9,4h1v1h-1zM10,4h1v1h-1zM12,4h1v1h-1zM14,4h1v1h-1zM15,4h1v1h-1zM16,4h1v1h-1zM22,4h1v1h-1zM23,4h1v1h-1zM25,4h1v1h-1zM26,4h1v1h-1zM27,4h1v1h-1zM28,4h1v1h-1zM30,4h1v1h-1zM31,4h1v1h-1zM32,4h1v1h-1zM33,4h1v1h-1zM34,4h1v1h-1zM35,4h1v1h-1zM36,4h1v1h-1zM4,5h1v1h-1zM10,5h1v1h-1zM13,5h1v1h-1zM15,5h1v1h-1zM16,5h1v1h-1zM17,5h1v1h-1zM18,5h1v1h-1zM20,5h1v1h-1zM21,5h1v1h-1zM25,5h1v1h-1zM27,5h1v1h-1zM28,5h1v1h-1zM30,5h1v1h-1zM36,5h1v1h-1zM4,6h1v1h-1zM6,6h1v1h-1zM7,6h1v1h-1zM8,6h1v1h-1zM10,6h1v1h-1zM12,6h1v1h-1zM13,6h1v1h-1zM14,6h1v1h-1zM19,6h1v1h-1zM21,6h1v1h-1zM24,6h1v1h-1zM27,6h1v1h-1zM28,6h1v1h-1zM30,6h1v1h-1zM32,6h1v1h-1zM33,6h1v1h-1zM34,6h1v1h-1zM36,6h1v1h-1zM4,7h1v1h-1zM6,7h1v1h-1zM7,7h1v1h-1zM8,7h1v1h-1zM10,7h1v1h-1zM12,7h1v1h-1zM13,7h1v1h-1zM16,7h1v1h-1zM20,7h1v1h-1zM21,7h1v1h-1zM23,7h1v1h-1zM27,7h1v1h-1zM30,7h1v1h-1zM32,7h1v1h-1zM33,7h1v1h-1zM34,7h1v1h-1zM36,7h1v1h-1zM4,8h1v1h-1zM6,8h1v1h-1zM7,8h1v1h-1zM8,8h1v1h-1zM10,8h1v1h-1zM14,8h1v1h-1zM16,8h1v1h-1zM21,8h1v1h-1zM23,8h1v1h-1zM25,8h1v1h-1zM27,8h1v1h-1zM30,8h1v1h-1zM32,8h1v1h-1zM33,8h1v1h-1zM34,8h1v1h-1zM36,8h1v1h-1zM4,9h1v1h-1zM10,9h1v1h-1zM12,9h1v1h-1zM17,9h1v1h-1zM19,9h1v1h-1zM20,9h1v1h-1zM24,9h1v1h-1zM25,9h1v1h-1zM26,9h1v1h-1zM28,9h1v1h-1zM30,9h1v1h-1zM36,9h1v1h-1zM4,10h1v1h-1zM5,10h1v1h-1zM6,10h1v1h-1zM7,10h1v1h-1zM8,10h1v1h-1zM9,10h1v1h-1zM10,10h1v1h-1zM12,10h1v1h-1zM14,10h1v1h-1zM16,10h1v1h-1zM18,10h1v1h-1zM20,10h1v1h-1zM22,10h1v1h-1zM24,10h1v1h-1zM26,10h1v1h-1zM28,10h1v1h-1zM30,10h1v1h-1zM31,10h1v1h-1zM32,10h1v1h-1zM33,10h1v1h-1zM34,10h1v1h-1zM35,10h1v1h-1zM36,10h1v1h-1zM12,11h1v1h-1zM13,11h1v1h-1zM15,11h1v1h-1zM16,11h1v1h-1zM21,11h1v1h-1zM23,11h1v1h-1zM24,11h1v1h-1zM25,11h1v1h-1zM28,11h1v1h-1zM5,12h1v1h-1zM7,12h1v1h-1zM9,12h1v1h-1zM10,12h1v1h-1zM11,12h1v1h-1zM12,12h1v1h-1zM13,12h1v1h-1zM16,12h1v1h-1zM20,12h1v1h-1zM23,12h1v1h-1zM24,12h1v1h-1zM25,12h1v1h-1zM28,12h1v1h-1zM29,12h1v1h-1zM30,12h1v1h-1zM31,12h1v1h-1zM33,12h1v1h-1zM34,12h1v1h-1zM36,12h1v1h-1zM8,13h1v1h-1zM12,13h1v1h-1zM13,13h1v1h-1zM14,13h1v1h-1zM16,13h1v1h-1zM20,13h1v1h-1zM22,13h1v1h-1zM24,13h1v1h-1zM28,13h1v1h-1zM29,13h1v1h-1zM30,13h1v1h-1zM31,13h1v1h-1zM35,13h1v1h-1zM36,13h1v1h-1zM4,14h1v1h-1zM6,14h1v1h-1zM7,14h1v1h-1zM9,14h1v1h-1zM10,14h1v1h-1zM14,14h1v1h-1zM18,14h1v1h-1zM19,14h1v1h-1zM20,14h1v1h-1zM21,14h1v1h-1zM23,14h1v1h-1zM26,14h1v1h-1zM28,14h1v1h-1zM29,14h1v1h-1zM30,14h1v1h-1zM31,14h1v1h-1zM32,14h1v1h-1zM34,14h1v1h-1zM36,14h1v1h-1zM6,15h1v1h-1zM7,15h1v1h-1zM8,15h1v1h-1zM9,15h1v1h-1zM15,15h1v1h-1zM21,15h1v1h-1zM23,15h1v1h-1zM24,15h1v1h-1zM25,15h1v1h-1zM26,15h1v1h-1zM28,15h1v1h-1zM30,15h1v1h-1zM32,15h1v1h-1zM33,15h1v1h-1zM35,15h1v1h-1zM4,16h1v1h-1zM6,16h1v1h-1zM7,16h1v1h-1zM9,16h1v1h-1zM10,16h1v1h-1zM12,16h1v1h-1zM13,16h1v1h-1zM14,16h1v1h-1zM18,16h1v1h-1zM23,16h1v1h-1zM24,16h1v1h-1zM25,16h1v1h-1zM28,16h1v1h-1zM29,16h1v1h-1zM30,16h1v1h-1zM33,16h1v1h-1zM35,16h1v1h-1zM4,17h1v1h-1zM5,17h1v1h-1zM11,17h1v1h-1zM14,17h1v1h-1zM15,17h1v1h-1zM20,17h1v1h-1zM21,17h1v1h-1zM28,17h1v1h-1zM29,17h1v1h-1zM30,17h1v1h-1zM32,17h1v1h-1zM33,17h1v1h-1zM34,17h1v1h-1zM35,17h1v1h-1zM36,17h1v1h-1zM7,18h1v1h-1zM9,18h1v1h-1zM10,18h1v1h-1zM11,18h1v1h-1zM12,18h1v1h-1zM16,18h1v1h-1zM17,18h1v1h-1zM18,18h1v1h-1zM20,18h1v1h-1zM24,18h1v1h-1zM25,18h1v1h-1zM27,18h1v1h-1zM29,18h1v1h-1zM30,18h1v1h-1zM32,18h1v1h-1zM34,18h1v1h-1zM35,18h1v1h-1zM6,19h1v1h-1zM8,19h1v1h-1zM9,19h1v1h-1zM14,19h1v1h-1zM17,19h1v1h-1zM18,19h1v1h-1zM19,19h1v1h-1zM21,19h1v1h-1zM22,19h1v1h-1zM24,19h1v1h-1zM25,19h1v1h-1zM28,19h1v1h-1zM30,19h1v1h-1zM32,19h1v1h-1zM35,19h1v1h-1zM5,20h1v1h-1zM7,20h1v1h-1zM8,20h1v1h-1zM9,20h1v1h-1zM10,20h1v1h-1zM13,20h1v1h-1zM14,20h1v1h-1zM16,20h1v1h-1zM19,20h1v1h-1zM21,20h1v1h-1zM24,20h1v1h-1zM25,20h1v1h-1zM26,20h1v1h-1zM27,20h1v1h-1zM30,20h1v1h-1zM32,20h1v1h-1zM35,20h1v1h-1zM5,21h1v1h-1zM6,21h1v1h-1zM8,21h1v1h-1zM11,21h1v1h-1zM12,21h1v1h-1zM13,21h1v1h-1zM19,21h1v1h-1zM25,21h1v1h-1zM26,21h1v1h-1zM27,21h1v1h-1zM28,21h1v1h-1zM29,21h1v1h-1zM31,21h1v1h-1zM33,21h1v1h-1zM35,21h1v1h-1zM7,22h1v1h-1zM10,22h1v1h-1zM11,22h1v1h-1zM13,22h1v1h-1zM18,22h1v1h-1zM19,22h1v1h-1zM26,22h1v1h-1zM30,22h1v1h-1zM34,22h1v1h-1zM36,22h1v1h-1zM4,23h1v1h-1zM6,23h1v1h-1zM9,23h1v1h-1zM16,23h1v1h-1zM19,23h1v1h-1zM20,23h1v1h-1zM21,23h1v1h-1zM22,23h1v1h-1zM23,23h1v1h-1zM24,23h1v1h-1zM25,23h1v1h-1zM26,23h1v1h-1zM29,23h1v1h-1zM30,23h1v1h-1zM31,23h1v1h-1zM36,23h1v1h-1zM4,24h1v1h-1zM6,24h1v1h-1zM7,24h1v1h-1zM9,24h1v1h-1zM10,24h1v1h-1zM11,24h1v1h-1zM12,24h1v1h-1zM14,24h1v1h-1zM15,24h1v1h-1zM16,24h1v1h-1zM18,24h1v1h-1zM22,24h1v1h-1zM25,24h1v1h-1zM27,24h1v1h-1zM28,24h1v1h-1zM29,24h1v1h-1zM5,25h1v1h-1zM6,25h1v1h-1zM7,25h1v1h-1zM8,25h1v1h-1zM11,25h1v1h-1zM17,25h1v1h-1zM18,25h1v1h-1zM20,25h1v1h-1zM21,25h1v1h-1zM25,25h1v1h-1zM28,25h1v1h-1zM30,25h1v1h-1zM34,25h1v1h-1zM35,25h1v1h-1zM36,25h1v1h-1zM4,26h1v1h-1zM5,26h1v1h-1zM7,26h1v1h-1zM10,26h1v1h-1zM11,26h1v1h-1zM12,26h1v1h-1zM13,26h1v1h-1zM17,26h1v1h-1zM18,26h1v1h-1zM19,26h1v1h-1zM20,26h1v1h-1zM21,26h1v1h-1zM22,26h1v1h-1zM23,26h1v1h-1zM24,26h1v1h-1zM26,26h1v1h-1zM28,26h1v1h-1zM29,26h1v1h-1zM30,26h1v1h-1zM31,26h1v1h-1zM32,26h1v1h-1zM33,26h1v1h-1zM36,26h1v1h-1zM5,27h1v1h-1zM6,27h1v1h-1zM7,27h1v1h-1zM8,27h1v1h-1zM11,27h1v1h-1zM12,27h1v1h-1zM13,27h1v1h-1zM15,27h1v1h-1zM16,27h1v1h-1zM19,27h1v1h-1zM22,27h1v1h-1zM23,27h1v1h-1zM25,27h1v1h-1zM26,27h1v1h-1zM27,27h1v1h-1zM31,27h1v1h-1zM4,28h1v1h-1zM7,28h1v1h-1zM9,28h1v1h-1zM10,28h1v1h-1zM11,28h1v1h-1zM22,28h1v1h-1zM23,28h1v1h-1zM24,28h1v1h-1zM25,28h1v1h-1zM28,28h1v1h-1zM29,28h1v1h-1zM30,28h1v1h-1zM31,28h1v1h-1zM32,28h1v1h-1zM12,29h1v1h-1zM19,29h1v1h-1zM20,29h1v1h-1zM23,29h1v1h-1zM24,29h1v1h-1zM28,29h1v1h-1zM32,29h1v1h-1zM33,29h1v1h-1zM36,29h1v1h-1zM4,30h1v1h-1zM5,30h1v1h-1zM6,30h1v1h-1zM7,30h1v1h-1zM8,30h1v1h-1zM9,30h1v1h-1zM10,30h1v1h-1zM12,30h1v1h-1zM15,30h1v1h-1zM16,30h1v1h-1zM19,30h1v1h-1zM20,30h1v1h-1zM22,30h1v1h-1zM25,30h1v1h-1zM28,30h1v1h-1zM30,30h1v1h-1zM32,30h1v1h-1zM33,30h1v1h-1zM34,30h1v1h-1zM35,30h1v1h-1zM4,31h1v1h-1zM10,31h1v1h-1zM12,31h1v1h-1zM14,31h1v1h-1zM15,31h1v1h-1zM16,31h1v1h-1zM18,31h1v1h-1zM19,31h1v1h-1zM21,31h1v1h-1zM24,31h1v1h-1zM25,31h1v1h-1zM26,31h1v1h-1zM28,31h1v1h-1zM32,31h1v1h-1zM4,32h1v1h-1zM6,32h1v1h-1zM7,32h1v1h-1zM8,32h1v1h-1zM10,32h1v1h-1zM13,32h1v1h-1zM14,32h1v1h-1zM15,32h1v1h-1zM17,32h1v1h-1zM20,32h1v1h-1zM21,32h1v1h-1zM24,32h1v1h-1zM25,32h1v1h-1zM26,32h1v1h-1zM28,32h1v1h-1zM29,32h1v1h-1zM30,32h1v1h-1zM31,32h1v1h-1zM32,32h1v1h-1zM33,32h1v1h-1zM36,32h1v1h-1zM4,33h1v1h-1zM6,33h1v1h-1zM7,33h1v1h-1zM8,33h1v1h-1zM10,33h1v1h-1zM12,33h1v1h-1zM15,33h1v1h-1zM18,33h1v1h-1zM20,33h1v1h-1zM22,33h1v1h-1zM25,33h1v1h-1zM27,33h1v1h-1zM28,33h1v1h-1zM30,33h1v1h-1zM32,33h1v1h-1zM33,33h1v1h-1zM34,33h1v1h-1zM35,33h1v1h-1zM4,34h1v1h-1zM6,34h1v1h-1zM7,34h1v1h-1zM8,34h1v1h-1zM10,34h1v1h-1zM13,34h1v1h-1zM15,34h1v1h-1zM16,34h1v1h-1zM18,34h1v1h-1zM20,34h1v1h-1zM21,34h1v1h-1zM22,34h1v1h-1zM24,34h1v1h-1zM25,34h1v1h-1zM26,34h1v1h-1zM27,34h1v1h-1zM32,34h1v1h-1zM33,34h1v1h-1zM36,34h1v1h-1zM4,35h1v1h-1zM10,35h1v1h-1zM12,35h1v1h-1zM14,35h1v1h-1zM17,35h1v1h-1zM18,35h1v1h-1zM19,35h1v1h-1zM24,35h1v1h-1zM25,35h1v1h-1zM28,35h1v1h-1zM4,36h1v1h-1zM5,36h1v1h-1zM6,36h1v1h-1zM7,36h1v1h-1zM8,36h1v1h-1zM9,36h1v1h-1zM10,36h1v1h-1zM15,36h1v1h-1zM16,36h1v1h-1zM17,36h1v1h-1zM18,36h1v1h-1zM19,36h1v1h-1zM22,36h1v1h-1zM23,36h1v1h-1zM25,36h1v1h-1zM26,36h1v1h-1zM28,36h1v1h-1zM29,36h1v1h-1zM30,36h1v1h-1zM32,36h1v1h-1zM33,36h1v1h-1zM35,36h1v1h-1z" fill="#000"/></svg>
@@ -1449,8 +1492,21 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
         <p class="poll-how">Same page and key as poll 1. Pick the better summary in each pair.</p>
       </div>
     </div>
+    <p class="p2-hyp"><b>Hypothesis:</b> Pairwise comparison is more reliable (higher agreement) than rating.</p>
   </div>
   <p class="src">From <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 32.</p>
+</section>
+
+<section class="slide pB arena" data-title="Chatbot Arena · pairwise votes rank LLMs" data-refs="chiang2024arena">
+  <p class="eb">B · RLHF</p>
+  <h2 class="sm">Pairwise comparison was the most popular way to compare LLMs in QA</h2>
+  <div class="slide-body">
+    <div class="arena-row">
+      <figure class="fig"><img src="./assets/partB/chiang2024-arena-screenshot.png" alt="Chatbot Arena screenshot: the rules (ask any question to two anonymous models and vote for the better one), the same prompt answered by Model A and Model B side by side, and four vote buttons: A is better, B is better, Tie, Both are bad."><figcaption><b>Evaluation view:</b> one question, two anonymous models, one vote</figcaption></figure>
+      <figure class="fig"><img src="./assets/partB/chiang2024-win-rate.png" alt="Win-rate matrix of 12 models, from gpt-4-turbo at the top to mistral-7b-instruct at the bottom; each cell is the fraction of battles that model A won against model B."><figcaption><b>Leaderboard:</b> models in rank order; each cell, how often A beat B</figcaption></figure>
+    </div>
+  </div>
+  <p class="src">Chatbot Arena (LMSYS; now LMArena). Left: <a data-ref="chiang2024arena">Chiang et al. (2024)</a>, Fig. 8. Right: the same paper, Fig. 2 (left), win rates from the human votes.</p>
 </section>
 
 <section class="slide pB s33" data-title="CS224N 33 · Pairwise comparisons" data-refs="yang2026b phelps2015 clark2018 bradley1952">
@@ -1569,7 +1625,7 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
     </div>
     <p class="p35-note">This is a penalty which prevents us from diverging too far from the pretrained model. In expectation, it is known as the <b>Kullback-Leibler</b> (<b>KL</b>) divergence between \(\textcolor{#1e9a4b}{p^{RL}_\theta(s)}\) and \(\textcolor{#c00000}{p^{PT}(s)}\).</p>
   </div>
-  <p class="src">From <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 35. The objective line is ours, in the symbols of p. 25 (slide 68) and this page.</p>
+  <p class="src">From <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 35. The objective line is ours, in the symbols of p. 25 (slide 70) and this page.</p>
 </section>
 
 <section class="slide pB" data-title="CS224N 36 · The RLHF pipeline" data-refs="yang2026b ouyang2022">
@@ -1592,7 +1648,7 @@ The 2023 FIFA Women's World Cup is scheduled to take place from 20 July to 20 Au
   <h2>Each RLHF step uses a different kind of data</h2>
   <div class="slide-body">
     <div data-viz="instructPipeline"></div>
-    <p class="pol-def"><b>Policy</b> = the LLM itself, the model that writes the responses and that RL updates (\(\textcolor{#1e9a4b}{p^{RL}_\theta}\) on slide 83).</p>
+    <p class="pol-def"><b>Policy</b> = the LLM itself, the model that writes the responses and that RL updates (\(\textcolor{#1e9a4b}{p^{RL}_\theta}\) on slide 86).</p>
   </div>
   <p class="src">Interactive (click a step; orange arrows train a model): structure after Ouyang et al. (2022), Fig. 2, redrawn. Prompt counts §3.2; K and the 6B reward model §3.5; compute in petaflop/s-days §5.1.</p>
 </section>
@@ -1732,24 +1788,24 @@ have lost.</p>
   <h2>Inserting \(R(s)\) into \(J_\beta\) gives the reward minus a KL term</h2>
   <div class="slide-body">
     <div data-viz="stepFlow" class="kd">
-      <div class="kd-row" data-step="1"><p class="kd-m">\(\displaystyle J_\beta(\theta) = \mathbb{E}_{\hat s\sim \textcolor{#1e9a4b}{p^{RL}_\theta(s)}}\big[R(\hat s)\big]\)</p><p class="kd-why">the objective of slide 83</p></div>
+      <div class="kd-row" data-step="1"><p class="kd-m">\(\displaystyle J_\beta(\theta) = \mathbb{E}_{\hat s\sim \textcolor{#1e9a4b}{p^{RL}_\theta(s)}}\big[R(\hat s)\big]\)</p><p class="kd-why">the objective of slide 86</p></div>
       <div class="kd-row" data-step="2"><p class="kd-m">\(\displaystyle = \mathbb{E}_{\hat s\sim \textcolor{#1e9a4b}{p^{RL}_\theta(s)}}\Big[\textcolor{#7030a0}{RM_\phi(\hat s)} - \beta\log\frac{\textcolor{#1e9a4b}{p^{RL}_\theta(\hat s)}}{\textcolor{#c00000}{p^{PT}(\hat s)}}\Big]\)</p><p class="kd-why">insert \(R(s)\)</p></div>
       <div class="kd-row" data-step="3"><p class="kd-m">\(\displaystyle = \mathbb{E}_{\hat s\sim \textcolor{#1e9a4b}{p^{RL}_\theta(s)}}\big[\textcolor{#7030a0}{RM_\phi(\hat s)}\big] - \beta\,\mathbb{E}_{\hat s\sim \textcolor{#1e9a4b}{p^{RL}_\theta(s)}}\Big[\log\frac{\textcolor{#1e9a4b}{p^{RL}_\theta(\hat s)}}{\textcolor{#c00000}{p^{PT}(\hat s)}}\Big]\)</p><p class="kd-why">the expectation of a sum is the sum of the expectations</p></div>
       <div class="kd-row" data-step="4"><p class="kd-m">\(\displaystyle = \mathbb{E}_{\hat s\sim \textcolor{#1e9a4b}{p^{RL}_\theta(s)}}\big[\textcolor{#7030a0}{RM_\phi(\hat s)}\big] - \beta\,\mathrm{KL}\big(\textcolor{#1e9a4b}{p^{RL}_\theta}\,\|\,\textcolor{#c00000}{p^{PT}}\big)\)</p><p class="kd-why">definition: \(\mathrm{KL}(p\,\|\,q) = \mathbb{E}_{s\sim p}\big[\log\frac{p(s)}{q(s)}\big]\)</p></div>
       <p class="kd-note" data-step="4">So the penalty in \(R(s)\) is, on average, \(\beta\) times the KL divergence: how far \(\textcolor{#1e9a4b}{p^{RL}_\theta}\) has moved from \(\textcolor{#c00000}{p^{PT}}\).</p>
     </div>
   </div>
-  <p class="src">Ours: the steps from <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 35 (slide 83) to the objective on slide 95.</p>
+  <p class="src">Ours: the steps from <a data-ref="yang2026b">Yang (2026)</a>, CS224N, p. 35 (slide 86) to the objective on slide 98.</p>
 </section>
 
 <section class="slide pB" data-title="KL penalty · the best policy for each β" data-refs="rafailov2023">
   <p class="eb">B · Limits of RL and reward models</p>
   <h2>A larger KL weight β keeps the policy nearer the reference</h2>
   <div class="slide-body">
-    <p class="mathline">\(\displaystyle J_\beta(\theta) = \mathbb{E}_{\hat s\sim \textcolor{#1e9a4b}{p^{RL}_\theta(s)}}\big[\textcolor{#7030a0}{RM_\phi(\hat s)}\big] - \beta\,\mathrm{KL}\big(\textcolor{#1e9a4b}{p^{RL}_\theta}\,\|\,\textcolor{#c00000}{p^{PT}}\big)\), as on slide 83. Move β.</p>
+    <p class="mathline">\(\displaystyle J_\beta(\theta) = \mathbb{E}_{\hat s\sim \textcolor{#1e9a4b}{p^{RL}_\theta(s)}}\big[\textcolor{#7030a0}{RM_\phi(\hat s)}\big] - \beta\,\mathrm{KL}\big(\textcolor{#1e9a4b}{p^{RL}_\theta}\,\|\,\textcolor{#c00000}{p^{PT}}\big)\), as on slide 85. Move β.</p>
     <div data-viz="klLeash" data-notation="rlhf"></div>
   </div>
-  <p class="src">Objective: Rafailov et al. (2023), eq. 3, in the symbols of slide 83. Interactive: four toy responses, \(p^{PT} = 0.25\) each, rewards \(RM_\phi\) = 1.0, 0.5, 0 and −1.0; the bars are the best policy for each β, derived later in this part; values computed in the browser.</p>
+  <p class="src">Objective: Rafailov et al. (2023), eq. 3, in the symbols of slide 86. Interactive: four toy responses, \(p^{PT} = 0.25\) each, rewards \(RM_\phi\) = 1.0, 0.5, 0 and −1.0; the bars are the best policy for each β, derived later in this part; values computed in the browser.</p>
 </section>
 
 <section class="slide pB" data-title="CS224N 49 · Reward hacking" data-refs="yang2026b clark2016">
@@ -2076,6 +2132,7 @@ have lost.</p>
   <p>One example of each of four abilities, then how each is trained: the objective and the data.</p>
   <div class="seg"><b>1</b><span><a data-goto="Four abilities · overview">Four abilities</a></span><span></span></div>
   <div class="seg"><b>2</b><span><a data-goto="Part C · 2 · How each ability is trained">How each ability is trained</a></span><span></span></div>
+  <div class="seg"><b>3</b><span><a data-goto="Part C · 3 · Homework, for practice">Homework, for practice</a></span><span></span></div>
   <aside class="recap">
     <div class="t">So far, in Part B</div>
     <ul><li>Instruction tuning: train on instruction–answer pairs with the next-token loss, on the answer only.</li><li>RLHF: people compare answers, a reward model learns the comparisons, and RL raises the reward with a KL penalty.</li><li>DPO learns from the comparisons directly, with no reward model and no RL loop. GRPO compares a group of answers to one prompt.</li></ul>
@@ -2196,11 +2253,12 @@ have lost.</p>
 </section>
 
 <section class="slide blue seg-div" data-title="Part C · 2 · How each ability is trained">
-  <p class="eb">Part C · 2 of 2</p>
+  <p class="eb">Part C · 2 of 3</p>
   <h1>What post-training enables</h1>
   <p>Next: <b>How each ability is trained</b></p>
   <div class="seg done"><b>1</b><span><a data-goto="Four abilities · overview">Four abilities</a></span><span></span></div>
   <div class="seg now"><b>2</b><span><a data-goto="Part C · 2 · How each ability is trained">How each ability is trained</a></span><span></span></div>
+  <div class="seg next"><b>3</b><span><a data-goto="Part C · 3 · Homework, for practice">Homework, for practice</a></span><span></span></div>
 </section>
 
 <section class="slide pC ab-train" data-title="Ability 1 · Think: how it is trained" data-refs="guo2025">
@@ -2382,6 +2440,56 @@ have lost.</p>
   <p class="src"><a data-ref="bai2022b">Bai et al. (2022b)</a>, Fig. 1 (CC BY 4.0).</p>
 </section>
 
+<section class="slide blue seg-div" data-title="Part C · 3 · Homework, for practice">
+  <p class="eb">Part C · 3 of 3</p>
+  <h1>What post-training enables</h1>
+  <p>Next: <b>Homework, for practice</b></p>
+  <div class="seg done"><b>1</b><span><a data-goto="Four abilities · overview">Four abilities</a></span><span></span></div>
+  <div class="seg done"><b>2</b><span><a data-goto="Part C · 2 · How each ability is trained">How each ability is trained</a></span><span></span></div>
+  <div class="seg now"><b>3</b><span><a data-goto="Part C · 3 · Homework, for practice">Homework, for practice</a></span><span></span></div>
+</section>
+
+<section class="slide pC task" data-title="Practice · DPO: the task">
+  <p class="eb">C · Homework, for practice</p>
+  <h2>Practice homework: teach a model your preference with DPO</h2>
+  <div class="slide-body">
+    <p class="key">Start from the chat model Qwen2.5-0.5B-Instruct (the SFT model, \(\pi_{\mathrm{ref}}\)). Design an instruction and a preference dataset. Train LoRA with the DPO loss of Part B.</p>
+    <div class="task-row">
+      <ol class="board-steps">
+        <li><b>Design</b> an instruction and pairs (prompt, chosen, rejected) for one task, or both. Keep some prompts for the test.</li>
+        <li><b>Predict first:</b> how often does the model answer as you prefer, with the instruction alone and after DPO?</li>
+        <li><b>Run</b> <a href="../../code/dpo_base.py">dpo_base.py</a> on Colab: <code>zero</code>, then <code>dpo</code>. One change at a time; 3 seeds.</li>
+        <li><b>Explain.</b> Which predictions failed, and why?</li>
+      </ol>
+      <div class="card deliver"><div class="tag">What you write</div>
+        <p>Instruction, pairs and predictions, before the runs</p>
+        <p>A table: test prompts answered as you prefer, zero and dpo, mean and range over 3 seeds</p>
+        <p>One plot: e.g. DPO loss and reward margin per step</p>
+        <p>At most 300 words: findings, failed predictions</p>
+      </div>
+    </div>
+    <p class="same">No course credit. In Assignment 3, Part B, you may hand in this practice in place of one of R1–R3; it is marked at the same standard.</p>
+  </div>
+</section>
+
+<section class="slide pC homework dpo-tasks" data-title="Practice · DPO: two tasks">
+  <p class="eb">C · Homework, for practice</p>
+  <h2>Two tasks: a reply format, and your taste in restaurants</h2>
+  <div class="slide-body">
+    <div class="grid">
+      <div class="card"><div class="tag">Task 1 · A QA format, not the usual chat reply</div>
+        <p>The model answers in this format. It is chat text, not code:</p>
+        <pre class="dpo-fmt">input = "&lt;question&gt;", Tool = &lt;a tool name&gt;, tool_result = Tool(), answer = LLM(input, tool_result), print(answer) -&gt; &lt;answer&gt;</pre>
+        <p><b>Chosen:</b> a reply in this format. <b>Rejected:</b> a normal chat reply to the same question.</p></div>
+      <div class="card"><div class="tag">Task 2 · Your preference over restaurants</div>
+        <p>Choose your own preference: for example, quiet, vegetarian, under S$20.</p>
+        <p><b>Chosen:</b> a recommendation that fits it. <b>Rejected:</b> one that does not.</p>
+        <p>Does the model learn the preference, or only the names in your pairs? Test with new places.</p></div>
+    </div>
+    <p class="callout">Check before you conclude: test on prompts that are not in your pairs. Is the change larger than the spread across seeds?</p>
+  </div>
+</section>
+
 <section class="slide part-summary" data-title="Part C close">
   <p class="eb">Part C — what post-training enables · summary</p>
   <h2>What does post-training enable?</h2>
@@ -2390,6 +2498,7 @@ have lost.</p>
       <li><b>Four abilities:</b> (1) think, then answer; (2) call a program (tool use); (3) act in a loop (agents); (4) refuse harm (safety).</li>
       <li><b>How each is trained:</b> (1) think: RL, with rules that check the answer (DeepSeek-R1); (2) call a program: fine-tune on text where a call helps (Toolformer); (3) act in a loop: RL in environments, with tests as the reward (TMax); (4) refuse harm: principles and AI feedback (Constitutional AI).</li>
       <li><b>One set of methods:</b> SFT and RL from Part B. What differs is the data, and what gives the reward: a rule, the tests, or an AI that reads principles.</li>
+      <li><b>Homework, for practice:</b> with DPO, teach a model a reply format or your taste in restaurants.</li>
     </ol>
   </div>
 </section>
@@ -2418,7 +2527,174 @@ have lost.</p>
   </div>
 </section>
 
+<section class="slide blue section-open" data-title="Part D">
+  <p class="eb">Part D</p>
+  <h1>Assignment 3: homework, for credit</h1>
+  <p>All at home, in two phases of about 10 days each. 20% of the module.</p>
+  <p class="hw-draft">These slides show what the homework will be like. Nothing here is final: the official version comes on Canvas.</p>
+  <div class="seg"><b>1</b><span><a data-goto="Homework · the phases">The three phases of the homework</a></span><span></span></div>
+  <div class="seg"><b>2</b><span><a data-goto="Homework · how it is marked">How it is marked, and what to submit</a></span><span></span></div>
+  <div class="seg"><b>3</b><span><a data-goto="Homework · Part A">First homework · Part A: knowledge, K1–K5</a></span><span></span></div>
+  <div class="seg"><b>4</b><span><a data-goto="Homework · Part B, the four steps">Research homework · Part B: R1–R3</a></span><span></span></div>
+</section>
+
+<section class="slide hw hw-phases" data-title="Homework · the phases">
+  <p class="eb">Part D · 1 · the three phases · released tonight, 14 Oct</p>
+  <h2>Three phases at home: each starts from your results in the last</h2>
+  <div class="slide-body">
+    <div class="phases">
+      <div class="ph"><div class="tag">Phase 0 · now · not marked</div><h4>Practice runs</h4><p><a href="../../../lecture-1/session-1/slides/#/68">L1·01</a> small GPT</p><p><a href="../../../lecture-1/session-2/slides/#/154">L1·02</a> four ways to adapt</p><p>L2·02 agent (21 Oct)</p></div>
+      <div class="arr">→</div>
+      <div class="ph"><div class="tag">Phase 1 · Part A · 30 points</div><h4>Knowledge</h4><p class="ph-dur">10 days</p></div>
+      <div class="arr">→</div>
+      <div class="ph accent"><div class="tag">Phase 2 · Part B · 70 points</div><h4>Research</h4><p class="ph-dur">10 days</p><p>R1–R3. You may replace one with a practice homework, marked at the same standard.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide hw hw-marks" data-title="Homework · how it is marked">
+  <p class="eb">Part D · 2 · how it is marked · 100 points = 20% of the module</p>
+  <h2>Marks go to your reasoning, not to a right prediction</h2>
+  <div class="slide-body">
+    <table class="hw-t">
+      <tr><th>Part</th><th>What is marked</th><th>Points</th></tr>
+      <tr><td>A</td><td>K1–K5, 6 points each: derivations and diagrams. Show each step.</td><td class="n">30</td></tr>
+      <tr><td>B</td><td>R1 25, R2 25, R3 20. In each: (a)&nbsp;predictions&nbsp;5, (b)&nbsp;setup and checks&nbsp;5, (c)&nbsp;experiments&nbsp;7, (d)&nbsp;report&nbsp;8 (R3:&nbsp;4,&nbsp;4,&nbsp;6,&nbsp;6).</td><td class="n">70</td></tr>
+    </table>
+    <ul class="hw-rules">
+      <li>Part B marks your predictions and their reasons, how you test them, and what you conclude. A wrong prediction loses no marks.</li>
+      <li>Predictions uploaded after the problem's first run earn at most 2 of the points of (a).</li>
+      <li>Using AI tools does not lower your marks: the work is marked on its quality. No AI tool marks your work.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide hw" data-title="Homework · rules and submission">
+  <p class="eb">Part D · 2 · rules and what to submit</p>
+  <h2>Use AI tools and declare them; report only your own runs</h2>
+  <div class="slide-body">
+    <div class="grid">
+      <div class="card"><div class="tag">Rules</div>
+        <p>AI tools allowed in every part. Add one sentence: which tool, for what.</p>
+        <p>Every Part B number comes from your runs.</p>
+        <p>Discuss ideas; do not share code, text or plots.</p></div>
+      <div class="card accent"><div class="tag">Submit</div>
+        <p>Predictions: before each problem's first run.</p>
+        <p>Part A: <code>partA.pdf</code>, about 7 days after the questions are out.</p>
+        <p>Part B: <code>partB.pdf</code> and <code>submission.zip</code>, at the end of phase 2.</p>
+        <p>Exact dates on Canvas. Late only with a valid reason; ask first.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide hw hw-a" data-title="Homework · Part A">
+  <p class="eb">Part D · 3 · first homework · Part A (30 points) · example questions</p>
+  <h2>Part A: Knowledge — derive by hand. Due in about 7 days</h2>
+  <div class="slide-body">
+    <p class="hw-lead">Use derivations to predict the answers to the questions below.</p>
+    <ol class="hw-list hw-ex">
+      <li><b>K1</b> (L1·01) The small GPT of the practice (<code>ablation_base.py</code>, built like nanoGPT): derive its parameter count \(N(V, T, d, L)\), and draw one block.</li>
+      <li><b>K2</b> (L1·01) Show that a uniform model has loss \(\ln V\). Why does your run start near \(\ln 65 = 4.17\)?</li>
+      <li><b>K3</b> (L1·02) With \(C \approx 6ND\) and about 20 tokens per parameter: was your practice run too large or too small?</li>
+      <li><b>K4</b> (L1·02) LoRA on <code>q_proj</code> and <code>v_proj</code> of Qwen2.5-0.5B: derive its trainable parameters as a function of \(r\).</li>
+      <li><b>K5</b> (tonight: slides 82–84, 86–88, 97–98, 104–110) From Bradley–Terry and the KL penalty, show that \(\log Z\) cancels, and derive the DPO loss.</li>
+    </ol>
+    <p class="key">Any diagram has to be drawn by hand. Each derivation must show its steps.</p>
+    <p class="hw-canvas">Examples only: the official questions, with more details and instructions, come on Canvas by Fri 16 Oct.</p>
+  </div>
+</section>
+
+<section class="slide hw hw-b" data-title="Homework · Part B, the four steps">
+  <p class="eb">Part D · 4 · research homework · Part B (70 points) · what you submit</p>
+  <h2>Part B: Research — hypothesis and validation</h2>
+  <div class="slide-body">
+    <table class="hw-t hw-sub">
+      <tr><td>(a) Hypothesis</td><td><code>predictions_R1.pdf</code> (R2, R3): outcome, probability, mechanism; before that problem's first run.</td></tr>
+      <tr><td>(b) Setup and checks</td><td><code>partB.pdf</code> (b): what you built or changed, and the checks that show it works.</td></tr>
+      <tr><td>(c) Experiments, 3 seeds</td><td><code>partB.pdf</code> (c): mean and range per setting. Code and result files: <code>submission.zip</code>.</td></tr>
+      <tr><td>(d) Report</td><td><code>partB.pdf</code> (d): at most 400 words, one table, one plot.</td></tr>
+    </table>
+    <div class="hw-ai">
+      <p class="tag">AI rule: you must be able to explain your report</p>
+      <ul>
+        <li>Report not clear to me? You explain it to me in 5–10 min. You convince me: you get the points. If not: 0 points for (c) and (d).</li>
+        <li>No conclusion? Write "I cannot draw a conclusion from my experiment results." and discuss it with me. We figure it out: you get the points. If not: half of (c) and (d).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide hw hw-r" data-title="Homework · R1 NanoX">
+  <p class="eb">Part D · 4 · research homework · R1 (25 points) · from L1·01</p>
+  <h2>R1: build an old architecture, then explain its loss gap</h2>
+  <div class="slide-body">
+    <ol class="board-steps">
+      <li><b>Your student number picks</b> NPLM, LSTM, ConvNet, ConvNeXt, MLP-Mixer or linear attention.</li>
+      <li><b>Build it</b> at the GPT's size (±10%). It must pass <code>check_nanox.py</code>.</li>
+      <li><b>Measure:</b> GPT against yours, 3 seeds. Is the gap real?</li>
+      <li><b>Explain the gap:</b> remove one part, or swap the mixing layer. Then change the context length.</li>
+    </ol>
+    <p class="key">What does attention give at under a million parameters? Laptop CPU, about 70 s a run.</p>
+  </div>
+</section>
+
+<section class="slide hw hw-r hw-r2" data-title="Homework · R2 training vs prompting">
+  <p class="eb">Part D · 4 · research homework · R2 (25 points) · from L1·02</p>
+  <h2>R2: find where training beats prompting, then test why</h2>
+  <div class="slide-body">
+    <div class="r2-grid">
+      <ol class="board-steps">
+        <li><b>Start from your practice table:</b> one \(n\) = 16, not a sweep.</li>
+        <li><b>Find n*:</b> sweep \(n\) = 4 to 64 for ICL and LoRA. Where does LoRA win?</li>
+        <li><b>Test one reason, near n*:</b> swap the labels, shorten the prompt, or use a larger model.</li>
+        <li><b>Report:</b> did n* move, which way, and is it more than the seed spread?</li>
+      </ol>
+      <div class="r2-ex">
+        <p class="tag">Practice table (L1·02) · example, made-up numbers</p>
+        <table class="hw-t r2-t">
+          <tr><th>Setting, \(n\) = 16</th><th>Accuracy, 3 seeds</th></tr>
+          <tr><td><code>zero</code>: instruction only</td><td>70% (1 run)</td></tr>
+          <tr><td><code>icl</code>: 16 examples in the prompt</td><td>81% (78–84)</td></tr>
+          <tr><td><code>lora</code>: rank 8, trained on the 16</td><td>80% (74–86)</td></tr>
+        </table>
+        <p class="r2-note">Mean (range) on 200 test reviews, Qwen2.5-0.5B, SST-2.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide hw hw-r" data-title="Homework · R3 agent reliability">
+  <p class="eb">Part D · 4 · research homework · R3 (20 points) · from L2·02</p>
+  <h2>R3: find why an agent fails, then make it more reliable</h2>
+  <div class="slide-body">
+    <ol class="board-steps">
+      <li><b>Run each question 8 times:</b> model alone, "think step by step", agent with a tool.</li>
+      <li><b>Compare pass^k with p̄^k:</b> do failures come from the run or the question?</li>
+      <li><b>Change one harness piece at a time,</b> at least three changes.</li>
+      <li><b>Rank them</b> by pass^k gained per 1,000 extra tokens.</li>
+    </ol>
+    <p class="key">Agent code comes on 21 Oct. Free model in Colab; no paid API.</p>
+  </div>
+</section>
+
 </div>
+
+<script>
+(() => {
+  const KEY = "ceg5305-p2l2s1-rs-", DEF = { s1: "8.0", s2: "1.2" };
+  const get = k => { try { return localStorage.getItem(KEY + k); } catch { return null; } };
+  const put = (k, v) => { try { v ? localStorage.setItem(KEY + k, v) : localStorage.removeItem(KEY + k); } catch { /* no storage */ } };
+  const show = k => document.querySelectorAll(`.rs-val[data-rs="${k}"]`).forEach(e => { e.textContent = get(k) || DEF[k]; });
+  document.querySelectorAll("input.rs-in").forEach(inp => {
+    const k = inp.dataset.rs;
+    inp.value = get(k) || DEF[k];
+    inp.addEventListener("input", () => { put(k, inp.value.trim()); show(k); });
+    inp.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === "Escape") inp.blur(); });
+    inp.addEventListener("blur", () => { if (!inp.value.trim()) inp.value = DEF[k]; });
+  });
+  Object.keys(DEF).forEach(show);
+})();
+</script>
 
 <div class="chrome"><i></i></div>
 <button class="navbtn prev" aria-label="previous slide">‹</button>

@@ -236,6 +236,54 @@
 .slide.seg-div.many h1 { margin: 10px 0 12px; }
 .slide.seg-div.many .seg { padding: 9px 0; font-size: 28px; }
 
+/* Slide 2, "About these slides" (D44, 14 Oct 2026): AI statement, reference decks, key papers. Text ≥ 27 px. */
+.slide.about-deck .slide-body > .fit { gap: 8px; }
+.slide.about-deck .ad-ai { font-size: 27px; line-height: 1.35; margin: 0 0 8px; }
+.slide.about-deck .ad-h { font-size: 27px; font-weight: 700; margin: 8px 0 0; color: var(--blue, #003d7c); }
+.slide.about-deck .ad-h span { font-weight: 400; color: var(--muted, #5b6b7a); }
+.slide.about-deck .ad-list { margin: 0; padding-left: 1.1em; }
+.slide.about-deck .ad-list li { font-size: 27px; line-height: 1.3; margin: 0 0 4px; }
+.slide.about-deck .ad-papers { font-size: 27px; line-height: 1.35; margin: 0; }
+
+/* Part D · how it is marked (14 Oct 2026): three-column table, points last; rules list under it. */
+.slide.hw.hw-marks table.hw-t td:last-child { width: 9%; }
+.slide.hw.hw-marks table.hw-t td:nth-child(2) { white-space: normal; }
+.slide.hw ul.hw-rules { margin: 16px 0 0; padding-left: 1.1em; }
+.slide.hw ul.hw-rules li { font-size: 27px; line-height: 1.35; margin-bottom: 10px; }
+/* three phases, not four: five grid columns */
+.slide.hw .phases { grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr); }
+
+/* Part D, second round (14 Oct 2026) */
+.slide.hw .phases .ph p.ph-dur { margin-top: 10px; font-size: 40px; font-weight: 700; color: var(--deep); }
+.slide.hw.hw-a p.hw-lead { margin: 0 0 10px; font-size: 28px; font-weight: 600; }
+.slide.hw.hw-a ol.hw-ex { padding-left: 0; list-style: none; }
+.slide.hw.hw-a ol.hw-ex li { font-size: 27px; line-height: 1.3; margin-bottom: 9px; }
+.slide.hw.hw-a ol.hw-ex li b { color: var(--orange-2); margin-right: 4px; }
+.slide.hw.hw-b table.hw-sub td:first-child { width: 30%; font-size: 27px; color: var(--deep); }
+.slide.hw.hw-b table.hw-sub td:last-child { width: auto; white-space: normal; }
+.slide.hw.hw-b table.hw-sub td { padding: 7px 10px; }
+.slide.hw.hw-b .hw-ai { margin-top: 14px; padding: 10px 16px; border-left: 4px solid var(--orange); background: var(--tint); }
+.slide.hw.hw-b .hw-ai .tag { margin: 0 0 4px; }
+.slide.hw.hw-b .hw-ai ul { margin: 0; padding-left: 1.1em; }
+.slide.hw.hw-b .hw-ai li { font-size: 27px; line-height: 1.3; margin-bottom: 6px; }
+.slide.hw.hw-r2 .r2-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.slide.hw.hw-r2 .r2-grid .board-steps li { font-size: 27px; line-height: 1.32; margin-bottom: 12px; }
+.slide.hw.hw-r2 .r2-ex { padding: 12px 16px; background: var(--panel); border-top: 3px solid var(--blue-2); }
+.slide.hw.hw-r2 table.r2-t td:first-child { width: auto; font-size: 27px; font-weight: 400; color: inherit; }
+.slide.hw.hw-r2 table.r2-t td:last-child { width: 34%; }
+.slide.hw.hw-r2 .r2-note { margin: 8px 0 0; font-size: 22px; color: var(--muted); }
+.slide.hw.hw-a ol.hw-ex li { margin-bottom: 6px; }
+.slide.hw.hw-a p.key { margin-top: 8px; }
+.slide.hw.hw-a p.hw-canvas { margin: 6px 0 0; font-size: 27px; color: var(--muted); }
+.slide.hw.hw-b .hw-ai { margin-top: 10px; padding: 8px 16px; }
+.slide.hw.hw-b .hw-ai li { margin-bottom: 4px; }
+.slide.hw table.r2-t th { text-transform: none; font-size: 20px; }
+.slide.hw.hw-a p.hw-lead { margin-bottom: 6px; }
+.slide.hw.hw-a ol.hw-ex li { line-height: 1.25; }
+.slide.hw.hw-a p.hw-canvas { font-size: 25px; }
+.slide.hw.hw-b table.hw-sub td { padding: 5px 10px; }
+.slide.section-open p.hw-draft { margin-top: 6px; font-size: 24px; opacity: .85; }
+
 /* ───── Part A (slides_build/partA/partA.css) ───── */
 /* Part A — Why we need mid- and post-training (slides_build/partA/partA.css).
    Every selector is scoped by .slide.pA. Theme: assets/css/slides-theme.css. */
@@ -594,6 +642,8 @@
 .slide.pA .effort-ui .eu-track i { position: absolute; top: 11px; width: 4px; height: 4px; border-radius: 50%; background: #a9c4f5; }
 .slide.pA .effort-ui .eu-knob { position: absolute; right: -2px; top: -4px; width: 34px; height: 34px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
 .slide.pA .effort-ui figcaption { font-size: 21px; line-height: 1.3; color: var(--muted); }
+/* Slide 21, AI safety graphic (14 Oct 2026): a smaller picture leaves room for the correction line and the references. */
+.slide.pA.solo-shot.ai-safety .fig img { max-height: 455px; }
 
 /* ───── Part B (slides_build/partB/partB.css) ───── */
 /* Part B — How to do post-training (slides_build/partB/partB.css). Round 3 rules at the end (11 Oct 2026).
@@ -1261,6 +1311,32 @@
 .slide.pB .p53-row .m small { font-size: 16px; }
 .slide.pB .cols.p53 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
 
+/* Instructor checklist for the two polls (14 Oct 2026, Junyuan Hong: "checklist (in a pink box)"). Small type on
+   purpose: it is a cue for the lecturer, not slide content. Ticks reset on reload. */
+.slide.pB .poll-steps { background: #fde8f6; border: 2px solid #e33fd2; border-radius: 10px; padding: 8px 14px 10px; color: #3b1236; }
+.slide.pB .poll-steps .ps-h { margin: 0 0 4px; font-size: 15px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #a3218f; }
+.slide.pB .poll-steps label { display: flex; gap: 8px; align-items: baseline; font-size: 17px; line-height: 1.3; margin: 2px 0; cursor: pointer; }
+.slide.pB .poll-steps input { accent-color: #c42db2; transform: translateY(2px); flex: none; }
+.slide.pB .poll-steps label:has(input:checked) { color: #9b8597; text-decoration: line-through; }
+.slide.pB .poll-steps .ps-no { color: #c0262d; }
+.slide.pB .poll-steps.ps-corner { position: absolute; top: 22px; right: 64px; width: 372px; z-index: 2; }
+.slide.pB .poll-steps.ps-corner { padding: 6px 12px 8px; }
+.slide.pB .poll-steps.ps-corner label { font-size: 16px; line-height: 1.25; margin: 1px 0; }
+.slide.pB.p2-only .p2-left { display: flex; flex-direction: column; gap: 22px; }
+.slide.pB.p2-only .p2-left .poll-steps { align-self: flex-start; }
+
+/* Slide 70: R(s1), R(s2) typed in class (14 Oct 2026); synced to .rs-val on slides 76 and 77 */
+.slide.pB input.rs-in { width: 3.4em; font: inherit; font-family: "KaTeX_Main", "Times New Roman", serif; font-size: 26px; text-align: center; padding: 0 4px; border: 2px dashed var(--orange); border-radius: 6px; background: var(--tint); color: var(--text); }
+.slide.pB input.rs-in:focus { outline: none; border-style: solid; }
+.slide.pB span.rs-val { font-family: "KaTeX_Main", "Times New Roman", serif; }
+
+/* Slide 79 hypothesis and the Chatbot Arena slide (14 Oct 2026) */
+.slide.pB.p2-only p.p2-hyp { margin: 14px 0 0; padding: 8px 14px; font-size: 27px; border-left: 4px solid var(--orange); background: var(--tint); }
+.slide.pB.arena .arena-row { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.slide.pB.arena .arena-row figure { margin: 0; display: flex; flex-direction: column; align-items: center; }
+.slide.pB.arena .arena-row img { display: block; width: auto; height: auto; max-width: 100%; max-height: 380px; object-fit: contain; border: 1px solid var(--line); border-radius: 6px; }
+.slide.pB.arena .arena-row figcaption { margin-top: 8px; font-size: 22px; text-align: center; color: var(--muted); }
+
 /* ───── Part C (slides_build/partC/partC.css) ───── */
 /* Part C — What post-training enables (slides_build/partC/partC.css).
    Every selector is scoped by .slide.pC. Theme: assets/css/slides-theme.css. */
@@ -1583,3 +1659,8 @@
 /* slide 133: Constitutional AI Fig. 1, full width (JH, 14 Oct 2026) */
 .slide.pC.cai-fig .slide-body { justify-content: center; }
 .slide.pC.cai-fig .fig img { width: 100%; max-height: 500px; object-fit: contain; }
+
+/* Practice homework, DPO (14 Oct 2026) */
+.slide.pC.dpo-tasks .grid > .card p { font-size: 27px; line-height: 1.32; margin-bottom: 10px; }
+.slide.pC.dpo-tasks pre.dpo-fmt { margin: 4px 0 12px; padding: 10px 12px; font-size: 19px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; background: var(--code, #f4f6f8); border: 1px solid var(--line); border-radius: 8px; }
+.slide.pC.task .card.deliver p { font-size: 22px; }
