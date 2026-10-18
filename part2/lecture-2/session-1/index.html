@@ -98,6 +98,7 @@
   <li class="sub"><a href="#b1-ppo">PPO</a></li>
   <li class="sub"><a href="#b2-reward-model">Model the human reward</a></li>
   <li class="sub"><a href="#b2-comparisons">Ratings and comparisons</a></li>
+  <li class="sub"><a href="#b2-arena">Chatbot Arena</a></li>
   <li class="sub"><a href="#b2-bt">Bradley–Terry and the RM loss</a></li>
   <li class="sub"><a href="#b2-difference">Only the difference matters</a></li>
   <li class="sub"><a href="#b2-test-rm">Test the reward model</a></li>
@@ -134,6 +135,7 @@
   <li class="sub"><a href="#c1-tool">Tool use: keep helpful calls</a></li>
   <li class="sub"><a href="#c1-agent">Agents: RL in environments</a></li>
   <li class="sub"><a href="#c1-safety">Safety: principles, AI feedback</a></li>
+  <li class="sub"><a href="#c1-practice">Practice homework: DPO</a></li>
   <li class="sub"><a href="#c1-summary">Part C summary</a></li>
   <li><a href="#close">Where we got to</a></li>
   <li><a href="#resources">Resources</a></li>
@@ -887,12 +889,24 @@ Give me three ideas for a weekend in Singapore.
 <p><b>Task.</b> Use the summaries \(s_1\), \(s_2\) and \(s_3\) above. Part 1: give \(s_3\) a score from 0 to 10, knowing that \(s_1\) got 8.0 and \(s_2\) got 1.2. Compare your number with a neighbour's. Part 2: for each pair (\(s_1\) with \(s_2\), \(s_1\) with \(s_3\), \(s_2\) with \(s_3\)), choose the better summary. Compare your three choices with a neighbour's.</p>
 <p><b>What the exercise shows.</b> When a class does this, the scores usually differ a lot from person to person, and so do the orders built from them. The pair choices agree more often. A score needs a scale that each person sets alone. A pair choice needs no scale. The size of the effect depends on the people.</p>
 <p>Some people give a cycle: \(s_1\) is better than \(s_2\), \(s_2\) is better than \(s_3\), and \(s_3\) is better than \(s_1\). No single order matches a cycle. A model with one score per text cannot fit it exactly. It can still be trained, because it gives probabilities and not certainties.</p></details>
+<p><b>Hypothesis.</b> Pairwise comparison is more reliable (higher agreement) than rating.</p>
 <p>The solution is to ask for <b>pairwise comparisons</b> in place of direct ratings. A <b>rating</b> is a score for one text. A <b>comparison</b> says which of two texts is better. The claim that comparisons can be more reliable than ratings cites <a data-ref="phelps2015">Phelps et al. (2015)</a> and <a data-ref="clark2018">Clark et al. (2018)</a>.</p>
 <p>In the toy case, the ranking is \(s_1 \succ s_3 \succ s_2\). The symbol \(a \succ b\) means that a person prefers \(a\) to \(b\).</p>
 <p>The reward model keeps its form: it reads the tokens of a text and outputs one number for the whole text. Only the training signal changes. For each comparison, the model must give a higher score to the preferred sample. The standard <b>reward-model loss</b> comes from the paired-comparison model of <a data-ref="bradley1952">Bradley &amp; Terry (1952)</a>:</p>
 <p>\[ \min_\phi\; J_{RM}(\phi) = -\,\mathbb{E}_{(s^w,\,s^l)\sim D}\Big[\log\sigma\big(RM_\phi(s^w) - RM_\phi(s^l)\big)\Big]. \]</p>
 <p>Here \(D\) is now a dataset of pairs. In each pair, \(s^w\) is the winning sample and \(s^l\) is the losing sample. The sigmoid is \(\sigma(z) = 1/(1 + e^{-z})\). It maps any number \(z\) to a probability between 0 and 1, and \(\sigma(0) = 0.5\).</p>
-<p>If \(RM_\phi(s^w)\) is much larger than \(RM_\phi(s^l)\), then \(\sigma\) is close to 1, its logarithm is close to 0, and the loss is small. So the loss asks for \(s^w\) to score higher than \(s^l\). The next section derives it.</p>
+<p>If \(RM_\phi(s^w)\) is much larger than \(RM_\phi(s^l)\), then \(\sigma\) is close to 1, its logarithm is close to 0, and the loss is small. So the loss asks for \(s^w\) to score higher than \(s^l\). The section <a href="#b2-bt">Bradley–Terry gives the reward-model loss</a> derives it.</p>
+
+<!-- 18 Oct 2026, Junyuan Hong: "Add the Chatbot Arena and DPO practice to the notes" (slide 80). Facts: Chiang et al.
+     (2024), arXiv v1 HTML, read 14 Oct 2026: §1 (anonymous models, vote, names after the vote; Apr 2023; 240K votes,
+     90K users, 100+ languages, Jan 2024), §3.1 (tie, both are bad; Fig. 8), §4 (Bradley–Terry coefficients; earlier
+     Elo), Fig. 2 (win rates). -->
+<h3 id="b2-arena">Pairwise comparison was the most popular way to compare LLMs in QA</h3>
+<p>The same kind of choice ranks whole models. <b>Chatbot Arena</b> (LMSYS; now LMArena) is a free website, run since April 2023. A user asks any question and gets answers from two anonymous LLMs, side by side. Then the user votes for the better answer: A is better, B is better, a tie, or both are bad. The names of the two models show only after the vote (<a data-ref="chiang2024arena">Chiang et al., 2024</a>, §1 and §3.1). By January 2024, the site had over 240,000 votes from about 90,000 users, in over 100 languages (§1).</p>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partB/chiang2024-arena-screenshot.png" width="1400" height="1069" loading="lazy" alt="Chatbot Arena screenshot: the rules (ask any question to two anonymous models and vote for the better one), the same prompt answered by Model A and Model B side by side, and four vote buttons: A is better, B is better, Tie, Both are bad."><figcaption>The evaluation view: one question, two anonymous models, one vote. Figure: <a data-ref="chiang2024arena">Chiang et al. (2024)</a>, Fig. 8.</figcaption></figure>
+<p>From the votes, the site ranks the models with the Bradley–Terry model of the next section. Each model gets one score \(\xi\). The probability that model \(m\) beats model \(m'\) is \(\sigma(\xi_m - \xi_{m'})\) (§4). Earlier versions of the leaderboard showed Elo ratings; the paper changed to the Bradley–Terry scores because they are better for statistical estimation (§4). The figure below gives the win rates between 12 models, in rank order. Each cell is how often the model of the row beat the model of the column.</p>
+<figure class="paper" style="--fig-w: 460px"><img src="slides/assets/partB/chiang2024-win-rate.png" width="750" height="750" loading="lazy" alt="Win-rate matrix of 12 models, from gpt-4-turbo at the top to mistral-7b-instruct at the bottom; each cell is the fraction of battles that model A won against model B."><figcaption>Win rates from the human votes, models in rank order. Figure: <a data-ref="chiang2024arena">Chiang et al. (2024)</a>, Fig. 2 (left).</figcaption></figure>
+<p>So pairwise choices do two jobs in post-training: they train the reward model, and they rank the finished models.</p>
 
 <h3 id="b2-bt">Bradley–Terry gives the reward-model loss</h3>
 <p>The derivation treats the prompt \(x\) and the response \(y\) separately. The sample is \(s = (x, y)\), and \(RM_\phi(s)\) is written \(r_\phi(x, y)\). The winning response is \(y_w\) and the losing response is \(y_l\). The loss \(J_{RM}\) of the last section is then the loss \(\mathcal{L}_{\mathrm{RM}}\) below.</p>
@@ -1446,6 +1460,27 @@ Every token of answer \(i\) gets the same advantage \(\hat A_i\). The loss keeps
 <p>The figure shows the whole pipeline, as the paper draws it. The top row is the supervised stage. A helpful RLHF model answers red-team prompts that elicit harmful samples. Each answer gets a critique and a revision. A model is fine-tuned on the revisions, and this gives the SL-CAI model. The bottom row is the RL stage. The SL-CAI model answers red-team prompts twice, which gives pairs of samples. An AI picks the better answer of each pair by the constitution. A preference model learns these choices. RLAIF training uses this preference model and the SL-CAI model, and gives the final RL-CAI model.</p>
 <figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partC/bai2022b-fig1.png" width="1696" height="703" loading="lazy" alt="Flow chart in two rows. Top row, the supervised stage: a helpful RLHF model, then generate responses to red-teaming prompts that elicit harmful samples, then a stack of response, critique and revision, then the finetuned SL-CAI model. Bottom row, the RL stage: generate responses to red-teaming prompts that elicit pairs of samples, then Constitutional AI feedback for self-improvement, then a finetuned preference model, then RLAIF training with the preference model and the SL-CAI model, then the final RL-CAI model."><figcaption>The Constitutional AI pipeline: a supervised stage (top), then RL from AI feedback (bottom). A small set of principles steers both the critiques and the AI feedback. Figure: <a data-ref="bai2022b">Bai et al. (2022)</a>, Fig. 1 (CC BY 4.0).</figcaption></figure>
 <p>The principles steer both stages, and no person labels harm. The four abilities now have an example each, and a method each. The summary puts them side by side.</p>
+
+<!-- 18 Oct 2026, Junyuan Hong: "Add the Chatbot Arena and DPO practice to the notes" (slides 137–139). From the slides
+     and the docstring of part2/lecture-2/code/dpo_base.py. -->
+<h3 id="c1-practice">Homework, for practice: teach a model your preference with DPO</h3>
+<p>This homework gives no credit. It uses the DPO loss of Part B (<a href="#b3-dpo-loss">DPO needs no reward model</a>). Start from a chat model, Qwen2.5-0.5B-Instruct. It is a model after SFT, so it is the frozen model \(p^{PT}\) of the DPO loss. The trained model \(p^{RL}_\theta\) is the same model plus a LoRA update; only the update is trained. Design an instruction and a preference dataset: for each prompt, a chosen answer \(y_w\) and a rejected answer \(y_l\). Then train with the DPO loss. The base code is <a href="../code/dpo_base.py">dpo_base.py</a>, with a Colab notebook, <a href="../code/dpo_base.ipynb">dpo_base.ipynb</a>. It uses the LoRA code of Lecture 1, session 02. (The code writes \(\pi_{\mathrm{ref}}\) for \(p^{PT}\) and \(\pi_\theta\) for \(p^{RL}_\theta\).)</p>
+<p>There are two tasks. Do one, or both.</p>
+<ul>
+  <li><b>Task 1: a QA format, not the usual chat reply.</b> The model answers in this format. It is the text of a chat reply, not code; nothing runs:
+<pre><code>input = "&lt;question&gt;", Tool = &lt;a tool name&gt;, tool_result = Tool(), answer = LLM(input, tool_result), print(answer) -&gt; &lt;answer&gt;</code></pre>
+  The chosen answer uses this format. The rejected answer is a normal chat reply to the same question.</li>
+  <li><b>Task 2: your preference over restaurants.</b> Choose your own preference, for example quiet, vegetarian and under S$20. The chosen answer recommends a place that fits it. The rejected answer recommends one that does not. Test with places that are not in your pairs: did the model learn the preference, or only the names?</li>
+</ul>
+<ol>
+  <li><b>Design</b> the instruction and the pairs. Keep some prompts for the test only.</li>
+  <li><b>Predict before you run the code.</b> How often does the model answer as you prefer, with the instruction alone (<code>zero</code>) and after DPO? Give each prediction a probability and a one-line reason.</li>
+  <li><b>Run</b> <code>zero</code>, then <code>dpo</code>, on Colab. Change one thing at a time, for example the instruction, the pairs or \(\beta\). Use 3 seeds.</li>
+  <li><b>Explain.</b> Which predictions failed, and why?</li>
+</ol>
+<p><b>What you write.</b> Your instruction, your pairs and your predictions, before the runs. A table: how often the model answers the test prompts as you prefer, for <code>zero</code> and <code>dpo</code>, with the mean and the range over 3 seeds. One plot, for example the DPO loss and the reward margin at each step. At most 300 words: your main findings, and the predictions that failed.</p>
+<div class="callout"><b>Check before you conclude.</b> Test on prompts that are not in your pairs. Is the change larger than the spread across seeds? The code measures two things on the test pairs. The first is whether \(\log p^{RL}_\theta(y_w\mid x) &gt; \log p^{RL}_\theta(y_l\mid x)\), for the trained model alone. A long answer has a lower log-probability than a short one, so this can stay low when the model has learned a long format. The second is whether the reward of the winner, \(\beta\log\big(p^{RL}_\theta(y_w\mid x)/p^{PT}(y_w\mid x)\big)\), is higher than the reward of the loser. This is the comparison that the DPO loss makes.</div>
+<p>One more option in the code, <code>--sft</code>, adds the SFT loss on the chosen answers to the DPO loss. DPO asks only that the winner gains on the loser, so it can lower the probability of the winner too. In Assignment 3, Part B, you may hand in this practice in place of one of R1–R3; it is marked at the same standard.</p>
 
 <h3 id="c1-summary">Part C summary: what does post-training enable?</h3>
 <p>Post-training enables four abilities. Each has its own recipe. All four use the methods of Part B, SFT and RL.</p>
