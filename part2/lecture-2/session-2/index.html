@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part 2 · Lecture 2, Session 02 — Prompting LLMs · CEG5305</title>
+<meta name="description" content="CEG5305 Part 2, Lecture 2, session 02: prompting large language models — a brief history of prompting in 19 methods, prompt to think (chain-of-thought and reasoning models), and prompt as system (agents and harness).">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../../../assets/css/site.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.querySelector('main'),{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],ignoredClasses:['viz'],throwOnError:false})"></script>
+<script type="module" src="../../../assets/js/main.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="inner">
+  <a class="brand" href="../../../">CEG5305 <span>· Generative AI with Foundation Models</span></a>
+  <nav><a href="../../../#lectures">Lectures</a><a href="#references">References</a></nav>
+</div></header>
+
+<div class="wrap">
+<p class="crumbs"><a href="../../../">Home</a> › Part 2 › Lecture 2 › Session 02</p>
+
+<!-- Short page, 10 Oct 2026 (session "CEG 5305 lec2s2"): the plan of the session and the slides link.
+     The full lecture notes are written from the same parts as the slides
+     (CEG5305_GenAI_2026/materials/part2/lectures/L2_02_prompting_icl_cot/slides_build/outline.json) and will replace the sections below. -->
+<section class="hero" id="overview">
+  <span class="badge">Part 2 - Lecture 2</span>
+  <h1>Prompting Large Language Models</h1>
+  <p class="lede">Topic 5, <em>Post-training and Prompting</em>. Session 01 changed the weights of the model. Session 02 keeps the weights fixed and changes only the input, and the loop around the model.</p>
+  <div class="meta"><span><b>Session 02</b> · three parts and an invited talk</span><span><b>Lecturer</b> · Junyuan Hong</span><span><b>Slides</b> · <a href="slides/">open the slides</a></span><span><b>Previous</b> · <a href="../session-1/">Session 01</a></span></div>
+  <div class="question">
+    <div class="q">How far can a fixed model go?</div>
+    <p>Tonight the model's weights stay fixed. We change the prompt and the context the model reads, how it reasons (chain-of-thought), and the loop and tools around it (the agent and its harness).</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="tag">Part A</div><h4>A brief history of prompting</h4><p>Nineteen methods on one math question. Each method fixes the limitation of the one before it.</p></div>
+    <div class="card"><div class="tag">Part B</div><h4>Prompt to think</h4><p>The model writes more before it answers: reasoning models, chain-of-thought prompting, search over many chains, and revision. When does that help?</p></div>
+    <div class="card"><div class="tag">Part C</div><h4>Prompt as System: Agents and harness</h4><p>When one call is not enough: the model in a loop, the system around it, and how to measure and secure it.</p></div>
+  </div>
+  <p class="note">Every slide has a teaching script: open the slides and press N.</p>
+</section>
+
+<!-- Disclosure (D44, Junyuan Hong, 14 Oct 2026; format in .claude/skills/make-lecture/references/disclosure.md) -->
+<section class="callout" id="about" aria-labelledby="about-h">
+  <h3 id="about-h">About these notes</h3>
+  <p>These notes were prepared with the help of AI tools (Claude, by Anthropic), working from the reference slides and papers listed here. Junyuan Hong chose the content, checked it and is responsible for any errors. If you find one, please report it on Canvas.</p>
+  <p><b>Reference slides</b></p>
+  <ul>
+    <li>UC Berkeley CS294/194-280 <i>Advanced Large Language Model Agents</i>, Spring 2025: <a data-ref="chen2025b">Inference-time techniques for LLM reasoning</a>, Xinyun Chen.</li>
+    <li>CMU 11-768 <i>AI Agents</i>, Fall 2026, lecture 1: <a data-ref="fried2026">What are agents? And how do they work?</a>, Daniel Fried and Graham Neubig.</li>
+    <li>CMU 11-768 <i>AI Agents</i>, Fall 2026, lecture 3: <a data-ref="neubig2026">Context management for long-context agents</a>, Graham Neubig.</li>
+    <li>CMU 11-768 <i>AI Agents</i>, Fall 2026, lecture 13: <a data-ref="fried2026b">Agent safety</a>, Daniel Fried and Graham Neubig.</li>
+  </ul>
+  <p><b>Key papers</b></p>
+  <ul>
+    <li>Brown, T. B., et al. (2020). <a data-ref="brown2020">Language models are few-shot learners</a>. <i>NeurIPS</i>.</li>
+    <li>Wei, J., et al. (2022). <a data-ref="wei2022b">Chain-of-thought prompting elicits reasoning in large language models</a>. <i>NeurIPS</i>.</li>
+    <li>Wang, X., et al. (2023). <a data-ref="wang2023a">Self-consistency improves chain of thought reasoning in language models</a>. <i>ICLR</i>.</li>
+    <li>Huang, J., et al. (2024). <a data-ref="huang2024">Large language models cannot self-correct reasoning yet</a>. <i>ICLR</i>.</li>
+    <li>Yao, S., et al. (2023). <a data-ref="yao2023a">ReAct: Synergizing reasoning and acting in language models</a>. <i>ICLR</i>.</li>
+    <li>Yao, S., et al. (2024). <a data-ref="yao2024b">τ-bench: A benchmark for tool-agent-user interaction in real-world domains</a>. <i>arXiv:2406.12045</i>.</li>
+  </ul>
+</section>
+
+<div class="layout">
+<nav class="toc" aria-label="On this page"><ol>
+  <li><a href="#overview">Overview</a></li>
+  <li><a href="#plan">The plan</a></li>
+  <li><a href="#part-a">A · A brief history of prompting</a></li>
+  <li><a href="#part-b">B · Prompt to think</a></li>
+  <li><a href="#talk">Invited talk and next week</a></li>
+  <li><a href="#part-c">C · Prompt as System: Agents and harness</a></li>
+  <li><a href="#homework">Homework</a></li>
+  <li><a href="#references">References</a></li>
+  <li><a href="#previous">Previous session</a></li>
+</ol></nav>
+
+<main>
+
+<h2 id="plan">The plan</h2>
+<div class="table-wrap"><table>
+  <tr><th>Block</th><th>What it covers</th></tr>
+  <tr><td>Opening</td><td>Why study prompting: five posts that show what a few words can do; a recap of session 01; today's question</td></tr>
+  <tr><td>Part A</td><td>From question to instruction · think · prompt engineering: from manual to automatic · tool use · context engineering and agent · what's next?</td></tr>
+  <tr><td>Part B</td><td>Reasoning models · chain-of-thought prompting · better prompts · many chains, then choose · revising the chain · token budget and the limits of chain-of-thought</td></tr>
+  <tr><td>Invited talk</td><td>Zeyu Qin, HKUST: “Scaling synthetic data and environments”</td></tr>
+  <tr><td>Break</td><td>Ten minutes</td></tr>
+  <tr><td>Part C</td><td>How capable agents are today · what an agent is · harness or training · agents are systems · context and safety</td></tr>
+  <tr><td>Close</td><td>Strengths and weaknesses of each setting · the homework · the lecture summary: the key message of each part</td></tr>
+</table></div>
+
+<div class="part" id="part-a"><div class="label">PART A</div><h2>A brief history of prompting</h2><p>Nineteen methods on one math question. Key message: From text completion to agent, the tech of prompting is more and more complicated to resolve the complicated tasks.</p></div>
+<p>One math question from GSM8K (<a data-ref="cobbe2021">Cobbe et al., 2021</a>) runs through nineteen methods. A single call grows from the question alone to an instruction, solved examples (<a data-ref="brown2020">Brown et al., 2020</a>) and written steps (<a data-ref="wei2022b">Wei et al., 2022</a>). Many tries help when a checker or a vote picks the answer (<a data-ref="cobbe2021">Cobbe et al., 2021</a>; <a data-ref="wang2023a">Wang et al., 2023</a>). Prompts move into a system role (<a data-ref="openai2023chat">OpenAI, 2023</a>), and then LLMs write and optimize them (<a data-ref="zhou2022">Zhou et al., 2022</a>; <a data-ref="yang2024b">Yang et al., 2024</a>; <a data-ref="yuksekgonul2024">Yuksekgonul et al., 2024</a>). Tool use follows: function calls (<a data-ref="schick2023">Schick et al., 2023</a>), ReAct and Reflexion (<a data-ref="yao2023a">Yao et al., 2023</a>; <a data-ref="shinn2023">Shinn et al., 2023</a>) and MCP (<a data-ref="anthropic2024mcp">Anthropic, 2024</a>). Then context engineering (<a data-ref="karpathy2025ctx">Karpathy, 2025</a>), agents that edit their own context (<a data-ref="zhang2025ace">Zhang et al., 2025</a>), agent libraries, multi-agent systems (<a data-ref="hadfield2025">Hadfield et al., 2025</a>), agents with memory (<a data-ref="packer2023">Packer et al., 2023</a>), and agents that improve agents (<a data-ref="zhang2025dgm">Zhang et al., 2025</a>). Each method fixes the limitation of the one before it; each slide shows the OpenAI API code.</p>
+
+<div class="part" id="part-b"><div class="label">PART B</div><h2>Prompt to think</h2><p>The model writes more before it answers. Key message: A reasoning trajectory cannot be trained token by token, thus prompting is the essential tool to steer the reasoning.</p></div>
+<p>This part follows the lecture <em>Inference-time techniques for LLM reasoning</em> by <a data-ref="chen2025b">X. Chen (2025)</a>. Better prompts for one chain. Then many chains, with a vote or a verifier (<a data-ref="wang2023a">Wang et al., 2023</a>; <a data-ref="yao2023b">Yao et al., 2023</a>). Then revising the chain with feedback. Last the limits: chain-of-thought helps most on math and symbolic tasks (<a data-ref="sprague2025">Sprague et al., 2025</a>), and the written chain does not always show the real reason (<a data-ref="turpin2023">Turpin et al., 2023</a>).</p>
+
+<h2 id="talk">Invited talk and next week</h2>
+<p>After Part B there is an invited talk by Zeyu Qin (HKUST), “Scaling synthetic data and environments”. Zeyu is a fourth-year Ph.D. candidate at HKUST and a member of technical staff at Kimi, working on RL and long-horizon agents. Details and the Zoom link are on Canvas.</p>
+<p><b>Next week, Wed 28 Oct 2026, 8:30 pm SGT: guest lecture by Zechen Zhang</b> (Harvard University; founder, Orchestra Research), “Working with increasingly capable AI for science”: notes on autoresearch and human–AI collaboration. What can research agents do, and do they have research taste? How should scientists and agents split the work? And what should research look like when its readers are agents?</p>
+
+<div class="part" id="part-c"><div class="label">PART C</div><h2>Prompt as System: Agents and harness</h2><p>The model in a loop, and the system around it. Key message: Harness is essential when an agent becomes a complicated system with constraints, tools, failure control, etc.</p></div>
+<p>This part follows the lecture <em>What are agents? And how do they work?</em> by <a data-ref="fried2026">Fried and Neubig (2026a)</a>: an agent is a model in a loop; each of its abilities can come from the harness or from training; agents are systems. It ends with pages from two later lectures of the same course: context that grows on every call and how to compact it (<a data-ref="neubig2026">Neubig, 2026</a>), and agent safety, with threat models, sandboxes, limited tokens and monitoring (<a data-ref="fried2026b">Fried and Neubig, 2026b</a>).</p>
+
+<h2 id="homework">Practice homework (no course credit)</h2>
+<p class="note"><b>This is practice homework. It carries no course credit and is not marked.</b> Demo code: <a href="../code/two_agent_demo.py">two_agent_demo.py</a> · <a href="https://colab.research.google.com/github/costa-nus/CEG5305_GenAI/blob/main/part2/lecture-2/code/two_agent_demo.ipynb">Colab notebook</a>.</p>
+<p>Two agents talk. Each agent is a model with its own instructions, and the reply of one is the input of the other. The demo code plays a patient and a counsellor in a first counselling session. It is a class role-play with two simulated roles, not medical advice: do not type your own problems into it. This homework is optional practice and carries no course credit.</p>
+<ol>
+  <li><b>Run the demo.</b> Get <a href="../code/two_agent_demo.py">two_agent_demo.py</a>, or open the <a href="https://colab.research.google.com/github/costa-nus/CEG5305_GenAI/blob/main/part2/lecture-2/code/two_agent_demo.ipynb">Colab notebook</a>. It uses the OpenAI Agents SDK and needs an API key for an OpenAI-compatible model; set <code>OPENAI_BASE_URL</code> to use another server. How the course gives access will be posted here.</li>
+  <li><b>Predict, then run.</b> Write your predictions with probabilities before you run. For example: Will the patient stay in role for six rounds? Will the counsellor give advice? In which round does the talk end?</li>
+  <li><b>Choose one piece to change</b> and change only that:
+    <ul>
+      <li><b>The scenario:</b> patient and counsellor, customer and support agent (with a tool), interviewer and candidate, tutor and student, or two neighbours. Or write your own.</li>
+      <li><b>The turn limit and the stop word:</b> when does the talk end?</li>
+      <li><b>The history:</b> does each agent see all earlier messages, or only the last two?</li>
+      <li><b>A guardrail:</b> a check on one agent's message before the other replies.</li>
+      <li><b>One sentence of an agent's instructions,</b> or the temperature.</li>
+    </ul></li>
+  <li><b>Compare.</b> Run each version 3 times. Compare the number of messages, how the talk ended, role-break hints and tokens. Check that the difference is larger than the spread across your 3 runs, and read the whole transcript before you trust a count.</li>
+</ol>
+<p>Write at most 300 words: your predictions, three findings ranked, and one result you did not predict, explained. AI tools are allowed.</p>
+
+<h2 id="references">References</h2>
+<p class="note">Every work cited on this page, in APA style with shortened author lists. Titles link to the work.</p>
+<ul class="refs-list" data-refs-list></ul>
+
+<h2 id="previous">Previous session</h2>
+<p><a href="../session-1/">Session 01: Post-training Large Language Models</a> changed the weights: instruction tuning, learning from preferences and reinforcement learning.</p>
+
+</main>
+</div>
+</div>
+
+<footer><div class="wrap">
+  <p>CEG5305 · Department of Electrical and Computer Engineering, National University of Singapore · AY2026/27 Semester 1. Part 2 page maintained by Junyuan Hong.</p>
+  <p>Works this page follows are cited where used.</p>
+</div></footer>
+</body>
+</html>

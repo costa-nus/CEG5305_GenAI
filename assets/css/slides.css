@@ -206,6 +206,30 @@ body:hover .navbtn { opacity: .7; }
 .navbtn.prev { left: 14px; } .navbtn.next { right: 14px; }
 .feedback { position: fixed; right: 18px; bottom: 70px; z-index: 11; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-2); color: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .25); opacity: .22; transition: opacity .2s, transform .2s, background .2s; }
 .feedback:hover, .feedback:focus-visible { opacity: 1; transform: scale(1.1); background: var(--orange); }
+/* script note (slides.js "script notes"): a button like .feedback above it, and a panel under the slide.
+   The panel text is 27 canvas px (20 pt, D22) and zooms with the slide (--sn-k, set by scaleDeck). */
+.notes-btn { position: fixed; right: 18px; bottom: 116px; z-index: 11; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; background: var(--blue-2); color: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .25); opacity: .22; cursor: pointer; transition: opacity .2s, transform .2s, background .2s; }
+.notes-btn:hover, .notes-btn:focus-visible { opacity: 1; transform: scale(1.1); background: var(--orange); }
+.notes-btn[aria-pressed="true"] { opacity: 1; background: var(--orange); }
+.sn-panel { position: fixed; left: 0; right: 0; bottom: 0; height: var(--sn-h, 40vh); z-index: 12; overflow-y: auto; background: #0d1520; border-top: 2px solid #22344a; color: #e3eaf2; display: none; }
+body.notes-on .sn-panel { display: block; }
+body.notes-on .chrome { bottom: var(--sn-h); }
+body.notes-on .navbtn { bottom: calc(var(--sn-h) + 14px); }
+body.notes-on .help { bottom: calc(var(--sn-h) + 18px); }
+body.notes-on .feedback { bottom: calc(var(--sn-h) + 70px); }
+body.notes-on .notes-btn { bottom: calc(var(--sn-h) + 116px); }
+.sn-inner { width: 1280px; zoom: var(--sn-k, 1); margin: 0 auto; padding: 16px 60px 28px; box-sizing: border-box; font: 27px/1.4 var(--font); }
+.sn-head { margin: 0 0 10px; color: #9fb3c8; font-weight: 700; }
+.sn-head span { color: var(--orange); }
+.sn-panel p[class^="sn-"] { margin: 0 0 10px; }
+.sn-panel p[class^="sn-"] > b:first-child { color: var(--orange); }
+.sn-ask, .sn-board { padding-left: 14px; border-left: 4px solid #3a4d63; }
+.sn-extra { color: #cdd9e5; }
+.sn-panel code { font-size: .9em; background: #16222f; padding: 0 4px; border-radius: 4px; }
+.sn-say { margin-top: 12px; padding-top: 12px; border-top: 1px solid #22344a; }
+.sn-say p { margin: 0 0 12px; }
+.sn-say i { color: #9fb3c8; }
+.sn-empty { color: #7d8fa3; font-style: italic; }
 .help { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 11; background: rgba(0,0,0,.72); color: #fff; font: 15px/1.4 var(--font); padding: 8px 14px; border-radius: 8px; opacity: 0; transition: opacity .4s; pointer-events: none; }
 .help.show { opacity: 1; }
 .blackout { position: fixed; inset: 0; background: #000; z-index: 30; display: none; }
@@ -230,7 +254,7 @@ body:hover .navbtn { opacity: .7; }
   html, body { overflow: visible; height: auto; background: #fff; }
   .deck { position: static; transform: none !important; width: 1280px; height: auto; }
   .slide { display: flex !important; position: relative; width: 1280px; height: 720px; break-after: page; }
-  .chrome, .navbtn, .feedback, .help, .overview, .blackout { display: none !important; }
+  .chrome, .navbtn, .feedback, .notes-btn, .sn-panel, .help, .overview, .blackout { display: none !important; }
   .slide .reel-stage { display: none; }
   .slide .reel-list { -webkit-mask-image: none; mask-image: none; }
   .slide .reel-list > ol { transform: none !important; }

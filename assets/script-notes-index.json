@@ -1,0 +1,11 @@
+{
+  "_about": "Decks whose folder holds a script-notes.json that the site shows under the slides (slides.js, 'script notes'). Paths are from the site root. A deck not listed gets no script-note button. List a deck only when its notes are to be published.",
+  "decks": [
+    "part2/lecture-1/session-1/slides/",
+    "part2/lecture-1/session-2/slides/",
+    "part2/lecture-2/session-1/slides/",
+    "part2/lecture-2/session-2/slides/",
+    "part2/lecture-3/session-1/slides/",
+    "part2/lecture-4/session-1/slides/"
+  ]
+}

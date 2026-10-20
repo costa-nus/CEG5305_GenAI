@@ -6,6 +6,8 @@ const W = 1280, H = 720;
 const deck = document.querySelector(".deck");
 const slides = [...deck.querySelectorAll(":scope > .slide")];
 let cur = 0;
+let notesOn = false;                                   // the script-note panel is open (see "script notes" below)
+const noteH = () => (notesOn ? Math.round(window.innerHeight * 0.4) : 0);
 
 // references: every work cited on a slide goes in an APA footer at its bottom —
 // each <a data-ref> inside it, plus keys listed in data-refs. data-refs="live" leaves
@@ -38,9 +40,14 @@ slides.forEach((s, i) => {
 });
 
 function scaleDeck() {
-  const k = Math.min(window.innerWidth / W, window.innerHeight / H);
+  // with the script note open, the slide shrinks into the space above the panel
+  const nh = noteH(), h = window.innerHeight - nh;
+  const k = Math.min(window.innerWidth / W, h / H);
+  deck.style.top = nh ? `${h / 2}px` : "";
   deck.style.transform = `scale(${k}) translate(-50%, -50%)`;
   deck.style.transformOrigin = "0 0";
+  document.body.style.setProperty("--sn-h", `${nh}px`);
+  document.body.style.setProperty("--sn-k", k);
 }
 
 // shrink a slide's content only when it does not fit; never enlarge
@@ -86,6 +93,63 @@ const setFeedback = () => {
 fb.addEventListener("click", setFeedback);
 document.body.appendChild(fb);
 
+// script notes: a button above the feedback button opens a panel under the slide with the lecture's teaching
+// script for that slide (what to do, what to ask, the narrative). The text is copied from the lecture's script.md
+// by .claude/skills/make-lecture/scripts/script_notes.py into <deck folder>/script-notes.json, keyed by the slide's
+// data-title. A deck gets the button only when its folder is listed in assets/script-notes-index.json (add it when
+// the notes are published); a deck that is not listed makes no request for the file. Hidden on every load; N toggles.
+let notes = null, noteBtn = null, notePanel = null, noteBody = null;
+function renderNote() {
+  if (!notes || !notesOn) return;
+  const n = notes[slides[cur].dataset.title];
+  noteBody.innerHTML = n
+    ? `<p class="sn-head">Script${n.time ? ` · <span>${n.time}</span>` : ""}</p>${n.html}`
+    : `<p class="sn-empty">Script is not written yet.</p>`;
+  notePanel.scrollTop = 0;
+}
+function toggleNotes(on = !notesOn) {
+  if (!notes) return;
+  notesOn = on;
+  document.body.classList.toggle("notes-on", on);
+  noteBtn.setAttribute("aria-pressed", String(on));
+  scaleDeck();
+  fit(slides[cur]);
+  renderNote();
+}
+function initNotes(map) {
+  notes = map;
+  Object.keys(map).forEach(t => { if (!slides.some(s => s.dataset.title === t)) console.warn("script note: no slide titled", t); });
+  noteBtn = document.createElement("button");
+  noteBtn.className = "notes-btn";
+  noteBtn.setAttribute("aria-label", "show or hide the teaching script for this slide");
+  noteBtn.setAttribute("aria-controls", "sn-panel");
+  noteBtn.setAttribute("aria-pressed", "false");
+  noteBtn.title = "Script note (N)";
+  noteBtn.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>`;
+  noteBtn.addEventListener("click", () => { toggleNotes(); noteBtn.blur(); });
+  notePanel = document.createElement("div");
+  notePanel.className = "sn-panel";
+  notePanel.id = "sn-panel";
+  notePanel.setAttribute("role", "region");
+  notePanel.setAttribute("aria-label", "Teaching script for this slide");
+  noteBody = document.createElement("div");
+  noteBody.className = "sn-inner";
+  notePanel.appendChild(noteBody);
+  document.body.append(noteBtn, notePanel);
+  const hint = document.querySelector(".help");
+  if (hint) hint.textContent += " · N script note";
+}
+{
+  const root = new URL("../../", import.meta.url);               // the site root, wherever the site is served
+  const folder = location.pathname.slice(root.pathname.length).replace(/[^/]*$/, "");
+  fetch(new URL("assets/script-notes-index.json", root))
+    .then(r => (r.ok ? r.json() : null))
+    .then(ix => (ix && ix.decks.includes(folder) ? fetch(new URL("script-notes.json", location.href), { cache: "no-cache" }) : null))
+    .then(r => (r && r.ok ? r.json() : null))
+    .then(d => { if (d && d.notes) initNotes(d.notes); })
+    .catch(() => {});
+}
+
 const bar = document.querySelector(".chrome i");
 function show(i, push = true) {
   scaleDeck();
@@ -96,6 +160,7 @@ function show(i, push = true) {
   const hash = `#/${cur + 1}`;
   if (push && location.hash !== hash) history.replaceState(null, "", hash);
   setFeedback();
+  renderNote();
   document.title = `${cur + 1}/${slides.length} · ${slides[cur].dataset.title || ""} — ${document.body.dataset.deck || ""}`;
   if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
 }
@@ -171,6 +236,7 @@ document.addEventListener("keydown", e => {
     case "End": e.preventDefault(); show(slides.length - 1); break;
     case "f": case "F": document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); break;
     case "o": case "O": toggleOverview(); break;
+    case "n": case "N": toggleNotes(); break;
     case "b": case "B": case ".": document.querySelector(".blackout").classList.toggle("on"); break;
     case "?": case "h": case "H": help(true); break;
   }

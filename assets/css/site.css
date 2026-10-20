@@ -150,6 +150,12 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0; }
 .src { font-size: .85rem; color: var(--muted); font-style: italic; margin-top: .4rem; }
 .callout { padding: .9rem 1.1rem; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); margin: 1rem 0; }
 .callout.warn { background: var(--tint); border-color: var(--orange); }
+/* "About these notes" box after a lecture page's hero (D44, 14 Oct 2026): AI statement, reference slides, key papers */
+.about-notes { margin: 0 0 1.4rem; }
+.about-notes h3 { margin: 0 0 .4rem; }
+.about-notes h4 { margin: .9rem 0 .3rem; }
+.about-notes ul { margin: .2rem 0 0; }
+.about-notes p { margin: .2rem 0; }
 
 .table-wrap { overflow-x: auto; margin: 1rem 0; position: relative; }
 /* KaTeX's hidden MathML is absolutely positioned; anchor it so it cannot widen the page */
@@ -368,13 +374,14 @@ button.chip { cursor: pointer; }
 .lec .id { font-weight: 700; color: var(--blue); font-variant-numeric: tabular-nums; }
 .lec .ti { font-weight: 600; }
 .lec .sub { grid-column: 2; font-size: .9rem; color: var(--muted); }
+.lec .desc { grid-column: 2; font-size: .9rem; line-height: 1.45; }
 .lec .st { font-size: .82rem; color: var(--muted); }
 .lec.live { border-color: var(--orange); }
 .lec.live .st { color: var(--orange-2); font-weight: 700; }
 .lec .st a { color: inherit; text-decoration: none; white-space: nowrap; }
 .lec .st a + a { margin-left: .9rem; }
 .lec .st a:hover { text-decoration: underline; }
-@media (max-width: 640px) { .lec { grid-template-columns: 1fr; } .lec .sub { grid-column: 1; } }
+@media (max-width: 640px) { .lec { grid-template-columns: 1fr; } .lec .sub, .lec .desc { grid-column: 1; } }
 
 footer { margin-top: 4rem; padding-block: 1.5rem 2.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; }
 footer .wrap > * { max-width: none; }
