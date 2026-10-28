@@ -207,6 +207,14 @@
 .slide.poster-ann .who b { display: block; font-family: "STIX Two Text", Georgia, serif; font-weight: 500; font-size: 30px; color: #1d1f24; }
 .slide.poster-ann .who span { display: block; font-size: 19px; color: #4a4d55; }
 .slide.poster-ann .who p { margin: 4px 0 0; font-size: 17px; line-height: 1.35; color: #4a4d55; }
+.slide.closing .card.next { grid-column: 1 / -1; }
+.slide.closing .card:first-child { grid-column: 1 / -1; }
+/* release: the part opener names its reference deck once (outline.json "credit") */
+.slide.section-open > .src { margin-top: 14px; font-size: 22px; max-width: 700px; line-height: 1.3; }
+.slide.section-open .recap .cr { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.25); font-size: 20px; line-height: 1.3; color: #cfdbe5; }
+.slide.section-open.with-recap.many > .seg { max-width: 700px; padding: 6px 0; }
+.slide.section-open.with-recap.many > h1 { margin: 4px 0 6px; }
+.slide.section-open.with-recap.many > p:not(.eb) { margin-bottom: 10px; }
 
 /* ───── Part A (slides_build/partA/partA.css) ───── */
 /* Part A — History of prompting, and one framework (slides_build/partA/partA.css).
@@ -1229,7 +1237,7 @@
 .slide.pC .tasks.pgp > div { min-height: 150px; }
 
 /* p. 9: quotation and its credit above the figure, four bullets below */
-.slide.pC .slide-body p.quote { margin: 0; font-size: 30px; line-height: 1.3; font-weight: 700; color: var(--deep); }
+.slide.pC .slide-body p.quote { margin: 0; font-size: 30px; line-height: 1.3; font-weight: 400; font-style: italic; color: var(--deep); }
 .slide.pC .slide-body p.attr { margin: 8px 0 0; font-size: 27px; line-height: 1.3; color: var(--muted); }
 .slide.pC .cols.def.top svg.pC-d { max-height: 230px; }
 
@@ -1318,6 +1326,188 @@
 .slide.pC .flow .fs span.eg code { font-size: 21px; letter-spacing: 0; white-space: normal; display: inline; }
 .slide.pC .card.pg p.eg { font-size: 24px; line-height: 1.3; margin-top: 10px; color: var(--text); }
 .slide.pC .card.pg p.eg code { font-size: 22px; }
+
+/* CMU 2: the repository screenshot, enlarged, JH 28 Oct 2026 */
+.slide.pC .fig.capfig.repo { margin: 0 auto; }
+.slide.pC .fig.capfig.repo img { display: block; margin: 0 auto; max-height: 390px; width: auto; max-width: 100%; }
+.slide.pC .reporow { display: flex; align-items: center; justify-content: center; gap: 36px; }
+.slide.pC .reporow .fig.capfig.repo { margin: 0; flex: 0 1 auto; }
+.slide.pC .reporow img.tux { flex: 0 0 auto; height: 300px; width: auto; border: 0; }
+
+/* CMU 2b: agents against people, JH 28 Oct 2026 */
+.slide.pC table.pC-t.cmp { font-size: 30px; }
+.slide.pC table.pC-t.cmp td { padding: 16px 16px; }
+.slide.pC table.pC-t.cmp td:first-child { width: 34%; }
+.slide.pC table.pC-t.cmp td:nth-child(2) { width: 22%; font-weight: 400; color: inherit; }
+.slide.pC table.pC-t.cmp td:nth-child(3) { width: 25%; }
+.slide.pC table.pC-t.cmp tr.ai td { background: #fdf1e6; font-weight: 700; color: var(--orange-2); }
+
+/* CMU 3: red boxes on the chat screenshot, JH 28 Oct 2026 (the original image stays unchanged) */
+.slide.pC .fig .hl { position: relative; display: inline-block; line-height: 0; max-width: 100%; }
+.slide.pC .fig .hl > .box { position: absolute; border: 4px solid #e11d1d; border-radius: 8px; pointer-events: none; }
+.slide.pC .fig .hl > .box.b1 { left: 1.1%; top: 39.9%; width: 40.9%; height: 24.4%; }
+.slide.pC .fig .hl > .box.b2 { left: 52.1%; top: 87.6%; width: 43%; height: 11.6%; }
+
+/* CMU 15: a diagram above each code block, JH 28 Oct 2026 */
+.slide.pC svg.pC-d.c15d { max-height: 190px; }
+.slide.pC svg.pC-d.c15d.r1 { max-height: 80px; }
+.slide.pC svg.pC-d.c15d text.cd { font-family: var(--mono); font-size: 19px; fill: var(--deep); letter-spacing: -.02em; }
+.slide.pC svg.pC-d.c15d text.cd.inv { fill: #fff; }
+.slide.pC svg.pC-d.c15d text.s { font-size: 20px; fill: var(--muted); }
+.slide.pC svg.pC-d.c15d text.fl { text-anchor: start; font-weight: 700; font-family: var(--mono); fill: var(--deep); }
+.slide.pC svg.pC-d.c15d text.lab { font-size: 18px; }
+
+/* CMU 13 · language-model diagram above the agent diagram, keywords as overlay */
+.slide.pC svg.pC-d.cmp13.lm { width: 100%; max-height: none; margin: 0 0 6px; }
+.slide.pC svg.pC-d.cmp13.ag { width: 100%; max-height: none; margin: 0; }
+.slide.pC .slide-body > .tag.ph { margin: 0; }
+.slide.pC svg.pC-d.cmp13 .newband { fill: #ffeb7a; fill-opacity: .5; stroke: #d9b800; stroke-width: 2; stroke-dasharray: 9 6; }
+.slide.pC svg.pC-d.cmp13 text.plus { font-size: 46px; font-weight: 800; fill: #8a6d00; text-anchor: middle; }
+.slide.pC svg.pC-d.cmp13 .pl { stroke-width: 3; }
+.slide.pC svg.pC-d.cmp13 .pl.gen { fill: #fff; stroke: #10a37f; stroke-width: 4; }
+.slide.pC svg.pC-d.cmp13 .pl.ext { fill: #f4f4f4; stroke: #8a96a3; }
+.slide.pC svg.pC-d.cmp13 .pl.env { fill: #fff; stroke: #8a96a3; stroke-dasharray: 8 6; }
+.slide.pC svg.pC-d.cmp13 text.pt { font-size: 26px; font-weight: 700; fill: var(--deep); }
+.slide.pC svg.pC-d.cmp13 .pk { fill: none; stroke: var(--muted); stroke-width: 2.4; }
+.slide.pC svg.pC-d.cmp13 text.lp { font-size: 22px; font-weight: 600; fill: var(--orange-2); }
+
+/* CMU 12 · flow strip above the four code blocks */
+.slide.pC svg.pC-d.flow12 { max-height: 90px; margin: 0 0 10px; }
+.slide.pC svg.pC-d.flow12 .fl { stroke-width: 3; fill: #fff; }
+.slide.pC svg.pC-d.flow12 .fl.llm { stroke: #10a37f; stroke-width: 4; }
+.slide.pC svg.pC-d.flow12 .fl.exe { fill: #f4f4f4; stroke: #8a96a3; stroke-dasharray: 8 6; }
+.slide.pC svg.pC-d.flow12 .fl.pill { fill: var(--tint); stroke: var(--orange); }
+.slide.pC svg.pC-d.flow12 text.fx { font-size: 26px; font-weight: 700; fill: var(--deep); }
+.slide.pC .grid.code2 .codelab { font-size: 27px; color: var(--deep); display: flex; align-items: center; gap: 12px; }
+.slide.pC .grid.code2 .codelab::before { content: ""; width: 26px; height: 20px; border-radius: 5px; flex: none; }
+.slide.pC .grid.code2 .codelab.llm::before { border: 4px solid #10a37f; background: #fff; }
+.slide.pC .grid.code2 .codelab.exe::before { border: 3px dashed #8a96a3; background: #f4f4f4; }
+.slide.pC svg.pC-d.cmp13 .w.loopw { stroke-dasharray: none; stroke-width: 3; }
+.slide.pC h2 .ai-out { color: #9aa5b1; text-decoration: line-through; text-decoration-thickness: .09em; }
+.slide.pC svg.pC-d.cmp13 .ctx { fill: #fff; stroke: var(--blue-2); stroke-width: 2.5; }
+.slide.pC svg.pC-d.cmp13 text.ctt { font-size: 24px; font-weight: 700; fill: var(--deep); text-anchor: start; }
+.slide.pC svg.pC-d.cmp13 .chip { fill: #f4f4f4; stroke: #8a96a3; stroke-width: 2; }
+.slide.pC svg.pC-d.cmp13 text.cx { font-size: 21px; font-weight: 600; fill: var(--deep); }
+.slide.pC .top13 { display: flex; align-items: flex-start; gap: 24px; }
+.slide.pC .top13 .lmcol { flex: 0 0 64.2%; }
+.slide.pC .top13 svg.loop9 { flex: 1 1 0; min-width: 0; width: auto; max-height: 190px; }
+.slide.pC .top13 svg.loop9 { box-sizing: border-box; border: 2px dashed #d9b800; border-radius: 14px; padding: 6px 8px; }
+/* CMU 11 · thumbnail of the agent diagram, top right */
+.slide.pC svg.pC-d.tdefmini { position: absolute; top: 56px; right: 56px; width: 500px; height: auto; overflow: hidden; border-radius: 12px; }
+.slide.pC svg.pC-d.tdefmini .newband { stroke-dasharray: 9 6; }
+/* CMU 14 · agent loop with the context emphasised */
+.slide.pC svg.pC-d.cmp13.loop14 { width: 100%; max-height: none; }
+.slide.pC svg.pC-d.loop14 .cblk { fill: #eef3f8; stroke: var(--blue-2); stroke-width: 4; }
+.slide.pC svg.pC-d.loop14 text.cbt { font-size: 32px; font-weight: 800; fill: var(--deep); text-anchor: start; }
+.slide.pC svg.pC-d.loop14 .cardc { fill: #fff; stroke: #8a96a3; stroke-width: 2.5; }
+.slide.pC svg.pC-d.loop14 text.cn { font-size: 26px; font-weight: 700; fill: var(--deep); text-anchor: start; }
+.slide.pC svg.pC-d.loop14 text.ce { font-family: var(--mono); font-size: 19px; fill: var(--deep); text-anchor: start; white-space: pre; }
+/* merged slide: inbox screenshot and legend on the left, the six tasks on the right */
+.slide.pC .mcols { display: grid; grid-template-columns: 36% minmax(0, 1fr); gap: 40px; align-items: center; width: 100%; align-self: stretch; }
+.slide.pC .mleft { display: flex; flex-direction: column; gap: 18px; }
+.slide.pC .mleft .fig.capfig.m177 { margin: 0; }
+.slide.pC .mleft .fig.capfig.m177 img { display: block; width: 100%; height: auto; max-height: none; }
+.slide.pC .legend.v { flex-direction: row; flex-wrap: wrap; gap: 8px 22px; align-items: center; }
+.slide.pC .legend.v .tag.lg { font-size: 27px; font-weight: 400; letter-spacing: 0; }
+.slide.pC .tasks.m177t { grid-template-columns: 1fr; border-left: 0; }
+.slide.pC .tasks.m177t > div { flex-direction: row; justify-content: space-between; align-items: center; gap: 20px; min-height: 0; padding: 10px 6px; font-size: 27px; font-weight: 400; border-right: 0; }
+.slide.pC .tasks.m177t > div .tag { flex: none; }
+.slide.pC h2 .hi { background: #ffeb7a; border-radius: 8px; padding: 0 .22em; }
+/* CMU 19 · one small diagram above each training stage */
+.slide.pC .grid.dgrow { margin-bottom: 18px; align-items: end; }
+.slide.pC svg.pC-d.tr3 { width: 100%; height: auto; max-height: 160px; }
+.slide.pC svg.pC-d.tr3 .gn { fill: #fff; stroke: #10a37f; stroke-width: 4; }
+.slide.pC svg.pC-d.tr3 .gn.dash { stroke-dasharray: 8 6; }
+.slide.pC svg.pC-d.tr3 text.tx { font-size: 22px; font-weight: 700; fill: var(--deep); }
+.slide.pC svg.pC-d.tr3 text.tx.inv { fill: #fff; font-size: 20px; }
+.slide.pC svg.pC-d.tr3 text.tk { font-size: 22px; font-weight: 600; fill: var(--deep); }
+.slide.pC svg.pC-d.tr3 text.ts { font-size: 20px; font-weight: 600; fill: var(--muted); }
+.slide.pC svg.pC-d.tr3 .w.loopw { stroke-dasharray: none; stroke: var(--orange); stroke-width: 3; }
+/* CMU 18 · training against harness, one diagram per card */
+.slide.pC svg.pC-d.two18 { width: 100%; height: auto; max-height: 225px; margin-top: 12px; }
+.slide.pC svg.pC-d.two18 .frame18 { fill: #fafbfc; stroke: #b9c2cb; stroke-width: 2; stroke-dasharray: 8 6; }
+.slide.pC svg.pC-d.two18 .chip3 { stroke-width: 3; }
+.slide.pC svg.pC-d.two18 .chip3.upd { fill: #ffe6d6; stroke: #e5532d; }
+.slide.pC svg.pC-d.two18 .chip3.frz { fill: #dff0fb; stroke: #3b9ad9; }
+.slide.pC svg.pC-d.two18 .chip3.neu { fill: #f4f4f4; stroke: #8a96a3; }
+.slide.pC svg.pC-d.two18 .env3 { fill: #f4f4f4; stroke: #8a96a3; stroke-width: 3; stroke-dasharray: 8 6; }
+.slide.pC svg.pC-d.two18 .dat3 { fill: #fff; stroke: var(--blue-2); stroke-width: 3; }
+.slide.pC svg.pC-d.two18 .opt3 { fill: var(--tint); stroke: var(--orange); stroke-width: 3; }
+.slide.pC svg.pC-d.two18 text.cn3 { font-size: 22px; font-weight: 700; fill: var(--deep); }
+.slide.pC svg.pC-d.two18 text.cs3 { font-size: 19px; font-weight: 600; fill: var(--muted); }
+.slide.pC svg.pC-d.two18 text.fl3 { font-size: 19px; font-weight: 600; fill: var(--muted); text-anchor: start; }
+.slide.pC .card:has(svg.two18) { display: flex; flex-direction: column; }
+.slide.pC .card svg.two18 { margin-top: auto; }
+.slide.pC .hh { background: #ffeb7a; }
+.slide.pC span.hh { padding: 0 .2em; border-radius: 6px; }
+.slide.pC .flow .fs.hh { background: #ffeb7a; }
+/* CMU 20 · examples of inaccurate calls */
+.slide.pC .bad4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1.5fr; gap: 12px 14px; width: 100%; align-self: stretch; }
+.slide.pC .bad4 .bh { grid-column: 1 / -1; font-size: 27px; font-weight: 700; color: var(--deep); }
+.slide.pC .bad4 > div:not(.bh) { background: #fff3f3; border: 2px solid var(--bad); border-radius: 10px; padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; }
+.slide.pC .bad4 b { font-size: 27px; color: var(--bad); }
+.slide.pC .bad4 code { font-size: 27px; background: none; padding: 0; color: var(--deep); }
+/* CMU 20 · pipelines without and with the harness */
+.slide.pC svg.pC-d.pipe20 { width: 100%; height: auto; }
+.slide.pC svg.pC-d.pipe20 .pn { stroke-width: 3; }
+.slide.pC svg.pC-d.pipe20 .pn.llm { fill: var(--deep); stroke: var(--deep); }
+.slide.pC svg.pC-d.pipe20 .pn.call { fill: var(--tint); stroke: var(--orange); }
+.slide.pC svg.pC-d.pipe20 .pn.exe { fill: #f4f4f4; stroke: #8a96a3; stroke-dasharray: 8 6; }
+.slide.pC svg.pC-d.pipe20 .pn.err { fill: var(--bad); stroke: var(--bad); }
+.slide.pC svg.pC-d.pipe20 .chk { fill: #ffeb7a; stroke: #d9b800; stroke-width: 2.5; }
+.slide.pC svg.pC-d.pipe20 text.pt2 { font-size: 24px; font-weight: 700; fill: var(--deep); }
+.slide.pC svg.pC-d.pipe20 text.pt2.inv { fill: #fff; }
+.slide.pC svg.pC-d.pipe20 text.pl2 { font-size: 22px; font-weight: 700; fill: var(--muted); text-anchor: start; }
+.slide.pC svg.pC-d.pipe20 text.ct2 { font-size: 22px; font-weight: 600; fill: var(--deep); }
+.slide.pC svg.pC-d.pipe20 text.rt2 { font-size: 20px; font-weight: 700; fill: var(--bad); text-anchor: start; }
+.slide.pC svg.pC-d.pipe20 .w.rj { stroke: var(--bad); stroke-width: 2.6; }
+.slide.pC svg.pC-d.pipe20 .ahr { fill: var(--bad); }
+.slide.pC .bad4.eq { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.slide.pC .bad4 span { font-size: 27px; color: var(--deep); }
+.slide.pC svg.pC-d.cap21 .chk { fill: #ffeb7a; stroke: #d9b800; stroke-width: 2.5; }
+.slide.pC svg.pC-d.cap21 text.rt3 { font-size: 20px; font-weight: 600; fill: var(--muted); text-anchor: start; }
+.slide.pC svg.pC-d.cap21 .pn.exe { fill: #f4f4f4; stroke: #8a96a3; stroke-dasharray: 8 6; }
+.slide.pC svg.pC-d.cap21 .trg { fill: #fff3f3; stroke: var(--bad); stroke-width: 2.5; }
+.slide.pC svg.pC-d.cap21 text.ex { font-size: 21px; font-weight: 600; fill: var(--bad); }
+.slide.pC svg.pC-d.cap21 text.ex.mono { font-family: var(--mono); font-size: 22px; }
+.slide.pC svg.pC-d .xic { fill: var(--bad); }
+.slide.pC svg.pC-d .xic2 { fill: none; stroke: #fff; stroke-width: 3.2; stroke-linecap: round; }
+.slide.pC svg.pC-d.cap21 .trg.ok { fill: #f4f4f4; stroke: #8a96a3; }
+.slide.pC svg.pC-d.cap21 text.ex.ok { fill: var(--deep); }
+.slide.pC svg.pC-d .w.okw { stroke: var(--good); stroke-width: 2.6; }
+.slide.pC svg.pC-d .ahg { fill: var(--good); }
+.slide.pC svg.pC-d .xic.ok { fill: var(--good); }
+.slide.pC .grid.lim { grid-template-columns: 1fr 1fr; gap: 28px 36px; }
+.slide.pC .grid.lim .card p { font-size: 30px; line-height: 1.3; color: var(--deep); margin: 6px 0 0; }
+.slide.pC .grid.lim .tag .old { color: var(--muted); font-weight: 600; text-decoration: line-through; text-decoration-thickness: .08em; }
+.slide.pC .grid.lim .tag .new { color: var(--good); }
+.slide.pC .bad4.eq3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.slide.pC svg.pC-d.cap21 text.ct2.sm { font-size: 19px; }
+.slide.pC .fig.capfig.skillfig { margin: 0 auto; }
+.slide.pC .fig.capfig.skillfig img { display: block; margin: 0 auto; max-height: 440px; width: auto; max-width: 100%; border-radius: 8px; }
+
+/* ───── Part C (slides_build/partC/partC1.css) ───── */
+/* Part C, segment "Inside a harness" (slides_build/partC/partC1.css). Scoped by .slide.pC. Code blocks come from
+   partC/gen_partC1.py (verbatim excerpts of mini-swe-agent, checked against the source). */
+.slide.pC pre.code.wr { margin: 0; padding: 10px 16px; }
+.slide.pC pre.code.wr code { white-space: normal; letter-spacing: -.02em; }
+.slide.pC pre.code.wr .l { display: block; white-space: pre-wrap; overflow-wrap: anywhere; padding-left: calc((var(--i, 0) + 4) * 1ch); text-indent: -4ch; line-height: 1.22; }
+.slide.pC pre.code.wr .l.hl { background: #fff1b8; border-radius: 3px; }
+.slide.pC pre.code.wr .l.cm { color: var(--muted); }
+.slide.pC .hxhead { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; margin: 0; }
+.slide.pC .hxhead .part { font-size: 27px; font-weight: 700; color: var(--orange-2); }
+.slide.pC .hxhead .file { font-size: 24px; font-weight: 500; color: var(--muted); font-family: var(--mono, monospace); }
+.slide.pC .slide-body p.hxnote { margin: 0; font-size: 28px; line-height: 1.3; }
+.slide.pC .chiprow.hx4 span { font-size: 27px; padding: 10px 14px; text-align: center; font-weight: 500; }
+.slide.pC .chiprow.hx4 b { display: block; color: var(--deep); font-weight: 700; }
+.slide.pC table.pC-t.hx td:nth-child(2) { width: auto; }
+
+/* Demo slides at the start of the segment (27 Oct 2026) */
+.slide.pC .slide-body p.hxintro { margin: 0 0 6px; }
+.slide.pC ol.hxtask { margin: 0; padding: 0; list-style: none; counter-reset: hxt; display: flex; flex-direction: column; gap: 10px; }
+.slide.pC ol.hxtask li { counter-increment: hxt; position: relative; padding: 8px 0 0 52px; border-top: 2px solid var(--blue-2); font-size: 27px; line-height: 1.25; }
+.slide.pC ol.hxtask li::before { content: counter(hxt) "."; position: absolute; left: 0; top: 8px; color: var(--blue-2); font-weight: 600; }
+.slide.pC table.pC-t.hxwide td:first-child { width: 66%; }
 
 /* ───── Part C (slides_build/partC/partC2.css) ───── */
 /* Part C, fragment 2 — CMU 11-768 lecture 3, pages 3, 4, 44–50 (slides_build/partC/partC2.css).
@@ -1548,3 +1738,19 @@
 .slide.pC ul.c4-sq.c4-below { margin-top: 18px; }
 /* p. 31: the box's text breaks after "identify", as on the page */
 .slide.pC .slide-body p.callout.c4-def { padding-right: 320px; }
+
+/* ───── Part C (slides_build/partC/partC5.css) ───── */
+/* Part C, fragment 5: "Designing the agent loop" (Sarkis 2026), JH 28 Oct 2026. Text pages in the article's own sentences. */
+.slide.pC.c5 .slide-body .fit { justify-content: flex-start; gap: 22px; }
+.slide.pC.c5 .slide-body p, .slide.pC.c5 .slide-body li { font-size: 30px; line-height: 1.36; margin: 0; }
+.slide.pC.c5.c5-big .slide-body p { font-size: 34px; line-height: 1.38; }
+.slide.pC.c5 .slide-body ul.pts { padding-left: 1.1em; }
+.slide.pC.c5 .slide-body ul.pts > li { margin-bottom: 14px; }
+.slide.pC.c5 .slide-body ul.pts ul { margin: 12px 0 0; padding-left: 1.1em; }
+.slide.pC.c5 .slide-body ul.pts ul > li { margin-bottom: 10px; }
+.slide.pC.c5 .slide-body b { color: var(--orange-2); }
+.slide.pC.c5 .fig.c5fig { margin: 0 auto; }
+.slide.pC.c5 .fig.c5fig img { display: block; margin: 0 auto; max-height: 470px; width: auto; max-width: 100%; border: 0; border-radius: 8px; }
+.slide.pC.c5-titles .pts li { font-size: 38px; line-height: 1.3; margin: 0 0 22px; }
+.slide.pC.c5-outline ol.pts { columns: 2; column-gap: 56px; font-size: 28px; line-height: 1.3; }
+.slide.pC.c5-outline ol.pts li { break-inside: avoid; margin: 0 0 12px; }

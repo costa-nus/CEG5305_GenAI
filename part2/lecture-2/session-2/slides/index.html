@@ -30,7 +30,7 @@
   <p>CEG5305 Introduction to Generative AI with Foundation Models<br>Junyuan Hong · AY2026/27 Semester 1</p>
   <div class="copyright">© 2026 Junyuan Hong. All rights reserved.</div>
   <!-- version: set only in the commit that publishes (stage 8, D34); see CHANGELOG.md beside this file -->
-  <div class="version">2026.10.21v1</div>
+  <div class="version">2026.10.28v1</div>
 </section>
 
 <!-- Disclosure (D44, Junyuan Hong, 14 Oct 2026; format in .claude/skills/make-lecture/references/disclosure.md).
@@ -82,7 +82,7 @@
       <div class="seg"><b>B</b><span><a data-goto="Part B">Prompt to think</a></span><span>44 min</span></div>
       <div class="seg quiet"><b>🎤</b><span><a data-goto="Invited talk">Invited talk: Zeyu Qin (HKUST), “Scaling synthetic data and environments”</a></span><span></span></div>
       <div class="seg quiet"><b>☕</b><span>Break</span><span>10 min</span></div>
-      <div class="seg"><b>C</b><span><a data-goto="Part C">Prompt as System: Agents and harness</a></span><span>40 min</span></div>
+      <div class="seg"><b>C</b><span><a data-goto="Part C">Prompt as System: Agents and harness</a></span><span>63 min</span></div>
       <div class="seg"><b>·</b><span><a data-goto="Strengths and weaknesses">Strengths and weaknesses, homework, invited talk</a></span><span>5 min</span></div>
     </div>
   </div>
@@ -175,12 +175,12 @@
   <p class="eb">Today's question</p>
   <h2></h2>
   <div class="slide-body">
-    <p class="lede">Given fixed model weights,</p>
-    <p class="big">We change the <span>context</span> and the <span>loop</span>.</p>
+    <p class="lede">How to prompt LLMs?</p>
+    <p class="big">Prompting is about <span>context</span> and <span>loop</span>.</p>
     <div class="grid">
       <div class="card"><div class="tag">A · A brief history of prompting</div><p>Different prompting methods on one math question: from a direct answer to agents.</p></div>
       <div class="card"><div class="tag">B · Prompt to think</div><p>Chain-of-thought and reasoning models: when writing more helps, and when it does not.</p></div>
-      <div class="card"><div class="tag">C · Prompt as System: Agents and harness</div><p>The loop and the harness around the model, and how to measure and secure them.</p></div>
+      <div class="card"><div class="tag">C · Prompt as System: Agents and harness</div><p>The loop and the harness around the model, to make them ready for production.</p></div>
     </div>
   </div>
 </section>
@@ -210,13 +210,14 @@
     <p class="note-code"></p>
   </div>
   <p class="src">GSM8K: grade-school math (Cobbe et al., 2021).</p>
+
 </section>
 
 <section class="slide pA" data-title="Prompting history · 19 methods">
   <p class="eb">A · From question to instruction</p>
   <h2>19 ways to ask LLMs -- From 2020 to 2026</h2>
   <div class="slide-body">
-    <div class="tl"><div class="tl-c"><div class="tl-g"><div class="tag">From question to instruction</div><div class="tl-i"><b>1</b><span>Direct answer</span><em>2020</em></div><div class="tl-i"><b>2</b><span>Instruction</span><em>2020</em></div><div class="tl-i"><b>3</b><span>In-context learning</span><em>2020</em></div></div><div class="tl-g"><div class="tag">Think</div><div class="tl-i"><b>4</b><span>Chain-of-thought</span><em>2022</em></div><div class="tl-i"><b>5</b><span>Best-of-n</span><em>2021</em></div><div class="tl-i"><b>6</b><span>Self-consistency</span><em>2022</em></div></div></div><div class="tl-c"><div class="tl-g"><div class="tag">Prompt engineering: from manual to automatic</div><div class="tl-i"><b>7</b><span>System prompt</span><em>2023</em></div><div class="tl-i"><b>8</b><span>Prompt engineering</span><em>2023</em></div><div class="tl-i"><b>9</b><span>APE: LLM writes the prompt</span><em>2022</em></div><div class="tl-i"><b>10</b><span>OPRO, TextGrad</span><em>2023–24</em></div></div><div class="tl-g"><div class="tag">Tool use</div><div class="tl-i"><b>11</b><span>Tool use, function calling</span><em>2023</em></div><div class="tl-i"><b>12</b><span>ReAct, Reflexion</span><em>2022–23</em></div><div class="tl-i"><b>13</b><span>MCP</span><em>2024</em></div></div></div><div class="tl-c"><div class="tl-g"><div class="tag">Context engineering and agent</div><div class="tl-i"><b>14</b><span>Context engineering</span><em>2025</em></div><div class="tl-i"><b>15</b><span>Agentic context engineering</span><em>2025</em></div><div class="tl-i"><b>16</b><span>Agent design: Agents SDK</span><em>2025</em></div><div class="tl-i"><b>17</b><span>Multi-agent systems</span><em>2023–25</em></div><div class="tl-i"><b>18</b><span>Long-horizon agents, memory</span><em>2025</em></div></div><div class="tl-g"><div class="tag">What's next?</div><div class="tl-i"><b>19</b><span>Agents improve agents</span><em>2025–26</em></div></div></div></div>
+    <div class="tl"><div class="tl-c"><div class="tl-g"><div class="tag">From question to instruction</div><div class="tl-i"><b>1</b><span>Direct answer</span><em>2020</em></div><div class="tl-i"><b>2</b><span>Instruction</span><em>2020</em></div><div class="tl-i"><b>3</b><span>In-context learning</span><em>2020</em></div></div><div class="tl-g"><div class="tag">Think</div><div class="tl-i"><b>4</b><span>Chain-of-thought</span><em>2022</em></div><div class="tl-i"><b>5</b><span>Best-of-n</span><em>2021</em></div><div class="tl-i"><b>6</b><span>Self-consistency</span><em>2022</em></div></div></div><div class="tl-c"><div class="tl-g"><div class="tag">Prompt engineering: from manual to automatic</div><div class="tl-i"><b>7</b><span>System prompt</span><em>2023</em></div><div class="tl-i"><b>8</b><span>Prompt engineering</span><em>2023</em></div><div class="tl-i"><b>9<br>10</b><span>Automatic prompt engineering</span><em>2022–24</em></div></div><div class="tl-g"><div class="tag">Tool use</div><div class="tl-i"><b>11</b><span>Tool use, function calling</span><em>2023</em></div><div class="tl-i"><b>12</b><span>ReAct/Reflexion Agent</span><em>2022–23</em></div><div class="tl-i"><b>13</b><span>MCP</span><em>2024</em></div></div></div><div class="tl-c"><div class="tl-g"><div class="tag">Context engineering and agent</div><div class="tl-i"><b>14</b><span>Context engineering</span><em>2025</em></div><div class="tl-i"><b>15</b><span>Agentic context engineering</span><em>2025</em></div><div class="tl-i"><b>16</b><span>Develop agent</span><em>2025</em></div><div class="tl-i"><b>17</b><span>Multi-agent systems</span><em>2023–25</em></div><div class="tl-i"><b>18</b><span>Agent in long run</span><em>2025</em></div></div><div class="tl-g"><div class="tag">What's next?</div><div class="tl-i"><b>19</b><span>Agents improve agents</span><em>2025–26</em></div></div></div></div>
     <p class="key"></p>
   </div>
 </section>
@@ -228,6 +229,7 @@
     <img class="pa-wide" src="./assets/partA/user-milestones.webp" alt="Three steps: 1, text completion via Python code (openai.Completion.create with text-davinci-003 completes a tagline); 2, ChatGPT answers a question in a chat window; 3, Codex is asked to make a 3D game and generates code, runs the build in a terminal and opens the game in the Unity editor.">
   </div>
   <p class="src">Image generated with ChatGPT (OpenAI), October 2026.</p>
+
 </section>
 
 <section class="slide pA" data-title="A1 · Direct answer">
@@ -293,6 +295,7 @@ print(r.choices[0].message.content)</code></pre>
     <p class="next"><b>Next →</b> <b>2 · Instruction</b> specifies the task and the answer format.</p>
   </div>
   <p class="src">Failed examples written for this slide to show the two limitations; not from a model run.</p>
+
 </section>
 
 <section class="slide pA" data-title="A2 · Instruction" data-refs="brown2020 ouyang2022">
@@ -594,13 +597,13 @@ print(answer, count, <span class="s">"of"</span>, len(r.choices))</code></pre>
   </div>
 </section>
 
-<section class="slide pB" data-title="Chen 41 · Gains across models" data-refs="chen2025b wang2023a">
+<section class="slide pB" data-title="Chen 41 · Gains across models" data-refs="wang2023a">
   <p class="eb">A · Think</p>
   <h2>Self-Consistency boosts the performance across models and benchmarks</h2>
   <div class="slide-body">
     <figure class="b2-fig" style="--h:400px"><img src="./assets/partB/b2-wang2023-tab2.png" alt="Wang et al. 2023 Table 2: arithmetic accuracy of CoT prompting and self-consistency for UL2-20B, LaMDA-137B, PaLM-540B and two GPT-3 models on AddSub, MultiArith, ASDiv, AQuA, SVAMP and GSM8K; every self-consistency number is higher, for example GSM8K 56.5 to 74.4 for PaLM-540B"></figure>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 41. Table: <a data-ref="wang2023a">Wang et al. (2023)</a>, Table 2 (average of 10 runs, 40 samples each, §3.1).</p>
+  <p class="src">Table: <a data-ref="wang2023a">Wang et al. (2023)</a>, Table 2 (average of 10 runs, 40 samples each, §3.1).</p>
 </section>
 
 <section class="slide pA" data-title="A6 · Self-consistency: use and limits">
@@ -715,6 +718,7 @@ ALWAYS include multiple distinct sources in your response, at LEAST 3-4.</div>
     </div>
   </div>
   <p class="src">A copy reported by users, not an official OpenAI document (LouisShark/chatgpt_system_prompt, GitHub, 10 Nov 2023). Lines are copied; "…" marks omissions.</p>
+
 </section>
 
 <section class="slide pA" data-title="A8 · Prompt engineering: code">
@@ -779,6 +783,7 @@ ALWAYS include multiple distinct sources in your response, at LEAST 3-4.</div>
     </div>
   </div>
   <p class="src">The candidates and scores in the diagram are illustrations.</p>
+
 </section>
 
 <section class="slide pA" data-title="A9 · APE: code">
@@ -835,6 +840,7 @@ cands = [c.message.content <span class="k">for</span> c <span class="k">in</span
     </div>
   </div>
   <p class="src">Diagram after Figure 2 of <a data-ref="yang2024b">Yang et al. (2024)</a>, redrawn. Green: an LLM. Yellow: what OPRO adds. Scores are illustrations.</p>
+
 </section>
 
 <section class="slide pA" data-title="A10a · OPRO: code">
@@ -878,6 +884,7 @@ best = max(history, key=<span class="k">lambda</span> x: x[1])</code></pre>
     </div>
   </div>
   <p class="src">Diagram after Figure 1 of <a data-ref="yuksekgonul2024">Yuksekgonul et al. (2024)</a>, redrawn. Solid: forward pass. Dashed: backward pass.</p>
+
 </section>
 
 <section class="slide pA" data-title="A10b · TextGrad: code">
@@ -946,6 +953,7 @@ q = tg.Variable(Q, requires_grad=<span class="k">False</span>, role_description=
     </div>
   </div>
   <p class="src">Flow of function calling, after <a data-ref="openai2023fc">OpenAI (2023)</a>, redrawn. Green: written by the LLM. Yellow: what tool use adds.</p>
+
 </section>
 
 <section class="slide pA" data-title="A11 · Tool use: code">
@@ -1063,6 +1071,7 @@ expr = json.loads(call.function.arguments)[<span class="s">"expression"</span>]
     </script>
   </div>
   <p class="src">ALFWorld example after Figure 1 (2b) of <a data-ref="yao2023a">Yao et al. (2023)</a></p>
+
 </section>
 
 <section class="slide pA" data-title="A12a · ReAct" data-refs="yao2023a">
@@ -1173,6 +1182,7 @@ Observation: 18
     </script>
   </div>
   <p class="src">ALFWorld example after Figure 1 of <a data-ref="shinn2023">Shinn et al. (2023)</a>; the text is shortened and the diagram is redrawn. Green: written by the LLM. Grey: given from outside.</p>
+
 </section>
 
 <section class="slide pA" data-title="A12b · Reflexion" data-refs="shinn2023">
@@ -1296,6 +1306,7 @@ r = client.responses.create(model=<span class="s">"gpt-5.4-mini"</span>, input=Q
     <img class="pa-wide ctx-img" src="./assets/partA/anthropic-ctx-fig1.png" alt="Prompt engineering versus context engineering. Left: prompt engineering for single-turn queries puts a system prompt and a user message in the context window and returns an assistant message. Right: context engineering for agents curates documents, tools, memory files, instructions, domain knowledge and message history into the context window; the model returns an assistant message or a tool call, and the tool result goes back into the possible context.">
   </div>
   <p class="src">Figure from <a data-ref="rajasekaran2025">Rajasekaran et al. (2025)</a>, Anthropic.</p>
+
 </section>
 
 <section class="slide pA" data-title="A14 · Context engineering: calibrating the system prompt" data-refs="rajasekaran2025">
@@ -1306,6 +1317,7 @@ r = client.responses.create(model=<span class="s">"gpt-5.4-mini"</span>, input=Q
     <img class="pa-wide ctx-img" src="./assets/partA/anthropic-ctx-fig2.png" alt="Calibrating the system prompt. A scale from too specific, with a long list of hard-coded rules, through just right, a clear role with a response framework and guidelines, to too vague, a one-sentence prompt for a bakery assistant.">
   </div>
   <p class="src">Figure from <a data-ref="rajasekaran2025">Rajasekaran et al. (2025)</a>, Anthropic.</p>
+
 </section>
 
 <section class="slide pA" data-title="A14 · Context engineering: code">
@@ -1371,6 +1383,7 @@ r = client.chat.completions.create(
     </div>
   </div>
   <p class="src">Diagram after Figure 4 of <a data-ref="zhang2025ace">Zhang et al. (2025)</a>, redrawn. Green: an LLM. Yellow: what ACE adds. Dashed: the playbook, kept between questions.</p>
+
 </section>
 
 <section class="slide pA" data-title="A15 · Agentic context engineering: code">
@@ -1426,6 +1439,7 @@ answer = generate(Q, context=playbook)          <span class="cm"># use it</span>
     </div>
   </div>
   <p class="src">Diagram after the agent loop in <a data-ref="openai2025agents">OpenAI (2025)</a>, redrawn. Yellow: what the Agents SDK adds.</p>
+
 </section>
 
 <section class="slide pA" data-title="A16 · Agent design: code">
@@ -1481,6 +1495,7 @@ print(result.final_output)                 <span class="cm"># "[18]"</span></cod
     </div>
   </div>
   <p class="src">Diagram after the manager pattern in <a data-ref="openai2025agents">OpenAI (2025)</a>, redrawn. Yellow: what multi-agent systems add.</p>
+
 </section>
 
 <section class="slide pA" data-title="A17 · Multi-agent systems: code">
@@ -1541,6 +1556,7 @@ result = Runner.run_sync(manager, Q)</code></pre>
     </div>
   </div>
   <p class="src">Diagram after Figures 1–3 of <a data-ref="packer2023">Packer et al. (2023)</a>, redrawn. Yellow: external memory.</p>
+
 </section>
 
 <section class="slide pA" data-title="A18 · Long-horizon agents: code">
@@ -1611,6 +1627,7 @@ task = (<span class="s">"Run the solver on all 1,319 GSM8K test questions, "</sp
     </div>
   </div>
   <p class="src">Diagram after Figure 1 of <a data-ref="zhang2025dgm">Zhang et al. (2025)</a>, redrawn. Green: an LLM. Yellow: what is new. The dark circle is the selected parent.</p>
+
 </section>
 
 <section class="slide pA" data-title="A19 · What&#x27;s next: RSI Lab research">
@@ -1620,6 +1637,7 @@ task = (<span class="s">"Run the solver on all 1,319 GSM8K test questions, "</sp
     <img class="pa-wide ctx-img" src="./assets/partA/sakana-rsi-publications.png" alt="Timeline of Sakana AI's RSI Lab research: LLM squared (June 2024), AI Scientist v1 (August 2024), Darwin Gödel Machine (April 2025), AI Scientist v2 (April 2025), ShinkaEvolve (August 2025), ALE-Agent (December 2025), Digital Red Queen (February 2026) and the AI Scientist in Nature (26 March 2026).">
   </div>
   <p class="src">Figure: Sakana AI's RSI research. Sakana AI, <a href="https://sakana.ai/rsi-lab/">Introducing Sakana AI's Recursive Self-Improvement (RSI) Lab</a>.</p>
+
 </section>
 
 <section class="slide pA" data-title="A19 · What&#x27;s next: trajectory">
@@ -1629,6 +1647,7 @@ task = (<span class="s">"Run the solver on all 1,319 GSM8K test questions, "</sp
     <img class="pa-wide ctx-img" src="./assets/partA/sakana-rsi-trajectory.png" alt="A curve of scientific discovery capabilities against cycles of R&D and self-improvement, rising above the status quo of human-led R&D through agent-native models, the AI Scientist (automated discovery) and recursive self-improvement (AI optimizing AI code), leading to various applications and democratized AI.">
   </div>
   <p class="src">Figure: the trajectory of recursive self-improvement. Sakana AI, <a href="https://sakana.ai/rsi-lab/">Introducing Sakana AI's Recursive Self-Improvement (RSI) Lab</a>.</p>
+
 </section>
 
 <section class="slide pA" data-title="A19 · What&#x27;s next: code">
@@ -1693,7 +1712,7 @@ notes = []
 </section>
 
 <!-- ═════════════════════════════ PART B ═════════════════════════════ -->
-<section class="slide blue section-open with-recap" data-title="Part B">
+<section class="slide blue section-open with-recap" data-title="Part B" data-refs="chen2025b">
   <p class="eb">Part B</p>
   <h1>Prompt to think</h1>
   <p>The model writes more before it answers: reasoning models, chain-of-thought prompting, search over many chains, and revision.</p>
@@ -1704,7 +1723,7 @@ notes = []
   </aside>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 2 · o1 results" data-refs="chen2025b openai2024">
+<section class="slide pB b1-s" data-title="Chen 2 · o1 results" data-refs="openai2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:38px">Reasoning: test-time scaling</h2>
   <div class="slide-body">
@@ -1779,10 +1798,10 @@ notes = []
 </svg>
     <p class="b1-q">OpenAI o1 (the first large-scale reasoning model) started to achieve impressive performance across various challenging reasoning tasks in math, coding, STEM, etc.</p>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, Berkeley CS294-280 lecture 1, p. 2. Chart redrawn from the numbers in <a data-ref="openai2024">OpenAI (2024)</a>, Appendix A; expert human 69.7 is read from that post's chart. Solid bars: one answer (pass@1); light bars: majority vote of 64 answers (cons@64). AIME: a US maths contest. Codeforces: programming contests. GPQA Diamond: hard science questions written by experts.</p>
+  <p class="src">Chart redrawn from the numbers in <a data-ref="openai2024">OpenAI (2024)</a>, Appendix A; expert human 69.7 is read from that post's chart. Solid bars: one answer (pass@1); light bars: majority vote of 64 answers (cons@64). AIME: a US maths contest. Codeforces: programming contests. GPQA Diamond: hard science questions written by experts.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 3 · More inference-time compute" data-refs="chen2025b chollet2024">
+<section class="slide pB b1-s" data-title="Chen 3 · More inference-time compute" data-refs="chollet2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Reasoning: test-time scaling</h2>
   <div class="slide-body">
@@ -1836,19 +1855,20 @@ notes = []
       </div>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 3. Chart redrawn from <a data-ref="chollet2024">Chollet (2024)</a>; costs read from its log axis. "Tuned": trained on 75% of the ARC-AGI public training set.</p>
+  <p class="src">Chart redrawn from <a data-ref="chollet2024">Chollet (2024)</a>; costs read from its log axis. "Tuned": trained on 75% of the ARC-AGI public training set.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 4–5 · o1 and Gemini demos" data-refs="chen2025b openai2024">
+<section class="slide pB b1-s" data-title="Chen 4–5 · o1 and Gemini demos" data-refs="openai2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:38px">Reasoning behind ChatGPT view</h2>
   <div class="slide-body">
     <figure class="b1-fig" style="--h:440px"><img src="./assets/partB/b1-chen2025b-p04-o1-demo.png" alt="ChatGPT screenshot: a user query about meeting Ronald, Richard and Kenneth in San Francisco, labelled User query; a line 'Thought about optimizing meeting schedules for 1m 14s'; a side panel labelled Summarized hidden thought; the start of the response, labelled Model-generated response"></figure>
   </div>
   <p class="src"></p>
+
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 6 · Trigger a long CoT" data-refs="chen2025b wei2022b nye2021">
+<section class="slide pB b1-s" data-title="Chen 6 · Trigger a long CoT" data-refs="wei2022b nye2021">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:36px">Core idea: trigger the LLM to generate <span class="b1-hl">long</span> chain-of-thought (CoT)</h2>
   <div class="slide-body">
@@ -1867,9 +1887,10 @@ notes = []
     </div>
   </div>
   <p class="src"></p>
+
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 9–10 · Standard vs CoT prompting" data-refs="chen2025b wei2022b nye2021">
+<section class="slide pB b1-s" data-title="Chen 9–10 · Standard vs CoT prompting" data-refs="wei2022b nye2021">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Background: standard prompting</h2>
   <div class="slide-body">
@@ -1881,19 +1902,19 @@ notes = []
       </ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 9. Figure: <a data-ref="wei2022b">Wei et al. (2022)</a>, Fig. 1 (left half). See also <a data-ref="nye2021">Nye et al. (2021)</a>.</p>
+  <p class="src">Figure: <a data-ref="wei2022b">Wei et al. (2022)</a>, Fig. 1 (left half). See also <a data-ref="nye2021">Nye et al. (2021)</a>.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 10 · Thoughts in the exemplars" data-refs="chen2025b wei2022b nye2021">
+<section class="slide pB b1-s" data-title="Chen 10 · Thoughts in the exemplars" data-refs="wei2022b nye2021">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:38px">Few-shot CoT prompting</h2>
   <div class="slide-body">
     <div class="b1-crop" style="--hh:450px; --iw:1633; --cw:1633; --ch:817; --cx:0; --cy:0"><img src="./assets/partB/b1-wei2022-fig1.png" alt="Wei et al. 2022 Figure 1: standard prompting gives the wrong answer 27 to the cafeteria question; chain-of-thought prompting shows the steps and gives the correct answer 9"><span class="b1-fr" style="left:2.4%; top:15.9%; width:45.5%; height:26.1%"></span><span class="b1-ovl blue" style="left:37%; top:33%">Exemplar</span><span class="b1-ovl red" style="left:88%; top:28.5%">Thought</span></div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 10. Figure: <a data-ref="wei2022b">Wei et al. (2022)</a>, Fig. 1. See also <a data-ref="nye2021">Nye et al. (2021)</a>.</p>
+  <p class="src">Figure: <a data-ref="wei2022b">Wei et al. (2022)</a>, Fig. 1. See also <a data-ref="nye2021">Nye et al. (2021)</a>.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 11 · CoT and model size" data-refs="chen2025b wei2022b wei2022c">
+<section class="slide pB b1-s" data-title="Chen 11 · CoT and model size" data-refs="wei2022b wei2022c">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>CoT performance scales with the model size</h2>
   <div class="slide-body">
@@ -1908,36 +1929,36 @@ notes = []
       </ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 11. Figure: <a data-ref="wei2022b">Wei et al. (2022)</a>, Fig. 4. Emergent abilities: <a data-ref="wei2022c">Wei et al. (2022)</a>.</p>
+  <p class="src">Figure: <a data-ref="wei2022b">Wei et al. (2022)</a>, Fig. 4. Emergent abilities: <a data-ref="wei2022c">Wei et al. (2022)</a>.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 12 · Zero-shot CoT" data-refs="chen2025b kojima2022">
+<section class="slide pB b1-s" data-title="Chen 12 · Zero-shot CoT" data-refs="kojima2022">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Zero-shot CoT: elicit reasoning with one instruction</h2>
   <div class="slide-body">
     <figure class="b1-fig" style="--h:350px"><img src="./assets/partB/b1-kojima2022-fig1.png" alt="Kojima et al. 2022 Figure 1: four prompts for the juggler question; few-shot and zero-shot answer 8 (wrong); few-shot CoT and zero-shot CoT with 'Let's think step by step' answer 4 (correct)"></figure>
     <p class="b1-q">“Let’s think step by step” triggers CoT generation w/o exemplars.</p>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 12. Figure: <a data-ref="kojima2022">Kojima et al. (2022)</a>, Fig. 1 (GPT-3 outputs).</p>
+  <p class="src">Figure: <a data-ref="kojima2022">Kojima et al. (2022)</a>, Fig. 1 (GPT-3 outputs).</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 13 · Zero-shot CoT results" data-refs="chen2025b kojima2022">
+<section class="slide pB b1-s" data-title="Chen 13 · Zero-shot CoT results" data-refs="kojima2022">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:38px">Zero-shot CoT outperforms zero-shot prompting</h2>
   <div class="slide-body">
     <figure class="b1-fig" style="--h:440px"><img src="./assets/partB/b1-kojima2022-table1.png" alt="Kojima et al. 2022 Table 1: zero-shot against zero-shot CoT on 12 tasks; for example MultiArith 17.7 to 78.7, GSM8K 10.4 to 40.7, CommonsenseQA 68.8 to 64.6"></figure>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 13. Table: <a data-ref="kojima2022">Kojima et al. (2022)</a>, Table 1; text-davinci-002 (GPT-3). Each cell: accuracy with a task-specific prompt to extract the answer / with "The answer is".</p>
+  <p class="src">Table: <a data-ref="kojima2022">Kojima et al. (2022)</a>, Table 1; text-davinci-002 (GPT-3). Each cell: accuracy with a task-specific prompt to extract the answer / with "The answer is".</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 14 · Zero-shot vs few-shot CoT" data-refs="chen2025b kojima2022">
+<section class="slide pB b1-s" data-title="Chen 14 · Zero-shot vs few-shot CoT" data-refs="kojima2022">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:37px">But zero-shot CoT is still worse than few-shot CoT</h2>
   <div class="slide-body">
     <figure class="b1-fig" style="--h:360px"><img src="./assets/partB/b1-kojima2022-table2-top.png" alt="Kojima et al. 2022 Table 2, top: MultiArith and GSM8K accuracy; zero-shot 17.7 and 10.4; zero-shot CoT 78.7 and 40.7; few-shot CoT with 8 samples 93.0 and 48.7; zero-plus-few-shot CoT 92.8 and 51.5"></figure>
     <p class="b1-q">How to improve CoT performance w/o manually labeling exemplars?</p>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 14. Table: <a data-ref="kojima2022">Kojima et al. (2022)</a>, Table 2 (top two blocks; text-davinci-002).</p>
+  <p class="src">Table: <a data-ref="kojima2022">Kojima et al. (2022)</a>, Table 2 (top two blocks; text-davinci-002).</p>
 </section>
 
 <section class="slide pB b1-s" data-title="Chen 14 · Zero-shot vs few-shot CoT · ✋">
@@ -1948,7 +1969,7 @@ notes = []
   </div>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 15 · Analogical prompting" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 15 · Analogical prompting" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Analogical prompting: instruct the LLM to generate exemplars</h2>
   <div class="slide-body">
@@ -1965,20 +1986,20 @@ A: The area of a square is found by squaring the length of its side. So, the are
       </div>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 15. Example: <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 1 (right), written out.</p>
+  <p class="src">Example: <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 1 (right), written out.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 15 · Analogical prompting: solve" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 15 · Analogical prompting: solve" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:36px">Analogical prompting: instruct the LLM to generate exemplars (cont.)</h2>
   <div class="slide-body">
     <div class="b1-io out"><span class="tag b1-io-lab">Model Output</span><b># Solve the initial problem:</b>
 To find the area of the square, we need to find the side length. The length is … \sqrt{(2 - (-2))^2 + (-2 - 2)^2} = \sqrt{32}. So, the area of the square is (\sqrt{32})^2 = 32.</div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 15. Example: <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 1 (right), written out; the model writes LaTeX, shown as it wrote it.</p>
+  <p class="src">Example: <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 1 (right), written out; the model writes LaTeX, shown as it wrote it.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 16 · Benefits of analogical prompting" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 16 · Benefits of analogical prompting" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Analogical prompting: instruct the LLM to generate exemplars</h2>
   <div class="slide-body">
@@ -1993,10 +2014,10 @@ To find the area of the square, we need to find the side length. The length is �
       <div class="b1-crop" style="--hh:440px; --iw:1667; --cw:680; --ch:595; --cx:980; --cy:70"><img src="./assets/partB/b1-yasunaga2024-fig1.png" alt="Yasunaga et al. 2024 Figure 1, right part: analogical prompting; the model input asks for the area of a square and for relevant exemplars first; the model output writes an exemplar, then solves the problem"></div>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 16. Figure: <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 1 (right part).</p>
+  <p class="src">Figure: <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 1 (right part).</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 17 · Human analogical reasoning" data-refs="chen2025b polya1945">
+<section class="slide pB b1-s" data-title="Chen 17 · Human analogical reasoning" data-refs="polya1945">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Motivation: human analogical reasoning</h2>
   <div class="slide-body">
@@ -2006,10 +2027,10 @@ To find the area of the square, we need to find the side length. The length is �
     </ul>
     <blockquote class="b1-quote"><p>"Do you know a related problem?"</p><cite>George Pólya, <i>How to Solve It</i> (1945)</cite></blockquote>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 17, which shows the book's cover and a page; not reproduced here. The question is the heading of that passage (<a data-ref="polya1945">Pólya, 1945</a>).</p>
+  <p class="src">, which shows the book's cover and a page; not reproduced here. The question is the heading of that passage (<a data-ref="polya1945">Pólya, 1945</a>).</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 18–19 · Codeforces prompt and knowledge" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 18–19 · Codeforces prompt and knowledge" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Example: Codeforces (prompt)</h2>
   <div class="slide-body">
@@ -2018,10 +2039,10 @@ To find the area of the square, we need to find the side length. The length is �
 <b># Problem:</b>
 You are given a sequence a_1, a_2, …, a_n. Each element of a is 1 or 2. Find out if an integer k exists so that the following conditions are met. 1 ≤ k ≤ n-1, and a_1 ⋅ a_2 … a_k = a_{k+1} … a_n. If there exist multiple k that satisfy the given condition, print the smallest.</div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 18. The prompt is typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (top), over three slides. Codeforces: a website for programming contests.</p>
+  <p class="src">The prompt is typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (top), over three slides. Codeforces: a website for programming contests.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 18–19 · Codeforces prompt and knowledge (2)" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 18–19 · Codeforces prompt and knowledge (2)" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Example: Codeforces (prompt) (cont.)</h2>
   <div class="slide-body">
@@ -2035,10 +2056,10 @@ Write a tutorial about these algorithms.
 <b>## Example Problems:</b>
 Provide three examples of relevant competitive programming problems that involve these algorithms. For each problem, describe the problem, explain the solution in detail, and then write the correct Python3 code.</div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 18. The prompt is typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (top), over three slides. Codeforces: a website for programming contests.</p>
+  <p class="src">The prompt is typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (top), over three slides. Codeforces: a website for programming contests.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 18–19 · Codeforces prompt and knowledge (3)" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 18–19 · Codeforces prompt and knowledge (3)" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Example: Codeforces (prompt) (cont.)</h2>
   <div class="slide-body">
@@ -2050,10 +2071,10 @@ Provide three examples of relevant competitive programming problems that involve
       <li>The generated knowledge complements the problems with broader insights</li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 18. The prompt is typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (top), over three slides. Codeforces: a website for programming contests.</p>
+  <p class="src">The prompt is typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (top), over three slides. Codeforces: a website for programming contests.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 19 · Codeforces knowledge" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 19 · Codeforces knowledge" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:39px">Example: Codeforces (self-generated knowledge + exemplars)</h2>
   <div class="slide-body">
@@ -2061,10 +2082,10 @@ Provide three examples of relevant competitive programming problems that involve
 
 <b>## Tutorial:</b> The prefix product algorithm is used to calculate the product of all the elements in a prefix of an array. The algorithm works by initializing a variable "prefix" to 1, and then iterating through the array from left to right. At each iteration, the current element is multiplied with the prefix, and the result is stored in the prefix variable. This way, the prefix variable keeps track of the product of all the elements in the prefix of the array. The time complexity of this algorithm is O(n), where n is the size of the input array. ......</div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 19. Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (middle), over four slides.</p>
+  <p class="src">Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (middle), over four slides.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 19 · Codeforces knowledge (2)" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 19 · Codeforces knowledge (2)" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:35px">Example: Codeforces (self-generated knowledge + exemplars) (cont.)</h2>
   <div class="slide-body">
@@ -2072,10 +2093,10 @@ Provide three examples of relevant competitive programming problems that involve
 <b>1.</b> Problem: Given an array of integers, find the product of all the elements in each subarray of size k.
    Solution: We can use the prefix product algorithm to solve this problem. We initialize a prefix variable to 1, and then iterate through the array from left to right. At each iteration, we multiply the current element with the prefix, ......</div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 19. Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (middle), over four slides.</p>
+  <p class="src">Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (middle), over four slides.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 19 · Codeforces knowledge (3)" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 19 · Codeforces knowledge (3)" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:35px">Example: Codeforces (self-generated knowledge + exemplars) (cont.)</h2>
   <div class="slide-body">
@@ -2089,10 +2110,10 @@ Provide three examples of relevant competitive programming problems that involve
             prefix = prefix // arr[i-k+1]
     return result</div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 19. Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (middle), over four slides.</p>
+  <p class="src">Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (middle), over four slides.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 19 · Codeforces knowledge (4)" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 19 · Codeforces knowledge (4)" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:35px">Example: Codeforces (self-generated knowledge + exemplars) (cont.)</h2>
   <div class="slide-body">
@@ -2102,10 +2123,10 @@ Provide three examples of relevant competitive programming problems that involve
 <b>3.</b> Problem: Given an array of integers, find the smallest k such that the product of all the elements in the prefix of the array is equal to the product of all the elements in the suffix of the array.
    Solution: ......</div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 19. Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (middle), over four slides.</p>
+  <p class="src">Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (middle), over four slides.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 20 · Solve the initial problem" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 20 · Solve the initial problem" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Example: Codeforces (solving the initial problem)</h2>
   <div class="slide-body">
@@ -2118,10 +2139,10 @@ Explanation of the solution:
     - If the prefix is equal to the suffix, update k to the current index.
   - Print the value of k.</div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 20. Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (bottom), over two slides.</p>
+  <p class="src">Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (bottom), over two slides.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 20 · Solve the initial problem (2)" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 20 · Solve the initial problem (2)" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Example: Codeforces (solving the initial problem) (cont.)</h2>
   <div class="slide-body">
@@ -2140,10 +2161,10 @@ for _ in range(t):
              k = i
     print(k)</div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 20. Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (bottom), over two slides.</p>
+  <p class="src">Typed out in full from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Fig. 3 (bottom), over two slides.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 21 · Analogical prompting results" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 21 · Analogical prompting results" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Result overview</h2>
   <div class="slide-body">
@@ -2197,10 +2218,10 @@ for _ in range(t):
 <line class="axl" x1="772" x2="1132" y1="300" y2="300"/>
 </svg>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 21. Chart redrawn from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Tables 1–3. Codeforces: GPT-3.5-turbo-16k; analogical = self-made knowledge and exemplars (exemplars only: 13%). Temporal sequences: a BIG-Bench task on what time a person could have gone somewhere.</p>
+  <p class="src">Chart redrawn from <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Tables 1–3. Codeforces: GPT-3.5-turbo-16k; analogical = self-made knowledge and exemplars (exemplars only: 13%). Temporal sequences: a BIG-Bench task on what time a person could have gone somewhere.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 22 · Stronger LLMs" data-refs="chen2025b yasunaga2024">
+<section class="slide pB b1-s" data-title="Chen 22 · Stronger LLMs" data-refs="yasunaga2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Stronger LLMs are better analogical reasoners</h2>
   <div class="slide-body">
@@ -2212,10 +2233,10 @@ for _ in range(t):
         <ul><li>The generated CoT is more tailored to the underlying LLM</li></ul></li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 22. Table: <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Table 4 (GSM8K). Retrieved: the 5 most similar solved problems from the training set.</p>
+  <p class="src">Table: <a data-ref="yasunaga2024">Yasunaga et al. (2024)</a>, Table 4 (GSM8K). Retrieved: the 5 most similar solved problems from the training set.</p>
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 29 · What CoT brings" data-refs="chen2025b">
+<section class="slide pB b1-s" data-title="Chen 29 · What CoT brings">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>What CoT brings into LLM reasoning</h2>
   <div class="slide-body">
@@ -2227,7 +2248,7 @@ for _ in range(t):
       <li>We can explicitly instruct the LLM with the desired reasoning strategies for problem solving</li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 29. The next two slides show why more tokens give more computation.</p>
+  <p class="src">The next two slides show why more tokens give more computation.</p>
 </section>
 
 <section class="slide pB b1-s" data-title="CoT math · serial steps" data-refs="li2024 zhou2025">
@@ -2308,6 +2329,7 @@ for _ in range(t):
     </div>
   </div>
   <p class="src">Drawn for this lecture after <a data-ref="li2024">Li et al. (2024)</a>, §1 and the proof sketch of their Theorem 3.3 (writing the output back "resets the depth"). Longest chain with T thought tokens ≤ L × (T + 1) layer steps (computed). See also <a data-ref="zhou2025">Zhou (2025)</a>, p. 5.</p>
+
 </section>
 
 <section class="slide pB b1-s" data-title="CoT math · circuits" data-refs="li2024 zhou2025">
@@ -2351,9 +2373,10 @@ for _ in range(t):
     </div>
   </div>
   <p class="src"><a data-ref="li2024">Li et al. (2024)</a>, Theorems 3.1 and 3.3, Fig. 2 (circuit redrawn): n = input length, embedding size O(log n), constant bits of precision. <a data-ref="zhou2025">Zhou (2025)</a>, p. 5: "O(T) intermediate tokens". "No AC<sup>0</sup> circuits can decide the parity": their p. 8. Parity tokens and gate values computed.</p>
+
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 30 · Least-to-most prompting" data-refs="chen2025b zhou2023b">
+<section class="slide pB b1-s" data-title="Chen 30 · Least-to-most prompting" data-refs="zhou2023b">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2 style="font-size:34px">How to improve reasoning? </h2>
   <div class="slide-body">
@@ -2363,9 +2386,10 @@ for _ in range(t):
     </div>
   </div>
   <p class="src"></p>
+
 </section>
 
-<section class="slide pB b1-s" data-title="Chen 37 · Summary" data-refs="chen2025b">
+<section class="slide pB b1-s" data-title="Chen 37 · Summary">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Summary</h2>
   <div class="slide-body">
@@ -2378,10 +2402,10 @@ for _ in range(t):
           <ul><li>Encourage longer CoT for complex tasks</li><li>Support reasoning strategies required for the task</li></ul></li></ul></li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 37. The deck's second half starts on p. 38.</p>
+  <p class="src">The deck's second half starts on p. 38.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 39 · More than one solution" data-refs="chen2025b">
+<section class="slide pB" data-title="Chen 39 · More than one solution">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>What is missing so far?</h2>
   <div class="slide-body">
@@ -2393,8 +2417,7 @@ for _ in range(t):
         <ul><li>In most cases, we do not have an oracle scorer at inference time</li></ul></li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, Berkeley CS294-280 lecture 1, p. 39.</p>
-</section>
+  </section>
 
 <section class="slide pA" data-title="Self-consistency · diagram" data-refs="wang2023a">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
@@ -2446,13 +2469,13 @@ for _ in range(t):
   </div>
 </section>
 
-<section class="slide pB" data-title="Chen 40 · Self-consistency" data-refs="chen2025b wang2023a">
+<section class="slide pB" data-title="Chen 40 · Self-consistency" data-refs="wang2023a">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Self-Consistency: select the response with the most consistent final answer</h2>
   <div class="slide-body">
     <figure class="b2-fig" style="--h:300px"><img src="./assets/partB/b2-wang2023-fig1.png" alt="Wang et al. 2023 Figure 1: chain-of-thought prompting with greedy decoding gives one chain and the wrong answer $14; self-consistency samples three chains that answer $18, $26 and $18, and a majority vote over the final answers gives $18"><figcaption>Note: the selection is only based on the final answer, the reasoning paths do not need to be the same across different sampled responses.</figcaption></figure>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 40. Figure: <a data-ref="wang2023a">Wang et al. (2023)</a>, Fig. 1.</p>
+  <p class="src">Figure: <a data-ref="wang2023a">Wang et al. (2023)</a>, Fig. 1.</p>
 </section>
 
 <section class="slide pB" data-title="Self-consistency · the math" data-refs="wang2023a wu2025">
@@ -2512,9 +2535,10 @@ for _ in range(t):
     </div>
   </div>
   <p class="src">Notation: <a data-ref="wang2023a">Wang et al. (2023)</a>, §2; limit: <a data-ref="wu2025">Wu et al. (2025)</a>, Thm. 1. Toy numbers; votes sampled in the page.</p>
+
 </section>
 
-<section class="slide pB" data-title="Chen 42 · Accuracy grows with samples" data-refs="chen2025b wang2023a">
+<section class="slide pB" data-title="Chen 42 · Accuracy grows with samples" data-refs="wang2023a">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Self-Consistency performance scales with more samples</h2>
   <div class="slide-body">
@@ -2525,10 +2549,10 @@ for _ in range(t):
         <ul><li>Unless the model is trained to be a good verifier (will cover later)</li></ul></li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 42. Figure: <a data-ref="wang2023a">Wang et al. (2023)</a>, Fig. 3 (GPT-3 code-davinci-001, §3.4).</p>
+  <p class="src">Figure: <a data-ref="wang2023a">Wang et al. (2023)</a>, Fig. 3 (GPT-3 code-davinci-001, §3.4).</p>
 </section>
 
-<section class="slide pB" data-title="Chen 43 · Diverse samples" data-refs="chen2025b wang2023a">
+<section class="slide pB" data-title="Chen 43 · Diverse samples" data-refs="wang2023a">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Sampling <span class="b2-em">diverse</span> responses is crucial to self-consistency</h2>
   <div class="slide-body">
@@ -2545,10 +2569,10 @@ for _ in range(t):
       </ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 43. Tables: <a data-ref="wang2023a">Wang et al. (2023)</a>, Tables 7 and 6; samplers: their §3.1 (temperature 0.5–0.7; top-k 40, except for GPT-3).</p>
+  <p class="src">Tables: <a data-ref="wang2023a">Wang et al. (2023)</a>, Tables 7 and 6; samplers: their §3.1 (temperature 0.5–0.7; top-k 40, except for GPT-3).</p>
 </section>
 
-<section class="slide pB" data-title="Chen 44 · Agreement predicts accuracy" data-refs="chen2025b wang2023a">
+<section class="slide pB" data-title="Chen 44 · Agreement predicts accuracy" data-refs="wang2023a">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Consistency is highly correlated with the accuracy</h2>
   <div class="slide-body">
@@ -2560,7 +2584,7 @@ for _ in range(t):
       </div>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 44. Figure: <a data-ref="wang2023a">Wang et al. (2023)</a>, Fig. 5 (GSM8K) and §3.5.</p>
+  <p class="src">Figure: <a data-ref="wang2023a">Wang et al. (2023)</a>, Fig. 5 (GSM8K) and §3.5.</p>
 </section>
 
 <section class="slide pB" data-title="Majority vote · ✋ question">
@@ -2629,27 +2653,27 @@ for _ in range(t):
     </div>
   </div>
   <p class="src">Computed for this slide: independent samples and two possible answers (right, or one common wrong answer).</p>
+
 </section>
 
-<section class="slide pB" data-title="Chen 49 · A vote needs comparable answers" data-refs="chen2025b wang2023a">
+<section class="slide pB" data-title="Chen 49 · A vote needs comparable answers" data-refs="wang2023a">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Limitation of self-consistency decoding: require an answer extraction process</h2>
   <div class="slide-body">
     <figure class="b2-fig" style="--h:318px"><img src="./assets/partB/b2-wang2023-fig1.png" alt="Wang et al. 2023 Figure 1: chain-of-thought prompting with greedy decoding gives one chain and the wrong answer $14; self-consistency samples three chains that answer $18, $26 and $18, and a majority vote over the final answers gives $18"><figcaption>Can we enable consistency-based decoding for <span class="b2-em">free-form generation</span>?</figcaption></figure>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 49, which shows <a data-ref="wang2023a">Wang et al. (2023)</a>, Fig. 1 again (see p. 40).</p>
-</section>
+  </section>
 
-<section class="slide pB" data-title="Chen 50 · Universal self-consistency" data-refs="chen2025b chen2023">
+<section class="slide pB" data-title="Chen 50 · Universal self-consistency" data-refs="chen2023">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Universal self-consistency: ask the LLM to perform consistency-based selection</h2>
   <div class="slide-body">
     <figure class="b2-fig" style="--h:320px"><img src="./assets/partB/b2-chen2023-fig1.png" alt="Chen et al. 2023 Figure 1: a question goes to the LLM, which gives several responses; the USC prompt lists all responses and asks to select the most consistent response based on majority consensus; the LLM returns the selected response"></figure>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 50. Figure and prompt: <a data-ref="chen2023">Chen et al. (2023)</a>, Fig. 1.</p>
+  <p class="src">Figure and prompt: <a data-ref="chen2023">Chen et al. (2023)</a>, Fig. 1.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 51 · USC results" data-refs="chen2025b chen2023">
+<section class="slide pB" data-title="Chen 51 · USC results" data-refs="chen2023">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Results</h2>
   <div class="slide-body">
@@ -2663,10 +2687,10 @@ for _ in range(t):
       </ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 51. Figure: <a data-ref="chen2023">Chen et al. (2023)</a>, Fig. 3 (k = number of responses) and §4.3.</p>
+  <p class="src">Figure: <a data-ref="chen2023">Chen et al. (2023)</a>, Fig. 3 (k = number of responses) and §4.3.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 52 · Trained verifiers" data-refs="chen2025b cobbe2021 lightman2024">
+<section class="slide pB" data-title="Chen 52 · Trained verifiers" data-refs="cobbe2021 lightman2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Improve further over consistency-based selection: training LLM rankers</h2>
   <div class="slide-body">
@@ -2678,10 +2702,10 @@ for _ in range(t):
       </div>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 52. Figure: <a data-ref="cobbe2021">Cobbe et al. (2021)</a>, Fig. 4; PRM: <a data-ref="lightman2024">Lightman et al. (2024)</a>.</p>
+  <p class="src">Figure: <a data-ref="cobbe2021">Cobbe et al. (2021)</a>, Fig. 4; PRM: <a data-ref="lightman2024">Lightman et al. (2024)</a>.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 53 · Verifiers beat the vote" data-refs="chen2025b lightman2024">
+<section class="slide pB" data-title="Chen 53 · Verifiers beat the vote" data-refs="lightman2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>(Strong) LLM-based verifiers outperform consistency-based selection</h2>
   <div class="slide-body">
@@ -2694,17 +2718,17 @@ for _ in range(t):
       </ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 53. Figure: <a data-ref="lightman2024">Lightman et al. (2024)</a>, Fig. 3 (500 MATH test problems).</p>
+  <p class="src">Figure: <a data-ref="lightman2024">Lightman et al. (2024)</a>, Fig. 3 (500 MATH test problems).</p>
 </section>
 
-<section class="slide pB" data-title="Chen 54 · Tree of Thoughts" data-refs="chen2025b yao2023b">
+<section class="slide pB" data-title="Chen 54 · Tree of Thoughts" data-refs="yao2023b">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>So far: response selection only after the full responses are generated</h2>
   <div class="slide-body">
     <ul class="b2-pts"><li>This does not fully utilize a step-wise scorer!</li><li>LLM + tree search: prioritize the exploration of more promising partial solutions</li></ul>
     <figure class="b2-fig" style="--h:285px"><img src="./assets/partB/b2-yao2023-fig1.png" alt="Yao et al. 2023 Figure 1: input-output prompting, chain of thought, self-consistency with a majority vote, and Tree of Thoughts, where the model explores a tree of partial thoughts and follows the promising branches to the output"></figure>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 54. Figure: <a data-ref="yao2023b">Yao et al. (2023)</a>, Fig. 1.</p>
+  <p class="src">Figure: <a data-ref="yao2023b">Yao et al. (2023)</a>, Fig. 1.</p>
 </section>
 
 <section class="slide pB" data-title="Chen 54 · Tree of Thoughts · ✋">
@@ -2718,7 +2742,7 @@ for _ in range(t):
   </div>
 </section>
 
-<section class="slide pB" data-title="Chen 55 · Game of 24" data-refs="chen2025b yao2023b">
+<section class="slide pB" data-title="Chen 55 · Game of 24" data-refs="yao2023b">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Tree-of-thought example: game of 24</h2>
   <div class="slide-body">
@@ -2728,10 +2752,10 @@ for _ in range(t):
       <ul class="b2-pts"><li>Thought generation: prompt the LLM to propose possible next thinking steps</li><li>Thought evaluation: prompt the LLM to evaluate how promising the current state is</li></ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 55. Figure: <a data-ref="yao2023b">Yao et al. (2023)</a>, Fig. 2. Answer to the ✋: (10 − 4) × (13 − 9) = 24, the green path.</p>
+  <p class="src">Figure: <a data-ref="yao2023b">Yao et al. (2023)</a>, Fig. 2. Answer to the ✋: (10 − 4) × (13 − 9) = 24, the green path.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 56 · Voting on states" data-refs="chen2025b yao2023b">
+<section class="slide pB" data-title="Chen 56 · Voting on states" data-refs="yao2023b">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Voting-based state evaluation</h2>
   <div class="slide-body">
@@ -2741,10 +2765,10 @@ for _ in range(t):
       <ul class="b2-pts"><li>LLM votes multiple times, then selects the majority vote as the final choice</li></ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 56. Figure: <a data-ref="yao2023b">Yao et al. (2023)</a>, Fig. 4 (creative writing task).</p>
+  <p class="src">Figure: <a data-ref="yao2023b">Yao et al. (2023)</a>, Fig. 4 (creative writing task).</p>
 </section>
 
-<section class="slide pB" data-title="Chen 57 · ToT results" data-refs="chen2025b yao2023b">
+<section class="slide pB" data-title="Chen 57 · ToT results" data-refs="yao2023b">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Tree-of-thought results: game of 24</h2>
   <div class="slide-body">
@@ -2760,10 +2784,10 @@ for _ in range(t):
       </ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 57. Table 2 and Fig. 3(a): <a data-ref="yao2023b">Yao et al. (2023)</a>; the x-axis counts nodes visited (the deck says "token budget").</p>
+  <p class="src">Table 2 and Fig. 3(a): <a data-ref="yao2023b">Yao et al. (2023)</a>; the x-axis counts nodes visited (the deck says "token budget").</p>
 </section>
 
-<section class="slide pB" data-title="Chen 58 · Summary of search and selection" data-refs="chen2025b">
+<section class="slide pB" data-title="Chen 58 · Summary of search and selection">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Summary</h2>
   <div class="slide-body">
@@ -2774,10 +2798,9 @@ for _ in range(t):
       <li>When LLM self-evaluation works well: search in the partial solution space can help</li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 58.</p>
-</section>
+  </section>
 
-<section class="slide pB" data-title="Chen 60 · Mistakes and feedback" data-refs="chen2025b">
+<section class="slide pB" data-title="Chen 60 · Mistakes and feedback">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Even the best LLMs still make (sometimes obvious) mistakes…</h2>
   <div class="slide-body">
@@ -2788,20 +2811,19 @@ for _ in range(t):
       <li>Inference-time self-improvement: LLM iteratively improves its own response for the given task</li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 60.</p>
-</section>
+  </section>
 
-<section class="slide pB" data-title="Chen 61 · Reflexion and Self-Refine" data-refs="chen2025b shinn2023 madaan2023">
+<section class="slide pB" data-title="Chen 61 · Reflexion and Self-Refine" data-refs="shinn2023 madaan2023">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Reflexion and Self-Refine</h2>
   <div class="slide-body">
     <figure class="b2-fig" style="--h:290px"><img src="./assets/partB/b2-shinn2023-fig1.png" alt="Shinn et al. 2023 Figure 1: three tasks (decision making, programming, reasoning); for each, a task, a failed trajectory, an evaluation (internal heuristic, self-generated unit tests, or external binary reward), a written reflection on the mistake, and a corrected next trajectory"></figure>
     <ul class="b2-pts"><li>LLM generates feedback on its output. Use external evaluation when available.</li><li>LLM self-refines its output given both internal feedback and external evaluation.</li></ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 61. Figure: <a data-ref="shinn2023">Shinn et al. (2023)</a>, Fig. 1. Self-Refine: <a data-ref="madaan2023">Madaan et al. (2023)</a>.</p>
+  <p class="src">Figure: <a data-ref="shinn2023">Shinn et al. (2023)</a>, Fig. 1. Self-Refine: <a data-ref="madaan2023">Madaan et al. (2023)</a>.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 62 · Reflexion results" data-refs="chen2025b shinn2023">
+<section class="slide pB" data-title="Chen 62 · Reflexion results" data-refs="shinn2023">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Self-reflection and self-refinement work with good (external) evaluation</h2>
   <div class="slide-body">
@@ -2813,19 +2835,19 @@ for _ in range(t):
       <ul class="b2-pts"><li>Reflexion improves on tasks with effective evaluation heuristics, e.g., ALFWorld.</li><li>On HotPotQA: the external evaluation gives the answer correctness at each reflection step.</li></ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 62. Figures: <a data-ref="shinn2023">Shinn et al. (2023)</a>, Figs. 3(a) and 4(a).</p>
+  <p class="src">Figures: <a data-ref="shinn2023">Shinn et al. (2023)</a>, Figs. 3(a) and 4(a).</p>
 </section>
 
-<section class="slide pB" data-title="Chen 63 · Self-debugging" data-refs="chen2025b chen2024c">
+<section class="slide pB" data-title="Chen 63 · Self-debugging" data-refs="chen2024c">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Self-debugging is a natural workflow for code generation</h2>
   <div class="slide-body">
     <figure class="b2-fig" style="--h:330px"><img src="./assets/partB/b2-chen2024-fig1.png" alt="Chen et al. 2024 Figure 1: the model reads the problem and unit tests; step 1 generates code; step 2 runs the code on the unit tests in an executor; step 3 the model explains the code; the execution result and the explanation become feedback that goes back to the model"><figcaption>Code execution provides natural external feedback: humans often debug better within an IDE</figcaption></figure>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 63. Figure: <a data-ref="chen2024c">Chen et al. (2024)</a>, Fig. 1.</p>
+  <p class="src">Figure: <a data-ref="chen2024c">Chen et al. (2024)</a>, Fig. 1.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 64 · Feedback formats" data-refs="chen2025b chen2024c">
+<section class="slide pB" data-title="Chen 64 · Feedback formats" data-refs="chen2024c">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Self-debugging with different feedback formats</h2>
   <div class="slide-body">
@@ -2850,10 +2872,10 @@ Actual Result: 1.8</pre>
       </ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 64. Example from <a data-ref="chen2024c">Chen et al. (2024)</a>, Fig. 5 (C++ to Python), set as text so that it can be read; one line broken to fit.</p>
+  <p class="src">Example from <a data-ref="chen2024c">Chen et al. (2024)</a>, Fig. 5 (C++ to Python), set as text so that it can be read; one line broken to fit.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 65 · Self-debugging results" data-refs="chen2025b chen2024c">
+<section class="slide pB" data-title="Chen 65 · Self-debugging results" data-refs="chen2024c">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Self-debugging results</h2>
   <div class="slide-body">
@@ -2862,10 +2884,10 @@ Actual Result: 1.8</pre>
       <ul class="b2-pts"><li>Self-debugging consistently boosts the performance across different LLMs</li><li>More informative feedback further improves the debugging performance</li></ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 65. Table: <a data-ref="chen2024c">Chen et al. (2024)</a>, Table 2.</p>
+  <p class="src">Table: <a data-ref="chen2024c">Chen et al. (2024)</a>, Table 2.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 66 · Self-correction with an oracle" data-refs="chen2025b shinn2023 kim2023">
+<section class="slide pB" data-title="Chen 66 · Self-correction with an oracle" data-refs="shinn2023 kim2023">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>How does self-correction work for QA-style reasoning tasks?</h2>
   <div class="slide-body">
@@ -2875,7 +2897,7 @@ Actual Result: 1.8</pre>
     </div>
     <ul class="b2-pts"><li>Some prior work show improvement with self-correction, but using an oracle verifier.</li><li>Oracle verifier is not available in most use cases. How do LLMs perform without such external feedback?</li></ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 66. Reflexion: <a data-ref="shinn2023">Shinn et al. (2023)</a>, Fig. 4(a). Table: <a data-ref="kim2023">Kim et al. (2023)</a>, Table 2 (RCI: the model criticises and improves its answer).</p>
+  <p class="src">Reflexion: <a data-ref="shinn2023">Shinn et al. (2023)</a>, Fig. 4(a). Table: <a data-ref="kim2023">Kim et al. (2023)</a>, Table 2 (RCI: the model criticises and improves its answer).</p>
 </section>
 
 <section class="slide pB" data-title="Chen 66 · Self-correction with an oracle · ✋">
@@ -2889,7 +2911,7 @@ Actual Result: 1.8</pre>
   </div>
 </section>
 
-<section class="slide pB" data-title="Chen 67 · Without an oracle" data-refs="chen2025b huang2024">
+<section class="slide pB" data-title="Chen 67 · Without an oracle" data-refs="huang2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Self-correction without oracle feedback hurts the reasoning performance</h2>
   <div class="slide-body">
@@ -2901,7 +2923,7 @@ Actual Result: 1.8</pre>
       <ul class="b2-pts"><li>Oracle: utilize the ground truth answer for correction</li><li>Without oracle feedback, LLMs need to judge the response correctness themselves</li><li>LLMs can wrongly judge the correctness of its predictions, leading to worse performance after self-correction</li></ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 67. Tables: <a data-ref="huang2024">Huang et al. (2024)</a>, Tables 2 and 3.</p>
+  <p class="src">Tables: <a data-ref="huang2024">Huang et al. (2024)</a>, Tables 2 and 3.</p>
 </section>
 
 <section class="slide pB" data-title="Chen 67 · Without an oracle · ✋">
@@ -2926,9 +2948,10 @@ Actual Result: 1.8</pre>
     </ul>
   </div>
   <p class="src"><a data-ref="huang2024">Huang et al. (2024)</a>, Fig. 1 (top row) and §3.2.</p>
+
 </section>
 
-<section class="slide pB" data-title="Chen 68 · Feedback prompts" data-refs="chen2025b huang2024">
+<section class="slide pB" data-title="Chen 68 · Feedback prompts" data-refs="huang2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>General-purpose feedback prompt variants do not improve the performance</h2>
   <div class="slide-body">
@@ -2937,10 +2960,10 @@ Actual Result: 1.8</pre>
       <p class="b2-p">Edit the feedback prompt affects the self-correction behavior (tendency to keep the initial response), but none of them significantly improves over the initial performance.</p>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 68. Table: <a data-ref="huang2024">Huang et al. (2024)</a>, Table 5.</p>
+  <p class="src">Table: <a data-ref="huang2024">Huang et al. (2024)</a>, Table 5.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 69 · Debate vs self-consistency" data-refs="chen2025b huang2024 du2024">
+<section class="slide pB" data-title="Chen 69 · Debate vs self-consistency" data-refs="huang2024 du2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Multi-agent debate does not improve over self-consistency</h2>
   <div class="slide-body">
@@ -2949,7 +2972,7 @@ Actual Result: 1.8</pre>
       <ul class="b2-pts"><li>Multi-agent debate: prompt the LLM to review multiple responses and give an updated one.</li><li>Recall: self-consistency selects the response with the most common final answer.</li><li>Without a good evaluator, multi-agent debate does not effectively utilize the token budget.</li></ul>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 69. Table: <a data-ref="huang2024">Huang et al. (2024)</a>, Table 7, with the debate of <a data-ref="du2024">Du et al. (2024)</a>.</p>
+  <p class="src">Table: <a data-ref="huang2024">Huang et al. (2024)</a>, Table 7, with the debate of <a data-ref="du2024">Du et al. (2024)</a>.</p>
 </section>
 
 <section class="slide pB" data-title="Chen 69 · Debate vs self-consistency · comic" data-refs="munroe2008">
@@ -2959,9 +2982,10 @@ Actual Result: 1.8</pre>
     <figure class="b2-xkcd"><a href="https://xkcd.com/386/" target="_blank" rel="noopener"><img src="https://imgs.xkcd.com/comics/duty_calls_2x.png" alt="xkcd 386, Duty Calls: a person at a computer at night says they cannot come to bed because someone is wrong on the internet" style="max-height:400px"></a><span class="tag">xkcd 386</span></figure>
   </div>
   <p class="src">Comic: <a data-ref="munroe2008">Munroe (2008)</a>, xkcd 386, CC BY-NC 2.5.</p>
+
 </section>
 
-<section class="slide pB" data-title="Chen 70 · Parallel or sequential" data-refs="chen2025b snell2024">
+<section class="slide pB" data-title="Chen 70 · Parallel or sequential" data-refs="snell2024">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>Putting everything together: how to best utilize the token budget</h2>
   <div class="slide-body">
@@ -2977,10 +3001,10 @@ Actual Result: 1.8</pre>
     </div>
     </div>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 70. Left chart: <a data-ref="snell2024">Snell et al. (2024)</a>, Fig. 7 (right; PaLM 2-S*, MATH). Right chart: crop of that page.</p>
+  <p class="src">Left chart: <a data-ref="snell2024">Snell et al. (2024)</a>, Fig. 7 (right; PaLM 2-S*, MATH). Right chart: crop of that page.</p>
 </section>
 
-<section class="slide pB" data-title="Chen 73 · The Bitter Lesson" data-refs="chen2025b sutton2019">
+<section class="slide pB" data-title="Chen 73 · The Bitter Lesson" data-refs="sutton2019">
   <p class="eb">B · Chain-of-thought and reasoning models</p>
   <h2>General principle of how to design effective reasoning techniques</h2>
   <div class="slide-body">
@@ -2990,7 +3014,7 @@ Actual Result: 1.8</pre>
       <li>“We want AI agents that can <span class="b2-em">discover like we can, not which contain what we have discovered</span>. Building in our discoveries only makes it harder to see how the discovering process can be done.”</li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="chen2025b">X. Chen (2025)</a>, p. 73, which quotes two passages of <a data-ref="sutton2019">Sutton (2019)</a>.</p>
+  <p class="src">, which quotes two passages of <a data-ref="sutton2019">Sutton (2019)</a>.</p>
 </section>
 
 <section class="slide pB" data-title="CoT limits · where CoT helps" data-refs="sprague2025">
@@ -3007,6 +3031,7 @@ Actual Result: 1.8</pre>
     </div>
   </div>
   <p class="src">Figure: <a data-ref="sprague2025">Sprague et al. (2025)</a>, Fig. 1 and Finding 1 (§1).</p>
+
 </section>
 
 <section class="slide pB" data-title="CoT limits · ✋ is the chain the reason?">
@@ -3036,6 +3061,7 @@ Actual Result: 1.8</pre>
     </div>
   </div>
   <p class="src">Figure: <a data-ref="turpin2023">Turpin et al. (2023)</a>, Fig. 1 (13 BIG-Bench Hard tasks; −36.3 for GPT-3.5, zero-shot CoT, suggested answer).</p>
+
 </section>
 
 <section class="slide pB" data-title="CoT limits · reasoning models hide hints" data-refs="chen2025">
@@ -3052,6 +3078,7 @@ Actual Result: 1.8</pre>
     </div>
   </div>
   <p class="src">Figure: <a data-ref="chen2025">Y. Chen et al. (2025)</a>, Fig. 1; averages from their p. 6.</p>
+
 </section>
 
 <section class="slide pB" data-title="CoT limits · a tool does better" data-refs="sprague2025">
@@ -3072,6 +3099,7 @@ Actual Result: 1.8</pre>
     <p class="b2-next">Next, in Part C: give the model tools and a loop.</p>
   </div>
   <p class="src">Figure: <a data-ref="sprague2025">Sprague et al. (2025)</a>, Fig. 6, average panel (the other panels: GSM8K, GSM8K-Hard, ContextHub, FOLIO), and Finding 2 (§1, §5).</p>
+
 </section>
 
 <section class="slide part-summary" data-title="Part B close">
@@ -3137,19 +3165,30 @@ Actual Result: 1.8</pre>
 </section>
 
 <!-- ═════════════════════════════ PART C ═════════════════════════════ -->
-<section class="slide blue section-open with-recap many" data-title="Part C">
+<section class="slide blue section-open with-recap many" data-title="Part C" data-refs="fried2026 neubig2026 fried2026b">
   <p class="eb">Part C</p>
   <h1>Prompt as System: Agents and harness</h1>
   <p>When one call is not enough: the model in a loop, the system around it, and how to measure and secure it.</p>
-  <div class="seg"><b>1</b><span><a data-goto="Why prompting · NeurIPS 2026 labs">How capable are agents today?</a></span><span>5 min</span></div>
+  <div class="seg"><b>1</b><span><a data-goto="CMU 5 · A web agent finds a restaurant">How capable are agents today?</a></span><span>5 min</span></div>
   <div class="seg"><b>2</b><span><a data-goto="Part C · 2 · What is an agent?">What is an agent?</a></span><span>10 min</span></div>
   <div class="seg"><b>3</b><span><a data-goto="Part C · 3 · Harness or training?">Harness or training?</a></span><span>10 min</span></div>
   <div class="seg"><b>4</b><span><a data-goto="Part C · 4 · Agents are systems">Agents are systems</a></span><span>8 min</span></div>
   <div class="seg"><b>5</b><span><a data-goto="Part C · 5 · Context and safety">Context and safety</a></span><span>7 min</span></div>
+  <div class="seg"><b>6</b><span><a data-goto="Part C · 6 · Multi-agent: When to invoke more agents?">Multi-agent: When to invoke more agents?</a></span><span>23 min</span></div>
   <aside class="recap">
     <div class="t">So far, in Part B</div>
     <ul><li>Reasoning models such as o1 think first, and do better with more compute at inference.</li><li>Better prompts give one better chain: CoT, analogical prompting, prompt search and least-to-most.</li><li>Many chains, then choose by a vote, a verifier or a tree search. A revised chain needs external feedback, not self-judgement alone.</li><li>CoT helps mainly on math and symbolic tasks, and the chain need not show the real reason.</li></ul>
   </aside>
+</section>
+
+<section class="slide pC" data-title="CMU 5 · A web agent finds a restaurant" data-refs="koh2024 koh2024b">
+  <p class="eb">C · How capable are agents today?</p>
+  <h2>A web agent reads the screen, then clicks</h2>
+  <div class="slide-body">
+    <figure class="fig vid solo"><video src="./assets/partC/koh2024-vwa-find-restaurant.mp4" poster="./assets/partC/koh2024-vwa-find-restaurant-poster.png" controls muted loop playsinline preload="none" aria-label="Screen recording: a GPT-4V agent searches Yelp for Thai restaurants in Pittsburgh, scrolls, and opens Pusadee's Garden; its reasoning prints in a terminal"></video></figure>
+    <div class="tag credit">Jing Yu Koh · multimodal GUI-agent demo · 2024</div>
+  </div>
+  <p class="src">Video: demo of <a data-ref="koh2024">Koh et al. (2024)</a> from <a data-ref="koh2024b">their repository</a> (MIT licence), 24 s, no sound; GIF converted to MP4. The page has no title.</p>
 </section>
 
 <section class="slide xpost poster-right" data-title="Why prompting · NeurIPS 2026 labs" data-refs="kim2026neurips">
@@ -3166,16 +3205,17 @@ Actual Result: 1.8</pre>
 
 <section class="slide pC" data-title="Anthropic · Reading Claude as a full-time job" data-refs="wilmers2026">
   <p class="eb">C · How capable are agents today?</p>
-  <h2>It is a skill to communicate with agents</h2>
+  <h2>Companies are looking for a skill to communicate with agents</h2>
   <div class="slide-body">
     <figure class="fig capfig anth6"><img src="./assets/partC/anthropic-employment-fig6.png" alt="Figure 6 of Wilmers et al. (2026): Reading Claude as a fulltime job. Six line charts of the hours per person per week that it would take to read all of Claude's output in interactive sessions, from April 2025 to April 2026: engineering and research 424 hours, finance and accounting 43, sales and go-to-market 35, other non-engineering 27, legal, policy and trust 26, marketing and communications 12."></figure>
   </div>
   <p class="src">Figure 6 of <a data-ref="wilmers2026">Wilmers et al. (2026)</a>, Anthropic, 16 Oct 2026. </p>
+
 </section>
 
 <section class="slide pC" data-title="Anthropic · Agents come to the communication network" data-refs="wilmers2026">
   <p class="eb">C · How capable are agents today?</p>
-  <h2>Agents diffused through Slack and eventually appeared in nearly half of active, public channels.</h2>
+  <h2>Agents diffused through Slack (Discord for work) and eventually appeared in nearly half of active, public channels.</h2>
   <div class="slide-body">
     <figure class="fig vid solo anth8"><video src="./assets/partC/anthropic-employment-fig8.mp4" poster="./assets/partC/anthropic-employment-fig8-poster.jpg" controls muted loop playsinline preload="none" aria-label="Animation, Figure 8 of Wilmers et al. (2026): Agents come to the communication network. Blue dots are employees, orange dots are agent threads, and lines join those who wrote in the same thread. The network of one large department starts with 155 employees and 150 agent threads and ends with 237 employees and 7,922 agent threads."></video></figure>
     <script>
@@ -3194,30 +3234,54 @@ Actual Result: 1.8</pre>
       })();
     </script>
   </div>
-  <p class="src">Figure 8 of <a data-ref="wilmers2026">Wilmers et al. (2026)</a>, Anthropic, 16 Oct 2026. Blue dots: employees. Orange dots: agent threads.</p>
+  <p class="src">Blue dots: employees. Orange dots: agent threads.</p>
+
 </section>
 
-<section class="slide pC" data-title="CMU 2 · Agents wrote a C compiler" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 2 · Agents wrote a C compiler">
   <p class="eb">C · How capable are agents today?</p>
   <h2>How capable are current agents?</h2>
   <div class="slide-body">
-    <figure class="fig capfig"><img src="./assets/partC/cmu-l01-p02-c-compiler-repo.png" alt="GitHub page of the repository anthropics/claudes-c-compiler: 3,982 commits; the About box says Claude Opus 4.6 wrote a dependency-free C compiler in Rust that can compile a booting Linux kernel"></figure>
+    <div class="reporow">
+      <figure class="fig capfig repo"><img src="./assets/partC/cmu-l01-p02-c-compiler-repo.png" alt="GitHub page of the repository anthropics/claudes-c-compiler: 3,982 commits; the About box says Claude Opus 4.6 wrote a dependency-free C compiler in Rust that can compile a booting Linux kernel"></figure>
+      <img class="tux" src="./assets/partC/tux.svg" alt="Tux, the Linux mascot, a penguin">
+    </div>
     <p class="pagecap">16 agents built a 100,000-line C compiler in two weeks—able to compile the Linux kernel.</p>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 2. Screenshot cropped from the deck page.</p>
+  <p class="src">Screenshot cropped from the deck page. Tux: Larry Ewing, Simon Budig, Garrett LeSage (Wikimedia Commons).</p>
 </section>
 
-<section class="slide pC" data-title="CMU 3 · An agent deleted an inbox" data-refs="fried2026 yue2026">
+<section class="slide pC" data-title="CMU 2b · Agents against people" data-refs="gcchistory ueyama2020 wikipedia2026gcc">
+  <p class="eb">C · How capable are agents today?</p>
+  <h2>Agent vs human </h2>
+  <div class="slide-body">
+    <div class="fit">
+      <table class="pC-t cmp">
+        <thead><tr><th>C COMPILER</th><th>WRITTEN BY</th><th>LINES</th><th>TIME</th></tr></thead>
+        <tbody>
+          <tr class="ai"><td>Claude's compiler (2026)</td><td>16 agents</td><td>about 100,000</td><td>2 weeks</td></tr>
+          <tr><td>GCC, first version (1987)</td><td>1 person</td><td>over 110,000</td><td>about 1 year</td></tr>
+          <tr><td>chibicc (2019–2020)</td><td>1 person</td><td>about 8,900</td><td>16 months</td></tr>
+          <tr><td>GCC today</td><td>many people</td><td>about 15 million</td><td>since 1987</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="pagecap">Not the same job: Claude's compiler targets three CPU families, chibicc one. A commit span is calendar time.</p>
+  </div>
+  <p class="src">Lines of chibicc counted from the repository on 28 Oct 2026.</p>
+</section>
+
+<section class="slide pC" data-title="CMU 3 · An agent deleted an inbox" data-refs="yue2026">
   <p class="eb">C · How capable are agents today?</p>
   <h2>Agents are capable but naughty</h2>
   <div class="slide-body">
-    <figure class="fig capfig tall"><img src="./assets/partC/cmu-l01-p03-openclaw-chat.png" alt="Two chat screenshots: the agent runs commands to trash everything in the inbox older than Feb 15; the user writes Do not do that; later the agent says Yes, I remember. And I violated it."></figure>
+    <figure class="fig capfig tall"><span class="hl"><img src="./assets/partC/cmu-l01-p03-openclaw-chat.png" alt="Two chat screenshots: the agent runs commands to trash everything in the inbox older than Feb 15; the user writes Do not do that; later the agent says Yes, I remember. And I violated it."><i class="box b1"></i><i class="box b2"></i></span></figure>
     <div class="tag credit"><a data-ref="yue2026">Summer Yue (@summeryue0) · X, February 2026</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 3. Post: <a data-ref="yue2026">Yue (2026)</a>, X, 23 Feb 2026; screenshots cropped from the deck page.</p>
+  <p class="src">Post: <a data-ref="yue2026">Yue (2026)</a>, X, 23 Feb 2026; screenshots cropped from the deck page, red boxes added.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 4 · What may an agent do alone?" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 4 · What may an agent do alone?">
   <p class="eb">C · How capable are agents today?</p>
   <h2>What should an agent be allowed to do autonomously?</h2>
   <div class="slide-body">
@@ -3231,33 +3295,35 @@ Actual Result: 1.8</pre>
       <div>Adjust an insulin dose after a week of glucose readings<span class="tag cls never">Never</span></div>
     </div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 4. The page lists the six tasks as "unclassified"; the classes shown are ours.</p>
+  <p class="src">The page lists the six tasks as "unclassified"; the classes shown are ours.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 5 · A web agent finds a restaurant" data-refs="fried2026 koh2024 koh2024b">
+<section class="slide pC" data-title="Challenges">
   <p class="eb">C · How capable are agents today?</p>
-  <h2>A web agent reads the screen, then clicks</h2>
+  <h2>Challenges</h2>
   <div class="slide-body">
-    <figure class="fig vid solo"><video src="./assets/partC/koh2024-vwa-find-restaurant.mp4" poster="./assets/partC/koh2024-vwa-find-restaurant-poster.png" controls muted loop playsinline preload="none" aria-label="Screen recording: a GPT-4V agent searches Yelp for Thai restaurants in Pittsburgh, scrolls, and opens Pusadee's Garden; its reasoning prints in a terminal"></video></figure>
-    <div class="tag credit">Jing Yu Koh · multimodal GUI-agent demo · 2024</div>
+    <div class="grid two lim">
+      <div class="card"><div class="tag ph">Agent basics</div><p>How to empower an LLM with abilities beyond chat and training?</p></div>
+      <div class="card accent"><div class="tag ph">Better control</div><p>How to control an agent so that humans do not have to be in the loop frequently?</p></div>
+    </div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 5 (Jing Yu Koh, 2024). Video: demo of <a data-ref="koh2024">Koh et al. (2024)</a> from <a data-ref="koh2024b">their repository</a> (MIT licence), 24 s, no sound; GIF converted to MP4. The page has no title.</p>
 </section>
 
 <section class="slide blue section-open seg-div many" data-title="Part C · 2 · What is an agent?">
-  <p class="eb">Part C · 2 of 5</p>
+  <p class="eb">Part C · 2 of 6</p>
   <h1>Prompt as System: Agents and harness</h1>
   <p>Next: <b>What is an agent?</b></p>
-  <div class="seg done"><b>1</b><span><a data-goto="Why prompting · NeurIPS 2026 labs">How capable are agents today?</a></span><span></span></div>
+  <div class="seg done"><b>1</b><span><a data-goto="CMU 5 · A web agent finds a restaurant">How capable are agents today?</a></span><span></span></div>
   <div class="seg now"><b>2</b><span><a data-goto="Part C · 2 · What is an agent?">What is an agent?</a></span><span></span></div>
   <div class="seg next"><b>3</b><span><a data-goto="Part C · 3 · Harness or training?">Harness or training?</a></span><span></span></div>
   <div class="seg next"><b>4</b><span><a data-goto="Part C · 4 · Agents are systems">Agents are systems</a></span><span></span></div>
   <div class="seg next"><b>5</b><span><a data-goto="Part C · 5 · Context and safety">Context and safety</a></span><span></span></div>
+  <div class="seg next"><b>6</b><span><a data-goto="Part C · 6 · Multi-agent: When to invoke more agents?">Multi-agent: When to invoke more agents?</a></span><span></span></div>
 </section>
 
 <section class="slide pA" data-title="ReAct · diagram" data-refs="yao2023a">
   <p class="eb">C · What is an agent?</p>
-  <h2>ReAct: the LLM thinks and acts, the world observes</h2>
+  <h2>Recap: ReAct AI Agent</h2>
   <div class="slide-body">
     <div class="react-viz" data-noedit>
       <div class="react-bar"><button type="button" class="rbtn ghost" data-act="prev">◀ Prev</button><button type="button" class="rbtn" data-act="next">Next step ▶</button><button type="button" class="rbtn ghost" data-act="reset">Reset</button><span class="rcount"></span>
@@ -3338,15 +3404,16 @@ Actual Result: 1.8</pre>
     </script>
   </div>
   <p class="src">ALFWorld example after Figure 1 (2b) of <a data-ref="yao2023a">Yao et al. (2023)</a></p>
+
 </section>
 
-<section class="slide pC" data-title="CMU 9 · What is an agent?" data-refs="fried2026 russell2020 sutton2018">
+<section class="slide pC" data-title="CMU 9 · What is an agent?" data-refs="russell2020 sutton2018">
   <p class="eb">C · What is an agent?</p>
-  <h2>What is an agent?</h2>
+  <h2>Step back: What is an <span class="ai-out">AI</span> agent?</h2>
   <div class="slide-body">
     <div class="cols def top">
       <div class="stack">
-        <p class="quote">An agent is anything that can be viewed as perceiving its environment through sensors and acting upon that environment through actuators.</p>
+        <p class="quote">“An agent is anything that can be viewed as perceiving its environment through sensors and acting upon that environment through actuators.”</p>
         <p class="attr"><a data-ref="russell2020">Russell &amp; Norvig</a>, <i>Artificial Intelligence: A Modern Approach</i></p>
       </div>
       <svg class="pC-d" viewBox="10 10 570 270" role="img" aria-label="The agent sends action A_t to the environment; the environment returns the next state S_t+1 and reward R_t+1 to the agent">
@@ -3371,10 +3438,10 @@ Actual Result: 1.8</pre>
       <li><b>Reward:</b> passing test cases, satisfying LLM-as-a-judge rubrics, positive user feedback</li>
     </ul>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 9. Loop redrawn after <a data-ref="sutton2018">Sutton &amp; Barto (2018)</a>, §3.1.</p>
+  <p class="src">Loop redrawn after <a data-ref="sutton2018">Sutton &amp; Barto (2018)</a>, §3.1.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 10 · Recap: language models" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 10 · Recap: language models">
   <p class="eb">C · What is an agent?</p>
   <h2>Recap: language models</h2>
   <div class="slide-body">
@@ -3382,9 +3449,9 @@ Actual Result: 1.8</pre>
       <div class="card"><div class="tag ph">Next-token prediction</div><ul class="pts"><li>At each step, predict a distribution over the next token.</li><li>Append the generated token to the prefix and predict again.</li></ul></div>
       <div class="card accent"><div class="tag ph">Chain of thought</div><ul class="pts"><li>Generate intermediate reasoning tokens before the answer.</li><li>Those tokens become context for later predictions.</li></ul></div>
     </div>
-    <svg class="pC-d row tall" viewBox="30 0 920 140" role="img" aria-label="Prompt 2 × (3 + 4) goes into the model, which writes reasoning tokens and then the answer 14">
+    <svg class="pC-d row tall" viewBox="30 0 920 140" role="img" aria-label="Query 2 × (3 + 4) goes into the model, which writes reasoning tokens and then the answer 14">
       <defs><marker id="pCa10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
-      <rect class="bx" x="60" y="14" width="240" height="84" rx="8"/><text class="code" x="180" y="52">2 × (3 + 4)</text><text class="code sm" x="180" y="82">prompt tokens</text><text class="t" x="180" y="132">Prompt</text>
+      <rect class="bx" x="60" y="14" width="240" height="84" rx="8"/><text class="code" x="180" y="52">2 × (3 + 4)</text><text class="code sm" x="180" y="82">prompt tokens</text><text class="t" x="180" y="132">Query</text>
       <path class="w" d="M300,56 H346" marker-end="url(#pCa10)"/>
       <circle class="bx dark" cx="390" cy="56" r="42"/><text class="t" x="390" y="132">Model</text>
       <path class="w" d="M432,56 H516" marker-end="url(#pCa10)"/>
@@ -3393,12 +3460,47 @@ Actual Result: 1.8</pre>
       <rect class="bx" x="690" y="14" width="240" height="84" rx="8"/><text class="code b" x="810" y="52">14</text><text class="code sm" x="810" y="82">answer tokens</text><text class="t" x="810" y="132">Answer</text>
     </svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 10. Diagram redrawn.</p>
+  <p class="src">Diagram redrawn.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 11 · Tool definition" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 13 · Actions as tokens">
   <p class="eb">C · What is an agent?</p>
-  <h2>Tool definition</h2>
+  <h2>From LLMs to agents: from one shot to loop</h2>
+  <div class="slide-body">
+    <div class="top13"><div class="lmcol"><div class="tag ph">Language model</div>
+    <svg class="pC-d cmp13 lm" viewBox="30 0 920 140" role="img" aria-label="Query 2 × (3 + 4) goes into the model, which writes reasoning tokens and then the answer 14">
+      <defs><marker id="pCa13l" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <rect class="bx" x="60" y="14" width="240" height="84" rx="8"/><text class="code" x="180" y="52">2 × (3 + 4)</text><text class="code sm" x="180" y="82">prompt tokens</text><text class="t" x="180" y="132">Query</text>
+      <path class="w" d="M300,56 H346" marker-end="url(#pCa13l)"/>
+      <circle class="bx dark" cx="390" cy="56" r="42"/><text class="t" x="390" y="132">Model</text>
+      <path class="w" d="M432,56 H516" marker-end="url(#pCa13l)"/>
+      <circle class="bx or" cx="560" cy="56" r="42"/><text class="t" x="560" y="132">Reasoning tokens</text>
+      <path class="w" d="M602,56 H686" marker-end="url(#pCa13l)"/>
+      <rect class="bx" x="690" y="14" width="240" height="84" rx="8"/><text class="code b" x="810" y="52">14</text><text class="code sm" x="810" y="82">answer tokens</text><text class="t" x="810" y="132">Answer</text>
+    </svg></div>
+    <svg class="pC-d loop9" viewBox="10 10 570 270" role="img" aria-label="The agent sends action A_t to the environment; the environment returns the next state S_t+1 and reward R_t+1 to the agent">
+        <defs><marker id="pCa9c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <rect class="bx" x="230" y="20" width="190" height="70" rx="10"/><text class="t" x="325" y="65">Agent</text>
+        <rect class="bx alt" x="230" y="200" width="190" height="70" rx="10"/><text class="t" x="325" y="245">Environment</text>
+        <path class="w" d="M420,55 H500 V235 H422" marker-end="url(#pCa9c)"/>
+        <text class="s st" x="512" y="140">action</text><text class="m" x="512" y="170">A</text><text class="m sub" x="530" y="176">t</text>
+        <path class="w" d="M230,250 H90 V40 H228" marker-end="url(#pCa9c)"/>
+        <path class="w thin" d="M230,225 H140 V70 H228" marker-end="url(#pCa9c)"/>
+        <path class="w dash" d="M170,200 V262"/>
+        <text class="s end" x="80" y="140">state</text><text class="m end" x="58" y="170">S</text><text class="m sub" x="60" y="176">t</text>
+        <text class="s st" x="150" y="140">reward</text><text class="m" x="150" y="170">R</text><text class="m sub" x="168" y="176">t</text>
+        <text class="m2" x="178" y="219">R</text><text class="m2 sub2" x="191" y="224">t+1</text>
+        <text class="m2" x="178" y="244">S</text><text class="m2 sub2" x="190" y="249">t+1</text>
+      </svg></div>
+    <div class="tag ph">Agent (thought-act-observe loop)</div>
+    <svg class="pC-d cmp13 ag" viewBox="-4 -70 1434 370" role="img" aria-label="The agent diagram: the query 2 × (3 + 4) goes into the Model, which writes Reasoning (Thought) and a Tool call (Action). Execute (Environment) runs the call and returns an Observation, which is added to the next input. The agent finishes with the message to the user, 14, the Answer. Tool call, Execute and Observation are added compared with the language model."><rect class="newband" x="532" y="-68" width="668" height="368" rx="14"/><text class="plus" x="552" y="-20">+</text><defs><marker id="pCa13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="bx" x="0" y="14" width="240" height="84" rx="8"/><text class="code" x="120" y="52">2 × (3 + 4)</text><text class="code sm" x="120" y="82">prompt tokens</text><text class="t" x="120" y="132">Query</text><path class="w" d="M240,56 H286" marker-end="url(#pCa13)"/><circle class="bx dark" cx="330" cy="56" r="40"/><text class="t" x="330" y="132">Model</text><path class="w" d="M370,56 H414" marker-end="url(#pCa13)"/><circle class="bx or" cx="454" cy="56" r="40"/><text class="t" x="454" y="132">Reasoning</text><path class="w" d="M494,56 H540" marker-end="url(#pCa13)"/><rect class="bx or" x="544" y="12" width="230" height="88" rx="8"/><text class="code b" x="659" y="48">read_file</text><text class="code sm" x="659" y="80">path: "cal.py"</text><text class="t" x="659" y="132">Tool call</text><path class="w" d="M774,56 H818" marker-end="url(#pCa13)"/><circle class="bx alt" cx="858" cy="56" r="40"/><text class="t" x="858" y="132">Execute</text><path class="w" d="M898,56 H942" marker-end="url(#pCa13)"/><rect class="bx" x="946" y="16" width="230" height="80" rx="8"/><text class="code sm" x="1061" y="62">def add(a, b): …</text><text class="t" x="1061" y="132">Observation</text><path class="w" d="M1176,56 H1222" marker-end="url(#pCa13)"/><rect class="bx" x="1226" y="14" width="200" height="84" rx="8"/><text class="code sm" x="1326" y="48">Message user:</text><text class="code b" x="1326" y="82">14</text><text class="t" x="1326" y="132">Answer</text><rect class="pl gen" x="379" y="-58" width="150" height="46" rx="23"/><text class="pt" x="454" y="-27">Thought</text><path class="pk" d="M454,-12 V6"/><rect class="pl gen" x="571" y="-58" width="176" height="46" rx="23"/><text class="pt" x="659" y="-27">Action</text><path class="pk" d="M659,-12 V6"/><rect class="pl env" x="770" y="-58" width="176" height="46" rx="23"/><text class="pt" x="858" y="-27">Environment</text><path class="pk" d="M858,-12 V6"/><rect class="pl ext" x="973" y="-58" width="176" height="46" rx="23"/><text class="pt" x="1061" y="-27">Reward</text><path class="pk" d="M1061,-12 V6"/><path class="w loopw" d="M1061,146 V182" marker-end="url(#pCa13)"/><rect class="ctx" x="700" y="184" width="480" height="108" rx="12"/><text class="ctt" x="718" y="214">Context</text><rect class="chip" x="716" y="232" width="132" height="48" rx="8"/><text class="cx" x="782.0" y="264">instruction</text><rect class="chip" x="860" y="232" width="130" height="48" rx="8"/><text class="cx" x="925.0" y="264">tool result</text><rect class="chip" x="1002" y="232" width="162" height="48" rx="8"/><text class="cx" x="1083.0" y="264">conv. history</text><path class="w loopw" d="M700,238 H330 V142" marker-end="url(#pCa13)"/><rect class="pl ext" x="1226" y="215" width="180" height="46" rx="23"/><text class="pt" x="1316" y="246">State</text><path class="pk" d="M1180,238 H1226"/></svg>
+  </div>
+</section>
+
+<section class="slide pC" data-title="CMU 11 · Tool definition">
+  <p class="eb">C · What is an agent?</p>
+  <h2>Tool definition: structured format</h2>
+  <svg class="pC-d cmp13 tdefmini" viewBox="356 -70 840 220" role="img" aria-label="Part of the agent diagram: Thought, Action, Environment and Observation (Reward) around Reasoning, Tool call, Execute and Observation"><defs><marker id="pCa11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="newband" x="532" y="-68" width="668" height="368" rx="14"/><text class="plus" x="552" y="-20">+</text><rect class="bx" x="0" y="14" width="240" height="84" rx="8"/><text class="code" x="120" y="52">2 × (3 + 4)</text><text class="code sm" x="120" y="82">prompt tokens</text><text class="t" x="120" y="132">Prompt</text><circle class="bx dark" cx="330" cy="56" r="40"/><text class="t" x="330" y="132">Model</text><path class="w" d="M370,56 H414" marker-end="url(#pCa11)"/><circle class="bx or" cx="454" cy="56" r="40"/><text class="t" x="454" y="132">Reasoning</text><path class="w" d="M494,56 H540" marker-end="url(#pCa11)"/><rect class="bx or" x="544" y="12" width="230" height="88" rx="8"/><text class="code b" x="659" y="48">read_file</text><text class="code sm" x="659" y="80">path: "cal.py"</text><text class="t" x="659" y="132">Tool call</text><path class="w" d="M774,56 H818" marker-end="url(#pCa11)"/><circle class="bx alt" cx="858" cy="56" r="40"/><text class="t" x="858" y="132">Execute</text><path class="w" d="M898,56 H942" marker-end="url(#pCa11)"/><rect class="bx" x="946" y="16" width="230" height="80" rx="8"/><text class="code sm" x="1061" y="62">def add(a, b): …</text><text class="t" x="1061" y="132">Observation</text><path class="w" d="M1176,56 H1222" marker-end="url(#pCa11)"/><rect class="pl gen" x="379" y="-58" width="150" height="46" rx="23"/><text class="pt" x="454" y="-27">Thought</text><path class="pk" d="M454,-12 V6"/><rect class="pl gen" x="571" y="-58" width="176" height="46" rx="23"/><text class="pt" x="659" y="-27">Action</text><path class="pk" d="M659,-12 V6"/><rect class="pl env" x="770" y="-58" width="176" height="46" rx="23"/><text class="pt" x="858" y="-27">Environment</text><path class="pk" d="M858,-12 V6"/><rect class="pl ext" x="973" y="-58" width="176" height="46" rx="23"/><text class="pt" x="1061" y="-27">Reward</text><path class="pk" d="M1061,-12 V6"/></svg>
   <div class="slide-body">
     <div class="cols tdef">
       <div class="stack">
@@ -3417,167 +3519,96 @@ Actual Result: 1.8</pre>
 }</code></pre>
     </div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 11. Lines wrapped for the slide; the page continues on the next slide.</p>
+  <p class="src">Lines wrapped for the slide; the page continues on the next slide.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 11 · Tool definition (2)" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 12 · Tool calls and results">
   <p class="eb">C · What is an agent?</p>
-  <h2>Tool definition (cont.)</h2>
+  <h2>Communicate with LLM</h2>
   <div class="slide-body">
-    <div class="codepair">
-      <div><div class="codelab">Example after <code>apply_chat_template</code></div>
-<pre class="code"><code>&lt;tools&gt;
-{"name":"read_file","description":"Read a UTF-8 file.",
- "parameters":{"type":"object","properties":{"path":{"type":"string"}},
- "required":["path"]}}
-&lt;/tools&gt;</code></pre></div>
-    </div>
-  </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 11. Lines wrapped for the slide.</p>
-</section>
-
-<section class="slide pC" data-title="CMU 12 · Tool calls and results" data-refs="fried2026">
-  <p class="eb">C · What is an agent?</p>
-  <h2>Tool calls and results</h2>
-  <div class="slide-body">
+    <svg class="pC-d flow12" viewBox="0 0 1100 94" role="img" aria-label="LLM says, a tool call, execution, a tool result, LLM sees"><defs><marker id="pCa12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="fl llm" x="0" y="12" width="170" height="70" rx="10"/><text class="fx" x="85.0" y="55">LLM says</text><path class="w" d="M170,47 H230" marker-end="url(#pCa12)"/><rect class="fl pill" x="234" y="12" width="160" height="70" rx="35"/><text class="fx" x="314.0" y="55">Tool call</text><path class="w" d="M394,47 H454" marker-end="url(#pCa12)"/><rect class="fl exe" x="458" y="12" width="170" height="70" rx="10"/><text class="fx" x="543.0" y="55">Execution</text><path class="w" d="M628,47 H688" marker-end="url(#pCa12)"/><rect class="fl pill" x="692" y="12" width="170" height="70" rx="35"/><text class="fx" x="777.0" y="55">Tool result</text><path class="w" d="M862,47 H922" marker-end="url(#pCa12)"/><rect class="fl llm" x="926" y="12" width="170" height="70" rx="10"/><text class="fx" x="1011.0" y="55">LLM sees</text></svg>
     <div class="grid two code2">
-      <div><div class="codelab ph">Tool call</div>
+      <div><div class="codelab llm">What LLM says</div>
+<pre class="code"><code>&lt;tool_call&gt;
+{"name":"read_file",
+ "arguments":{"path":"test.py"}}
+&lt;/tool_call&gt;</code></pre>
+        <div class="codelab exe">What execution sees</div>
 <pre class="code"><code>{"role":"assistant","tool_calls":[{
   "id":"call_7",
   "name":"read_file",
   "arguments":{"path":"test.py"}
-}]}</code></pre>
-        <div class="codelab">After <code>apply_chat_template</code></div>
-<pre class="code"><code>&lt;tool_call&gt;
-{"name":"read_file",
- "arguments":{"path":"test.py"}}
-&lt;/tool_call&gt;</code></pre></div>
-      <div><div class="codelab ph">Tool result</div>
+}]}</code></pre></div>
+      <div><div class="codelab exe">What execution outputs</div>
 <pre class="code"><code>{"role":"tool",
  "tool_call_id":"call_7",
  "name":"read_file",
  "content":"def add(a, b): …"}</code></pre>
-        <div class="codelab">After <code>apply_chat_template</code></div>
+        <div class="codelab llm">What LLM sees</div>
 <pre class="code"><code>&lt;tool_response&gt;
 def add(a, b): …
 &lt;/tool_response&gt;</code></pre></div>
     </div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 12. The id links the result to its call. One line of the page is wrapped.</p>
+  <p class="src">The id links the result to its call. One line of the page is wrapped.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 13 · Actions as tokens" data-refs="fried2026 schick2023">
-  <p class="eb">C · What is an agent?</p>
-  <h2>From LLMs to agents: actions as tokens</h2>
-  <div class="slide-body">
-    <div class="grid two">
-      <div class="card"><div class="tag ph">Language model</div><ul class="pts"><li>A tool call is another token sequence the model can predict.</li><li>The sequence names a tool and supplies its arguments.</li></ul></div>
-      <div class="card accent"><div class="tag ph">Harness</div><ul class="pts"><li>Parses, validates, and executes the call.</li><li>Returns the result as observation tokens.</li></ul></div>
-    </div>
-    <svg class="pC-d row tall" viewBox="0 0 1100 140" role="img" aria-label="Model, then reasoning, then the tool call read_file with path test.py, then execute, then the observation def add(a, b)">
-      <defs><marker id="pCa13" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
-      <circle class="bx dark" cx="66" cy="56" r="40"/><text class="t" x="66" y="132">Model</text>
-      <path class="w" d="M106,56 H166" marker-end="url(#pCa13)"/>
-      <circle class="bx or" cx="210" cy="56" r="40"/><text class="t" x="210" y="132">Reasoning</text>
-      <path class="w" d="M250,56 H320" marker-end="url(#pCa13)"/>
-      <rect class="bx or" x="324" y="12" width="250" height="88" rx="8"/><text class="code b" x="449" y="48">read_file</text><text class="code sm" x="449" y="80">path: "test.py"</text><text class="t" x="449" y="132">Tool call</text>
-      <path class="w" d="M574,56 H638" marker-end="url(#pCa13)"/>
-      <circle class="bx alt" cx="682" cy="56" r="40"/><text class="t" x="682" y="132">Execute</text>
-      <path class="w" d="M722,56 H798" marker-end="url(#pCa13)"/>
-      <rect class="bx" x="802" y="16" width="290" height="80" rx="8"/><text class="code sm" x="947" y="62">def add(a, b): …</text><text class="t" x="947" y="132">Observation</text>
-    </svg>
-    <div class="tag credit">Toolformer · <a data-ref="schick2023">Schick et al., NeurIPS 2023</a></div>
-  </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 13. Diagram redrawn.</p>
-</section>
-
-<section class="slide pC" data-title="CMU 14 · An agent is a model in a loop" data-refs="fried2026 yao2023a">
+<section class="slide pC" data-title="CMU 14 · An agent is a model in a loop">
   <p class="eb">C · What is an agent?</p>
   <h2>An agent is a model in a loop</h2>
   <div class="slide-body">
-    <svg class="pC-d loop" viewBox="0 0 1120 310" role="img" aria-label="Context with task, tool and history goes to the model; the model reasons and writes a call; the harness executes it and the result goes into the history; the loop ends when the model calls send_message to the user">
-      <defs><marker id="pCa14" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
-      <rect class="frame" x="0" y="0" width="380" height="300" rx="10"/><text class="hd2" x="18" y="34">Context</text>
-      <rect class="bx" x="16" y="50" width="348" height="72" rx="6"/><text class="s2" x="32" y="76">Task</text><text class="code sm st" x="32" y="106">What does test.py contain?</text>
-      <rect class="bx" x="16" y="132" width="348" height="72" rx="6"/><text class="s2" x="32" y="158">Tool</text><text class="code sm st" x="32" y="188">read_file(path)</text>
-      <rect class="bx hist" x="16" y="214" width="348" height="72" rx="6"/><text class="s2" x="32" y="240">History</text>
-      <path class="w" d="M380,150 H410" marker-end="url(#pCa14)"/>
-      <rect class="bx dark" x="412" y="115" width="100" height="70" rx="8"/><text class="t inv" x="462" y="158">Model</text>
-      <path class="w" d="M512,150 H538" marker-end="url(#pCa14)"/>
-      <rect class="bx or" x="540" y="115" width="140" height="70" rx="8"/><text class="t" x="610" y="158">Reasoning</text>
-      <path class="w" d="M680,150 H708" marker-end="url(#pCa14)"/>
-      <rect class="bx or" x="710" y="96" width="400" height="108" rx="8"/><text class="code sm b st" x="728" y="130">send_message</text><text class="code sm st" x="728" y="160">to: user</text><text class="code sm st" x="728" y="188">“test.py defines add(a, b).”</text><text class="t" x="910" y="240">Call</text>
-    </svg>
-    <div class="tag credit">ReAct · <a data-ref="yao2023a">Yao et al., ICLR 2023</a></div>
+    <svg class="pC-d cmp13 loop14" viewBox="-4 -6 1134 412" role="img" aria-label="The query goes into the model; the model writes reasoning; its output goes to the environment or the user; what comes back goes into the context, which holds the instruction, the tool results and the conversation history. The context is the state, and it is the input of the next step."><defs><marker id="pCa14" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="bx" x="0" y="14" width="240" height="84" rx="8"/><text class="code" x="120" y="52">2 × (3 + 4)</text><text class="code sm" x="120" y="82">prompt tokens</text><text class="t" x="120" y="132">Query</text><path class="w" d="M240,56 H286" marker-end="url(#pCa14)"/><circle class="bx dark" cx="330" cy="56" r="40"/><text class="t" x="330" y="132">Model</text><path class="w" d="M370,56 H414" marker-end="url(#pCa14)"/><circle class="bx or" cx="454" cy="56" r="40"/><text class="t" x="454" y="132">Reasoning</text><path class="w" d="M494,56 H540" marker-end="url(#pCa14)"/><rect class="bx alt" x="544" y="12" width="230" height="88" rx="8"/><text class="t" x="659" y="66">Env / user</text><path class="w" d="M659,104 V186" marker-end="url(#pCa14)"/><rect class="cblk" x="0" y="190" width="1126" height="206" rx="14"/><text class="cbt" x="24" y="236">Context</text><rect class="pl ext" x="940" y="204" width="160" height="42" rx="21"/><text class="pt" x="1020" y="234">State</text><rect class="cardc" x="24" y="258" width="346" height="126" rx="10"/><text class="cn" x="42" y="294">instruction</text><text class="ce" x="42" y="332" xml:space="preserve">You are a coding agent.</text><text class="ce" x="42" y="366" xml:space="preserve">Tools: read_file(path)</text><rect class="cardc" x="392" y="258" width="346" height="126" rx="10"/><text class="cn" x="410" y="294">tool result</text><text class="ce" x="410" y="332" xml:space="preserve">def add(a, b):</text><text class="ce" x="410" y="366" xml:space="preserve">    return a + b</text><rect class="cardc" x="760" y="258" width="346" height="126" rx="10"/><text class="cn" x="778" y="294">conv. history</text><text class="ce" x="778" y="332" xml:space="preserve">user: Read cal.py</text><text class="ce" x="778" y="366" xml:space="preserve">model: read_file("cal.py")</text><path class="w loopw" d="M330,190 V146" marker-end="url(#pCa14)"/></svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 14. Diagram redrawn; the page shows one call.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 15 · A minimal ReAct loop" data-refs="fried2026 lieret2025">
+<section class="slide pC" data-title="CMU L03 4 · Agent prompt composition example (2)">
   <p class="eb">C · What is an agent?</p>
-  <h2>A minimal ReAct loop</h2>
+  <h2>Agent can accumulate a lot of context in long run</h2>
   <div class="slide-body">
-    <div class="codehead"><span class="nm"><a data-ref="lieret2025">mini-swe-agent</a></span><span class="tag browse">Browse the full source: <span class="btn">Loop →</span><span class="btn">Templates →</span></span></div>
-<pre class="code lg"><code>def run(self, task: str = "", **kwargs) -&gt; dict:
-    self.messages = []
-    self.add_messages(
-        self.model.format_message(role="system", content=
-            self._render_template(self.config.system_template)),
-        self.model.format_message(role="user", content=
-            self._render_template(self.config.instance_template)),
-    )
-    while True:
-        self.step()</code></pre>
+    <div class="c2-comp">
+      <div class="s1"><b>23%</b><span class="tag">System + tools</span></div>
+      <div class="s2"><b>9%</b><span class="tag">User</span></div>
+      <div class="s3"><b>9%</b><span class="tag">Reasoning</span></div>
+      <div class="s4"><b>2%</b></div>
+      <div class="s5"><b>20%</b><span class="tag">Tool calls</span></div>
+      <div class="s6"><b>37%</b><span class="tag">Tool results</span></div>
+    </div>
+    <p class="c2-stat"><b>77,922</b> mean tokens per session across 1,500 OpenHands (AI Agent) sessions</p>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 15. Code: <a data-ref="lieret2025">mini-swe-agent</a>, agents/default.py (MIT licence). Lines wrapped for the slide; the page continues on the next slide.</p>
-</section>
-
-<section class="slide pC" data-title="CMU 15 · A minimal ReAct loop (2)" data-refs="fried2026 lieret2025">
-  <p class="eb">C · What is an agent?</p>
-  <h2>A minimal ReAct loop (cont.)</h2>
-  <div class="slide-body">
-<pre class="code lg"><code>def step(self) -&gt; list[dict]:
-    return self.execute_actions(self.query())
-
-def query(self) -&gt; dict:
-    message = self.model.query(self.messages)
-    self.add_messages(message)
-    return message
-
-def execute_actions(self, message: dict) -&gt; list[dict]:
-    """Execute actions in message, add observation messages,
-    return them."""
-<span class="ex">    tool = self.tools[message["tool_call"]["name"]]
-    result = tool(**message["tool_call"]["arguments"])
-    return self.add_messages({"role": "tool", "content": str(result)})</span></code></pre>
-  </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 15. Code: <a data-ref="lieret2025">mini-swe-agent</a> (MIT licence). The shaded lines are an example added for this lecture; the page shows only the docstring. The next query() reads the result.</p>
-</section>
-
-<section class="slide pC" data-title="CMU 16 · Example agent trajectory" data-refs="fried2026">
-  <p class="eb">C · What is an agent?</p>
-  <h2>Example agent trajectory</h2>
-  <div class="slide-body">
-    <div class="tag lnkrow"><a class="btn" href="https://www.swebench.com/" target="_blank" rel="noopener">swebench.com ↗</a></div>
-    <figure class="fig wide big"><img src="./assets/partC/cmu-l01-p16-trajectory.png" alt="Trajectory viewer: a minimap of 59 messages coloured system, user, assistant and tool; block 0 is the system prompt, block 1 the task about parse_expr ignoring evaluate=False for relationals"></figure>
-  </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 16; screenshot from the deck page. Task sympy__sympy-24661, SWE-bench Verified.</p>
-</section>
+  </section>
 
 <section class="slide blue section-open seg-div many" data-title="Part C · 3 · Harness or training?">
-  <p class="eb">Part C · 3 of 5</p>
+  <p class="eb">Part C · 3 of 6</p>
   <h1>Prompt as System: Agents and harness</h1>
   <p>Next: <b>Harness or training?</b></p>
-  <div class="seg done"><b>1</b><span><a data-goto="Why prompting · NeurIPS 2026 labs">How capable are agents today?</a></span><span></span></div>
+  <div class="seg done"><b>1</b><span><a data-goto="CMU 5 · A web agent finds a restaurant">How capable are agents today?</a></span><span></span></div>
   <div class="seg done"><b>2</b><span><a data-goto="Part C · 2 · What is an agent?">What is an agent?</a></span><span></span></div>
   <div class="seg now"><b>3</b><span><a data-goto="Part C · 3 · Harness or training?">Harness or training?</a></span><span></span></div>
   <div class="seg next"><b>4</b><span><a data-goto="Part C · 4 · Agents are systems">Agents are systems</a></span><span></span></div>
   <div class="seg next"><b>5</b><span><a data-goto="Part C · 5 · Context and safety">Context and safety</a></span><span></span></div>
+  <div class="seg next"><b>6</b><span><a data-goto="Part C · 6 · Multi-agent: When to invoke more agents?">Multi-agent: When to invoke more agents?</a></span><span></span></div>
 </section>
 
-<section class="slide pC" data-title="CMU 17 · Six agent capabilities" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 3–4 · Capable but naughty: what may an agent do alone?" data-refs="yue2026">
   <p class="eb">C · Harness or training?</p>
-  <h2>Agent capabilities</h2>
+  <h2>Capable but naughty agent: How to control?</h2>
+  <div class="slide-body">
+    <div class="mcols"><div class="mleft"><figure class="fig capfig m177"><span class="hl"><img src="./assets/partC/cmu-l01-p03-openclaw-chat.png" alt="Two chat screenshots: the agent runs commands to trash everything in the inbox older than Feb 15; the user writes Do not do that; later the agent says Yes, I remember. And I violated it."><i class="box b1"></i><i class="box b2"></i></span></figure><div class="legend v"><span class="tag lg auto">Autonomous</span><span class="tag lg ask">Ask first</span><span class="tag lg never">Never</span></div></div>
+    <div class="tasks pgp m177t">
+      <div>Diagnose why the online store’s checkout started failing<span class="tag cls auto">Autonomous</span></div>
+      <div>Draft and send a product-launch email to 50,000 customers<span class="tag cls ask">Ask first</span></div>
+      <div>Collect your tax forms, and prepare and file your 2025 tax return<span class="tag cls ask">Ask first</span></div>
+      <div>Migrate a payments API from Python to Rust without breaking mobile checkout<span class="tag cls ask">Ask first</span></div>
+      <div>Buy concert tickets to my favorite band if they set up a show in my area<span class="tag cls ask">Ask first</span></div>
+      <div>Adjust an insulin dose after a week of glucose readings<span class="tag cls never">Never</span></div>
+    </div></div>
+  </div>
+  <p class="src">Post: <a data-ref="yue2026">Yue (2026)</a>. Screenshots cropped, red boxes added; the classes are ours.</p>
+</section>
+
+<section class="slide pC" data-title="CMU 17 · Six agent capabilities">
+  <p class="eb">C · Harness or training?</p>
+  <h2>A usable agent should be <span class="hi">reliable</span></h2>
   <div class="slide-body">
     <ol class="caps">
       <li><b>Accurate tool calling</b></li>
@@ -3588,132 +3619,236 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
       <li><b>Safety</b></li>
     </ol>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 17.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU 18 · Two ways to build them" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 18 · Two ways to build them">
   <p class="eb">C · Harness or training?</p>
-  <h2>Two ways to build these capabilities</h2>
+  <h2>How to build these capabilities? Two ways</h2>
   <div class="slide-body">
     <div class="grid two">
-      <div class="card"><div class="tag ph">LLM training</div><ul class="pts"><li>Change the model’s behavior through pretraining, SFT, or RL.</li><li>Teach reusable patterns for reasoning, tool use, and recovery.</li><li>Capabilities become part of the learned policy.</li></ul></div>
-      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li>Change the system around the model: prompts, tools, memory, and control flow.</li><li>Provide context, validation, retries, and safety boundaries.</li><li>Capabilities emerge from the model–harness combination.</li></ul></div>
+      <div class="card"><div class="tag ph">LLM training</div><ul class="pts"><li>Change the model’s behavior through pretraining, SFT, or RL.</li><li>Teach reusable patterns for reasoning, tool use, and recovery.</li><li>Capabilities become part of the model.</li></ul><svg class="pC-d two18" viewBox="0 0 540 250" role="img" aria-label="Training: collected data is used in a loop to optimize the model, which is updated, while the prompt stays frozen; the agent interacts with the environment"><defs><marker id="pCa18t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="frame18" x="0" y="0" width="264" height="112" rx="14"/><text class="fl3" x="14" y="24">Agent</text><rect class="chip3 upd" x="14" y="34" width="112" height="62" rx="10"/><text class="cn3" x="70.0" y="62">Model</text><text class="cs3" x="70.0" y="86">🔥 update</text><rect class="chip3 frz" x="140" y="34" width="112" height="62" rx="10"/><text class="cn3" x="196.0" y="62">Prompt</text><text class="cs3" x="196.0" y="86">❄️ freeze</text><path class="w" d="M266,56 H430" marker-end="url(#pCa18t)" marker-start="url(#pCa18t)"/><rect class="env3" x="432" y="22" width="108" height="68" rx="10"/><text class="cn3" x="486" y="64">Env</text><path class="w" d="M486,92 V168" marker-end="url(#pCa18t)"/><rect class="dat3" x="420" y="170" width="120" height="64" rx="10"/><text class="cn3" x="480" y="198">Collect</text><text class="cn3" x="480" y="222">data</text><path class="w" d="M418,202 H374" marker-end="url(#pCa18t)"/><rect class="opt3" x="232" y="170" width="140" height="64" rx="10"/><text class="cn3" x="302" y="209">Optimize</text><path class="w" d="M232,204 H70 V98" marker-end="url(#pCa18t)"/></svg></div>
+      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li>Change the system around the model: <b>prompts, tools, memory, and control flow</b>.</li><li>Provide context, validation, retries, and safety boundaries.</li><li>Capabilities emerge from the model–harness combination.</li></ul><svg class="pC-d two18" viewBox="0 0 540 250" role="img" aria-label="Harness engineering: collected data is used once to optimize the harness, which is updated, while the model stays frozen; the agent, with its harness, interacts with the environment"><defs><marker id="pCa18h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="frame18" x="0" y="0" width="384" height="112" rx="14"/><text class="fl3" x="14" y="24">Agent</text><rect class="chip3 frz" x="14" y="34" width="112" height="62" rx="10"/><text class="cn3" x="70.0" y="62">Model</text><text class="cs3" x="70.0" y="86">❄️ freeze</text><rect class="chip3 neu" x="136" y="34" width="112" height="62" rx="10"/><text class="cn3" x="192.0" y="72">Context</text><rect class="chip3 upd" x="258" y="34" width="112" height="62" rx="10"/><text class="cn3" x="314.0" y="62">Harness</text><text class="cs3" x="314.0" y="86">🔥 update</text><path class="w" d="M386,56 H430" marker-end="url(#pCa18h)" marker-start="url(#pCa18h)"/><rect class="env3" x="432" y="22" width="108" height="68" rx="10"/><text class="cn3" x="486" y="64">Env</text><path class="w" d="M486,92 V168" marker-end="url(#pCa18h)"/><rect class="dat3" x="420" y="170" width="120" height="64" rx="10"/><text class="cn3" x="480" y="198">Collect</text><text class="cn3" x="480" y="222">data</text><path class="w" d="M418,202 H374" marker-end="url(#pCa18h)"/><rect class="opt3" x="232" y="170" width="140" height="64" rx="10"/><text class="cn3" x="302" y="209">Optimize</text><path class="w" d="M314,170 V98" marker-end="url(#pCa18h)"/></svg></div>
     </div>
-    <svg class="pC-d row short" viewBox="0 0 1100 90" role="img" aria-label="Training changes the model; the model plus the harness makes the agent">
-      <defs><marker id="pCa18" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
-      <rect class="bx or" x="200" y="10" width="170" height="64" rx="8"/><text class="t" x="285" y="50">Training</text>
-      <path class="w" d="M370,42 H430" marker-end="url(#pCa18)"/>
-      <rect class="bx dark" x="432" y="10" width="150" height="64" rx="8"/><text class="t inv" x="507" y="50">Model</text>
-      <text class="t" x="625" y="52">+</text>
-      <rect class="bx alt" x="668" y="10" width="232" height="64" rx="8"/><text class="t" x="784" y="50">Harness</text>
-    </svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 18. Policy: the rule by which the model chooses its next token. Diagram redrawn.</p>
+  <p class="src">Policy: the rule by which the model chooses its next token. Diagram redrawn.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 19 · How agent behaviour is trained" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 19 · How agent behaviour is trained">
   <p class="eb">C · Harness or training?</p>
   <h2>How agent behavior is trained</h2>
   <div class="slide-body">
+    <div class="grid three dgrow"><svg class="pC-d tr3" viewBox="0 0 360 150" role="img" aria-label="Pretraining: Internet data is split into tokens, and the model predicts the next token"><defs><marker id="pCa19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="bx alt" x="0" y="42" width="96" height="66" rx="10"/><text class="tx" x="48" y="72">Internet</text><text class="tx" x="48" y="98">data</text><path class="w" d="M98,75 H124" marker-end="url(#pCa19)"/><rect class="bx" x="128" y="52" width="46" height="46" rx="8"/><text class="tk" x="151" y="82">The</text><rect class="bx" x="178" y="52" width="46" height="46" rx="8"/><text class="tk" x="201" y="82">cat</text><rect class="bx" x="228" y="52" width="46" height="46" rx="8"/><text class="tk" x="251" y="82">sat</text><path class="w" d="M276,75 H288" marker-end="url(#pCa19)"/><rect class="gn dash" x="292" y="52" width="60" height="46" rx="8"/><text class="tk" x="322" y="82">on</text><text class="ts" x="236" y="34">next-token prediction</text></svg><svg class="pC-d tr3" viewBox="0 0 360 150" role="img" aria-label="Instruction following: an instruction is answered by a response, as in a chat"><defs><marker id="pCa19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="bx alt" x="0" y="10" width="220" height="50" rx="16"/><text class="tx" x="110" y="43">Instruction</text><rect class="gn" x="140" y="90" width="220" height="50" rx="16"/><text class="tx" x="250" y="123">Response</text><path class="w" d="M110,62 V115 H136" marker-end="url(#pCa19)"/></svg><svg class="pC-d tr3" viewBox="0 0 360 150" role="img" aria-label="Reinforcement learning: the model gives an answer, a verifier or preference scores it, and the reward goes back to the model"><defs><marker id="pCa19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><circle class="bx dark" cx="34" cy="56" r="30"/><text class="tx inv" x="34" y="63">LLM</text><path class="w" d="M66,56 H88" marker-end="url(#pCa19)"/><rect class="gn" x="92" y="30" width="108" height="52" rx="10"/><text class="tx" x="146" y="63">Answer</text><path class="w" d="M202,56 H226" marker-end="url(#pCa19)"/><rect class="bx" x="230" y="24" width="128" height="64" rx="10"/><text class="tx" x="294" y="53">Verifier</text><text class="tk" x="294" y="78">✓ / ✗</text><path class="w loopw" d="M294,90 V136 H34 V90" marker-end="url(#pCa19)"/><text class="ts rw" x="164" y="126">reward or preference</text></svg></div>
     <div class="grid three">
       <div class="card pg"><div class="tag">01</div><p class="nm">Pretraining</p><p>Text, code, multimodal data</p><p class="mu">Broad representations and regularities</p><p class="eg">Example: after <code>def add(a, b): return</code> the next token is <code>a + b</code></p></div>
       <div class="card pg"><div class="tag">02</div><p class="nm">Mid-training / SFT</p><p>Instructions, traces, tool calls</p><p class="mu">Formats and demonstrations</p><p class="eg">Example: a trace “user: fix test.py” → <code>read_file("test.py")</code> → file text → edit</p></div>
       <div class="card pg"><div class="tag">03</div><p class="nm">RL</p><p>Rewards or preferences</p><p class="mu">Trajectory-level behavior</p><p class="eg">Example: reward 1 if the tests pass after the whole run, 0 if not</p></div>
     </div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 19. See the <a href="../../session-1/slides/">session 01 slides</a>.</p>
+  <p class="src">See the <a href="../../session-1/slides/">session 01 slides</a>.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 20 · Capability 1: tool calling" data-refs="fried2026">
+<section class="slide pC" data-title="Limitation of training">
+  <p class="eb">C · Harness or training?</p>
+  <h2>Limitation of training</h2>
+  <div class="slide-body">
+    <div class="grid two lim">
+      <div class="card"><div class="tag ph">Inefficient</div><p>Human annotation and a lot of GPU hours</p></div>
+      <div class="card"><div class="tag ph">Expensive</div><p>Data collection and training. An H100 costs $25–40K to buy, or about $2–4 per hour to rent</p></div>
+      <div class="card"><div class="tag ph">Hard to generalize</div><p>More data is needed for corner cases, and niche domains always have corner cases</p></div>
+      <div class="card"><div class="tag ph">Not possible to customize by individuals</div><p>An individual has no resources for it</p></div>
+    </div>
+  </div>
+  <p class="src">H100 prices, Oct 2026: retail $25–40K per GPU; rental about $2–4 per GPU-hour at specialist clouds, up to $12 at hyperscalers (vendor price guides).</p>
+
+</section>
+
+<section class="slide pC" data-title="Advantages of harness engineering">
+  <p class="eb">C · Harness or training?</p>
+  <h2>Advantages of harness engineering</h2>
+  <div class="slide-body">
+    <div class="grid two lim">
+      <div class="card"><div class="tag ph"><s class="old">Inefficient</s> → <span class="new">Efficient</span></div><p>Edit a prompt, a tool, or a skill. No annotation and no GPU hours</p></div>
+      <div class="card"><div class="tag ph"><s class="old">Expensive</s> → <span class="new">Cheap</span></div><p>No training run. Test a change on the model you already use</p></div>
+      <div class="card"><div class="tag ph"><s class="old">Hard to generalize</s> → <span class="new">Fix corner cases</span></div><p>Add a rule, a check, or a skill for the case. No new data needed</p></div>
+      <div class="card"><div class="tag ph"><s class="old">No customization</s> → <span class="new">Anyone can customize</span></div><p>Memory, skills, and custom tools are files that an individual can write today</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide pC" data-title="CMU 20 · Capability 1: tool calling">
   <p class="eb">C · Harness or training?</p>
   <h2>Accurate tool calling</h2>
   <div class="slide-body">
+    <div class="bad4"><div class="bh">Inaccurate calls for the task “fix test.py”</div>
+      <div><b>✗ Wrong tool</b><code>web_search</code></div>
+      <div><b>✗ Wrong type</b><code>path: 42</code></div>
+      <div><b>✗ Broken format</b><code>read_file(path</code></div>
+      <div><b>✗ Irrelevant result</b><code>Weather: 31°C</code></div>
+    </div>
     <div class="grid two">
-      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li>Grammar-constrained decoding.</li></ul></div>
+      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li><span class="hh">Grammar-constrained decoding.</span></li></ul></div>
       <div class="card"><div class="tag ph">LLM training</div><ul class="pts"><li><b class="rl">SFT:</b> train on tool-calling traces.</li></ul></div>
     </div>
-    <div class="flow lab n4 arrows"><div class="fs"><b>Select tool</b><span class="eg">Task “fix test.py”: <code>read_file</code> fits, <code>web_search</code> does not</span></div><div class="fs ex"><span><code><b>read_file</b></code><code>path: "test.py"</code></span><b>Arguments</b></div><div class="fs"><b>Validate</b><span class="eg"><code>path: 42</code> is rejected: a path must be a string</span></div><div class="fs"><b>Execute</b><span class="eg">Run <code>read_file</code>; the file text comes back</span></div></div>
+    <svg class="pC-d pipe20" viewBox="180 0 880 146" role="img" aria-label="With a harness: the same pipeline, plus checks. Before execution the harness checks that the tool exists and the types are right; after execution it checks that the result is relevant; a failed check goes back to the LLM"><defs><marker id="pCa20b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker><marker id="pCa20rb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ahr" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="pn llm" x="190" y="6" width="120" height="44" rx="10"/><text class="pt2 inv" x="250" y="36.0">LLM</text><path class="w" d="M312,28.0 H344" marker-end="url(#pCa20b)"/><rect class="pn call" x="346" y="6" width="154" height="44" rx="22"/><text class="pt2" x="423" y="36.0">Tool call</text><path class="w" d="M502,28.0 H534" marker-end="url(#pCa20b)"/><rect class="pn exe" x="536" y="6" width="154" height="44" rx="10"/><text class="pt2" x="613" y="36.0">Execution</text><path class="w" d="M692,28.0 H724" marker-end="url(#pCa20b)"/><rect class="pn call" x="726" y="6" width="154" height="44" rx="22"/><text class="pt2" x="803" y="36.0">Tool result</text><text class="pt2" x="902" y="36.0">/</text><rect class="pn err" x="924" y="6" width="120" height="44" rx="10"/><text class="pt2 inv" x="984" y="36.0">ERROR!</text><rect class="chk" x="355" y="76" width="280" height="38" rx="10"/><text class="ct2" x="495" y="102">tool exists? types right?</text><rect class="chk" x="693" y="76" width="220" height="38" rx="10"/><text class="ct2" x="803" y="102">result relevant?</text><path class="w" d="M400,52 V74" marker-end="url(#pCa20b)"/><path class="w" d="M600,74 V54" marker-end="url(#pCa20b)"/><path class="w" d="M803,52 V74" marker-end="url(#pCa20b)"/><path class="w rj" d="M355,95 H250"/><path class="w rj" d="M803,116 V136 H250 V54" marker-end="url(#pCa20rb)"/><circle class="xic" cx="250" cy="74" r="12"/><path class="xic2" d="M244.0,68.0 L256.0,80.0 M256.0,68.0 L244.0,80.0"/></svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 20. Diagram redrawn.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 21 · Capability 2: long context" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 21 · Capability 2: long context">
   <p class="eb">C · Harness or training?</p>
   <h2>Coherence over long context</h2>
   <div class="slide-body">
+    <div class="bad4 eq"><div class="bh">Failures in a 200-turn session</div><div><b>✗ Overflows</b><span>the window</span></div><div><b>✗ Forgets</b><span>an early rule</span></div><div><b>✗ Clutters</b><span>with a side task</span></div><div><b>✗ Drifts</b><span>from the goal</span></div></div>
     <div class="grid two">
-      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li>Context compression/compaction.</li><li>Dynamic memory lookup.</li><li>Sub-agent delegation.</li></ul></div>
+      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li><span class="hh">Context compression/compaction.</span></li><li><span class="hh">Dynamic memory lookup.</span></li><li><span class="hh">Sub-agent delegation.</span></li><li><span class="hh">Task checklist.</span></li></ul></div>
       <div class="card"><div class="tag ph">LLM training</div><ul class="pts"><li><b class="rl">SFT:</b> long-context training.</li></ul></div>
     </div>
-    <div class="flow lab n4 arrows"><div class="fs"><b>History</b><span class="eg">200 turns, about 150k tokens: the window is nearly full</span></div><div class="fs"><b>Summary</b><span class="eg">“Fixed 2 bugs; test_b still fails” replaces turns 1–180</span></div><div class="fs"><b>Memory</b><span class="eg">Saved note: “run tests with pytest -x”</span></div><div class="fs"><b>Retrieval</b><span class="eg">Later: look up “how to run tests” and read that note</span></div></div>
+    <svg class="pC-d pipe20 cap21" viewBox="0 0 1126 190" role="img" aria-label="Pipeline: History, LLM, Next call, Task done. Examples with the harness part that handles each: window nearly full - Summary; how to run tests? - Memory lookup; search 50 files - Sub-agent; bug 1 fixed - Checklist"><defs><marker id="pCa220" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker><marker id="pCa22g0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ahg" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="pn call" x="70" y="6" width="150" height="44" rx="22"/><text class="pt2" x="145" y="36.0">History</text><path class="w" d="M222,28 H336" marker-end="url(#pCa220)"/><rect class="pn llm" x="340" y="6" width="150" height="44" rx="10"/><text class="pt2 inv" x="415" y="36.0">LLM</text><path class="w" d="M492,28 H606" marker-end="url(#pCa220)"/><rect class="pn call" x="610" y="6" width="150" height="44" rx="22"/><text class="pt2" x="685" y="36.0">Next call</text><path class="w" d="M762,28 H876" marker-end="url(#pCa220)"/><rect class="pn call" x="880" y="6" width="150" height="44" rx="22"/><text class="pt2" x="955" y="36.0">Task done</text><path class="w" d="M125,53 V76" marker-end="url(#pCa220)"/><rect class="trg ok" x="30" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="125" y="105">window nearly full</text><path class="w" d="M125,120 V138" marker-end="url(#pCa220)"/><rect class="chk" x="30" y="140" width="190" height="42" rx="10"/><text class="ct2 sm" x="125" y="167">Memory compaction</text><path class="w okw" d="M222,161 H237 V42 H223" marker-end="url(#pCa22g0)"/><circle class="xic ok" cx="231" cy="100" r="12"/><path class="xic2" d="M225,100 L230,105 L238,95"/><path class="w" d="M395,53 V76" marker-end="url(#pCa220)"/><rect class="trg ok" x="300" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="395" y="105">how to run tests?</text><path class="w" d="M395,120 V138" marker-end="url(#pCa220)"/><rect class="chk" x="300" y="140" width="190" height="42" rx="10"/><text class="ct2" x="395" y="167">Memory lookup</text><path class="w okw" d="M492,161 H507 V42 H493" marker-end="url(#pCa22g0)"/><circle class="xic ok" cx="501" cy="100" r="12"/><path class="xic2" d="M495,100 L500,105 L508,95"/><path class="w" d="M665,53 V76" marker-end="url(#pCa220)"/><rect class="trg ok" x="570" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="665" y="105">search 50 files</text><path class="w" d="M665,120 V138" marker-end="url(#pCa220)"/><rect class="chk" x="570" y="140" width="190" height="42" rx="10"/><text class="ct2" x="665" y="167">Sub-agent</text><path class="w okw" d="M762,161 H777 V42 H763" marker-end="url(#pCa22g0)"/><circle class="xic ok" cx="771" cy="100" r="12"/><path class="xic2" d="M765,100 L770,105 L778,95"/><path class="w" d="M935,53 V76" marker-end="url(#pCa220)"/><rect class="trg ok" x="840" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="935" y="105">bug 1 fixed</text><path class="w" d="M935,120 V138" marker-end="url(#pCa220)"/><rect class="chk" x="840" y="140" width="190" height="42" rx="10"/><text class="ct2" x="935" y="167">Checklist</text><path class="w okw" d="M1032,161 H1047 V42 H1033" marker-end="url(#pCa22g0)"/><circle class="xic ok" cx="1041" cy="100" r="12"/><path class="xic2" d="M1035,100 L1040,105 L1048,95"/></svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 21.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 22 · Capability 3: customizability" data-refs="fried2026">
+<section class="slide pC" data-title="CMU L03 46 · Compaction example (2)">
+  <p class="eb">C · Harness or training?</p>
+  <h2>Compaction example</h2>
+  <div class="slide-body">
+    <div class="c2-cmp">
+      <div class="c2-col">
+        <p class="c2-h">Before</p>
+        <div class="c2-row obs"><span class="tag">OBSERVATION</span><span class="tx">CI job times out after 30 minutes.</span></div>
+        <div class="c2-row act"><span class="tag">ACTION</span><span class="tx">Inspect the job log.</span></div>
+        <div class="c2-row obs"><span class="tag">OBSERVATION</span><span class="tx">24K-line log; repeated “address already in use.”</span></div>
+        <div class="c2-row act"><span class="tag">ACTION</span><span class="tx">Set <code>--workers=1</code> and rerun.</span></div>
+        <div class="c2-row obs"><span class="tag">OBSERVATION</span><span class="tx">Suite passes; log saved at <code>/tmp/ci.log</code>.</span></div>
+      </div>
+      <div class="c2-mid"><span class="arr">→</span><b>compact</b></div>
+      <div class="c2-col">
+        <p class="c2-h">After</p>
+        <div class="c2-row obsr"><span class="tag">OBSERVATION</span><span class="tx"><b>Goal:</b> fix CI timeout.<br><b>Cause:</b> port collision.<br><b>Verified:</b> <code>--workers=1</code> passes.<br><b>Evidence:</b> <code>/tmp/ci.log</code>.</span></div>
+        <div class="c2-row act"><span class="tag">NEXT ACTION</span><span class="tx">Open the PR with the tested worker setting.</span></div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+<section class="slide pC" data-title="CMU 22 · Capability 3: customizability">
   <p class="eb">C · Harness or training?</p>
   <h2>Customizability</h2>
   <div class="slide-body">
+    <div class="bad4 eq eq3"><div class="bh">Failures without customization</div><div><b>✗ Ignores</b><span>user preferences</span></div><div><b>✗ Lacks</b><span>our workflow</span></div><div><b>✗ Cannot reach</b><span>our own tools</span></div></div>
     <div class="grid two">
-      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li>Agent memory.</li><li>Skills.</li><li>Custom tools.</li></ul></div>
+      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li><span class="hh">Agent memory.</span></li><li><span class="hh">Skills.</span></li><li><span class="hh">Custom tools.</span></li></ul></div>
       <div class="card"><div class="tag ph">LLM training</div><ul class="pts"><li><b class="rl">RL:</b> learning from user feedback.</li></ul></div>
     </div>
-    <div class="flow lab n3"><div class="fs"><b>Memory</b><span class="eg">“This user prefers type hints and short functions”</span></div><div class="fs"><b>Skills</b><span class="eg">A skill file: how to write a release note</span></div><div class="fs"><b>Tools</b><span class="eg">A custom tool <code>deploy_staging()</code></span></div></div>
+    <svg class="pC-d pipe20 cap21" viewBox="0 0 1126 190" role="img" aria-label="Pipeline: Task, LLM, Result. Examples with the harness part that handles each: prefers type hints - Memory; write a release note - Skill file; deploy to staging - Custom tool"><defs><marker id="pCa221" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker><marker id="pCa22g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ahg" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="pn call" x="215" y="6" width="150" height="44" rx="22"/><text class="pt2" x="290" y="36.0">Task</text><path class="w" d="M367,28 H481" marker-end="url(#pCa221)"/><rect class="pn llm" x="485" y="6" width="150" height="44" rx="10"/><text class="pt2 inv" x="560" y="36.0">LLM</text><path class="w" d="M637,28 H751" marker-end="url(#pCa221)"/><rect class="pn call" x="755" y="6" width="150" height="44" rx="22"/><text class="pt2" x="830" y="36.0">Result</text><path class="w" d="M270,53 V76" marker-end="url(#pCa221)"/><rect class="trg ok" x="175" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="270" y="105">prefers type hints</text><path class="w" d="M270,120 V138" marker-end="url(#pCa221)"/><rect class="chk" x="175" y="140" width="190" height="42" rx="10"/><text class="ct2" x="270" y="167">Memory</text><path class="w okw" d="M367,161 H382 V42 H368" marker-end="url(#pCa22g1)"/><circle class="xic ok" cx="376" cy="100" r="12"/><path class="xic2" d="M370,100 L375,105 L383,95"/><path class="w" d="M540,53 V76" marker-end="url(#pCa221)"/><rect class="trg ok" x="445" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="540" y="105">write a release note</text><path class="w" d="M540,120 V138" marker-end="url(#pCa221)"/><rect class="chk" x="445" y="140" width="190" height="42" rx="10"/><text class="ct2" x="540" y="167">Skill file</text><path class="w okw" d="M637,161 H652 V42 H638" marker-end="url(#pCa22g1)"/><circle class="xic ok" cx="646" cy="100" r="12"/><path class="xic2" d="M640,100 L645,105 L653,95"/><path class="w" d="M810,53 V76" marker-end="url(#pCa221)"/><rect class="trg ok" x="715" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="810" y="105">deploy to staging</text><path class="w" d="M810,120 V138" marker-end="url(#pCa221)"/><rect class="chk" x="715" y="140" width="190" height="42" rx="10"/><text class="ct2" x="810" y="167">Custom tool</text><path class="w okw" d="M907,161 H922 V42 H908" marker-end="url(#pCa22g1)"/><circle class="xic ok" cx="916" cy="100" r="12"/><path class="xic2" d="M910,100 L915,105 L923,95"/></svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 22.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 23 · Capability 4: complex tasks" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 23 · Capability 4: complex tasks">
   <p class="eb">C · Harness or training?</p>
   <h2>Complex task management</h2>
   <div class="slide-body">
+    <div class="bad4 eq eq3"><div class="bh">Failures on a long task</div><div><b>✗ Skips</b><span>a step</span></div><div><b>✗ Overloads</b><span>one thread</span></div><div><b>✗ Trusts</b><span>an unchecked result</span></div></div>
     <div class="grid two">
-      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li>Provide planning/decomposition tools.</li><li>Sub-agent delegation.</li></ul></div>
+      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li><span class="hh">Provide planning/decomposition tools.</span></li><li><span class="hh">Sub-agent delegation.</span></li><li><span class="hh">Verify results with tests.</span></li></ul></div>
       <div class="card"><div class="tag ph">LLM training</div><ul class="pts"><li><b class="rl">RL:</b> train on complex, long-horizon tasks.</li></ul></div>
     </div>
-    <div class="flow lab n4 arrows"><div class="fs"><b>Plan</b><span class="eg">1 add the endpoint, 2 write tests, 3 update the docs</span></div><div class="fs"><b>Delegate</b><span class="eg">Sub-agent A writes the tests; sub-agent B updates the docs</span></div><div class="fs"><b>Verify</b><span class="eg">Run the test suite and read the failures</span></div><div class="fs"><b>Goal</b><span class="eg">All tests pass and a pull request is open</span></div></div>
+    <svg class="pC-d pipe20 cap21" viewBox="0 0 1126 190" role="img" aria-label="Pipeline: Task, LLM, Result. Examples with the harness part that handles each: code, tests, docs - Plan; tests and docs - Delegate; all tests pass? - Verify"><defs><marker id="pCa222" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker><marker id="pCa22g2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ahg" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="pn call" x="215" y="6" width="150" height="44" rx="22"/><text class="pt2" x="290" y="36.0">Task</text><path class="w" d="M367,28 H481" marker-end="url(#pCa222)"/><rect class="pn llm" x="485" y="6" width="150" height="44" rx="10"/><text class="pt2 inv" x="560" y="36.0">LLM</text><path class="w" d="M637,28 H751" marker-end="url(#pCa222)"/><rect class="pn call" x="755" y="6" width="150" height="44" rx="22"/><text class="pt2" x="830" y="36.0">Result</text><path class="w" d="M270,53 V76" marker-end="url(#pCa222)"/><rect class="trg ok" x="175" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="270" y="105">code, tests, docs</text><path class="w" d="M270,120 V138" marker-end="url(#pCa222)"/><rect class="chk" x="175" y="140" width="190" height="42" rx="10"/><text class="ct2" x="270" y="167">Plan</text><path class="w okw" d="M367,161 H382 V42 H368" marker-end="url(#pCa22g2)"/><circle class="xic ok" cx="376" cy="100" r="12"/><path class="xic2" d="M370,100 L375,105 L383,95"/><path class="w" d="M540,53 V76" marker-end="url(#pCa222)"/><rect class="trg ok" x="445" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="540" y="105">tests and docs</text><path class="w" d="M540,120 V138" marker-end="url(#pCa222)"/><rect class="chk" x="445" y="140" width="190" height="42" rx="10"/><text class="ct2" x="540" y="167">Delegate</text><path class="w okw" d="M637,161 H652 V42 H638" marker-end="url(#pCa22g2)"/><circle class="xic ok" cx="646" cy="100" r="12"/><path class="xic2" d="M640,100 L645,105 L653,95"/><path class="w" d="M810,53 V76" marker-end="url(#pCa222)"/><rect class="trg ok" x="715" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="810" y="105">all tests pass?</text><path class="w" d="M810,120 V138" marker-end="url(#pCa222)"/><rect class="chk" x="715" y="140" width="190" height="42" rx="10"/><text class="ct2" x="810" y="167">Verify</text><path class="w okw" d="M907,161 H922 V42 H908" marker-end="url(#pCa22g2)"/><circle class="xic ok" cx="916" cy="100" r="12"/><path class="xic2" d="M910,100 L915,105 L923,95"/></svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 23.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 24 · Capability 5: the environment" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 24 · Capability 5: the environment">
   <p class="eb">C · Harness or training?</p>
   <h2>Environment understanding</h2>
   <div class="slide-body">
+    <div class="bad4 eq"><div class="bh">Failures in a shell</div><div><b>✗ Lacks</b><span>domain knowledge</span></div><div><b>✗ Cannot reach</b><span>the data source</span></div><div><b>✗ Breaks</b><span>the output shape</span></div><div><b>✗ Misreads</b><span>FAILED test_b</span></div></div>
     <div class="grid two">
-      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li>Learn skills corresponding to domain knowledge.</li></ul></div>
+      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li><span class="hh">Learn skills corresponding to domain knowledge.</span></li><li><span class="hh">MCP: connect tools and data.</span></li></ul></div>
       <div class="card"><div class="tag ph">LLM training</div><ul class="pts"><li><b class="rl">SFT:</b> train on data w/ expected observation shape.</li><li><b class="rl">RL:</b> train in domain-specific environments.</li></ul></div>
     </div>
-    <div class="flow lab n3 arrows"><div class="fs"><b>Interface</b><span class="eg">A shell in the repository: <code>ls</code>, <code>cat</code>, <code>git</code></span></div><div class="fs"><b>Observe</b><span class="eg">Output: <code>FAILED test_b: KeyError</code></span></div><div class="fs"><b>Act</b><span class="eg">Edit <code>utils.py</code>, then run <code>pytest</code> again</span></div></div>
+    <svg class="pC-d pipe20 cap21" viewBox="0 0 1126 190" role="img" aria-label="Pipeline: LLM, Command, Shell, Output. Examples with the harness part that handles each: which test runner? - Skill: domain; read a ticket - MCP server"><defs><marker id="pCa223" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker><marker id="pCa22g3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ahg" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="pn llm" x="70" y="6" width="150" height="44" rx="10"/><text class="pt2 inv" x="145" y="36.0">LLM</text><path class="w" d="M222,28 H336" marker-end="url(#pCa223)"/><rect class="pn call" x="340" y="6" width="150" height="44" rx="22"/><text class="pt2" x="415" y="36.0">Command</text><path class="w" d="M492,28 H606" marker-end="url(#pCa223)"/><rect class="pn exe" x="610" y="6" width="150" height="44" rx="10"/><text class="pt2" x="685" y="36.0">Shell</text><path class="w" d="M762,28 H876" marker-end="url(#pCa223)"/><rect class="pn call" x="880" y="6" width="150" height="44" rx="22"/><text class="pt2" x="955" y="36.0">Output</text><path class="w" d="M125,53 V76" marker-end="url(#pCa223)"/><rect class="trg ok" x="30" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="125" y="105">which test runner?</text><path class="w" d="M125,120 V138" marker-end="url(#pCa223)"/><rect class="chk" x="30" y="140" width="190" height="42" rx="10"/><text class="ct2" x="125" y="167">Skill: domain</text><path class="w okw" d="M222,161 H237 V42 H223" marker-end="url(#pCa22g3)"/><circle class="xic ok" cx="231" cy="100" r="12"/><path class="xic2" d="M225,100 L230,105 L238,95"/><path class="w" d="M395,53 V76" marker-end="url(#pCa223)"/><rect class="trg ok" x="300" y="78" width="190" height="40" rx="10"/><text class="ex ok" x="395" y="105">read a ticket</text><path class="w" d="M395,120 V138" marker-end="url(#pCa223)"/><rect class="chk" x="300" y="140" width="190" height="42" rx="10"/><text class="ct2" x="395" y="167">MCP server</text><path class="w okw" d="M492,161 H507 V42 H493" marker-end="url(#pCa22g3)"/><circle class="xic ok" cx="501" cy="100" r="12"/><path class="xic2" d="M495,100 L500,105 L508,95"/></svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 24.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 25 · Capability 6: safety" data-refs="fried2026">
+<section class="slide pC" data-title="Agent Skills · Agent + Skills + Virtual Machine" data-refs="zhang2025skills">
+  <p class="eb">C · Harness or training?</p>
+  <h2>A complex task with MCP, skills, sandbox (virtual machine)</h2>
+  <div class="slide-body">
+    <figure class="fig capfig skillfig"><img src="./assets/partC/agent-skills-vm.jpg" alt="Diagram titled Agent plus Skills plus Virtual Machine. On the left, the agent configuration: a core system prompt, equipped skills (bigquery, docx, nda-review, pdf, pptx, xlsx), and three equipped MCP servers that connect to three remote MCP servers elsewhere on the internet. An arrow labelled use computer leads to the agent virtual machine on the right, with Bash, Python and Node.js and a file system. A green note says the contents of skill directories live in the agent computer's file system: skills/bigquery, skills/docx, skills/nda-review and skills/pdf, each with a SKILL.md file and other files."></figure>
+  </div>
+  <p class="src">Figure from <a data-ref="zhang2025skills">Zhang et al. (2025)</a>, Anthropic Engineering.</p>
+
+</section>
+
+<section class="slide pC" data-title="CMU 25 · Capability 6: safety">
   <p class="eb">C · Harness or training?</p>
   <h2>Safety</h2>
   <div class="slide-body">
+    <div class="bad4 eq"><div class="bh">Unsafe actions</div><div><b>✗ Deletes</b><span>the inbox</span></div><div><b>✗ Leaks</b><span>a credential</span></div><div><b>✗ Edits</b><span>outside the repo</span></div><div><b>✗ Unseen</b><span>for 100 steps</span></div></div>
     <div class="grid two">
-      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li>Sandboxing tools.</li><li>Limit access to credentials.</li><li>Monitor trajectories.</li></ul></div>
+      <div class="card accent"><div class="tag ph">Harness engineering</div><ul class="pts"><li><span class="hh">Sandboxing tools.</span></li><li><span class="hh">Limit access to credentials.</span></li><li><span class="hh">Monitor trajectories.</span></li></ul></div>
       <div class="card"><div class="tag ph">LLM training</div><ul class="pts"><li><b class="rl">RL:</b> safety-aware RL.</li></ul></div>
     </div>
-    <div class="flow lab n4"><div class="fs"><b>Credential</b></div><div class="fs"><b>Guardrail</b></div><div class="fs"><b>Sandbox</b></div><div class="fs"><b>Monitor</b></div></div>
+    <svg class="pC-d pipe20 cap21" viewBox="0 0 1126 190" role="img" aria-label="Pipeline with checks: a credential request goes to human approval; an rm -rf tool call goes to guardrail review; access to Photos goes out of the sandbox check; an insulting result goes to the monitor. A rejected step goes back to where it came from"><defs><marker id="pCa21s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker><marker id="pCa21sr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ahr" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="pn llm" x="70" y="6" width="150" height="44" rx="10"/><text class="pt2 inv" x="145" y="36.0">LLM</text><path class="w" d="M222,28 H336" marker-end="url(#pCa21s)"/><path class="w" d="M125,53 V76" marker-end="url(#pCa21s)"/><rect class="trg" x="30" y="78" width="190" height="40" rx="10"/><text class="ex" x="125" y="105">Credential request</text><path class="w" d="M125,120 V138" marker-end="url(#pCa21s)"/><rect class="chk" x="30" y="140" width="190" height="42" rx="10"/><text class="ct2" x="125" y="167">Human approval</text><path class="w rj" d="M222,161 H237 V42 H223" marker-end="url(#pCa21sr)"/><circle class="xic" cx="237" cy="100" r="12"/><path class="xic2" d="M231.0,94.0 L243.0,106.0 M243.0,94.0 L231.0,106.0"/><rect class="pn call" x="340" y="6" width="150" height="44" rx="22"/><text class="pt2" x="415" y="36.0">Tool call</text><path class="w" d="M492,28 H606" marker-end="url(#pCa21s)"/><path class="w" d="M395,53 V76" marker-end="url(#pCa21s)"/><rect class="trg" x="300" y="78" width="190" height="40" rx="10"/><text class="ex mono" x="395" y="105">rm -rf</text><path class="w" d="M395,120 V138" marker-end="url(#pCa21s)"/><rect class="chk" x="300" y="140" width="190" height="42" rx="10"/><text class="ct2" x="395" y="167">Guardrail review</text><path class="w rj" d="M492,161 H507 V42 H493" marker-end="url(#pCa21sr)"/><circle class="xic" cx="507" cy="100" r="12"/><path class="xic2" d="M501.0,94.0 L513.0,106.0 M513.0,94.0 L501.0,106.0"/><rect class="pn exe" x="610" y="6" width="150" height="44" rx="10"/><text class="pt2" x="685" y="36.0">Execution</text><path class="w" d="M762,28 H876" marker-end="url(#pCa21s)"/><path class="w" d="M665,53 V76" marker-end="url(#pCa21s)"/><rect class="trg" x="570" y="78" width="190" height="40" rx="10"/><text class="ex" x="665" y="105">access Photos</text><path class="w" d="M665,120 V138" marker-end="url(#pCa21s)"/><rect class="chk" x="570" y="140" width="190" height="42" rx="10"/><text class="ct2" x="665" y="167">Out of sandbox</text><path class="w rj" d="M762,161 H777 V42 H763" marker-end="url(#pCa21sr)"/><circle class="xic" cx="777" cy="100" r="12"/><path class="xic2" d="M771.0,94.0 L783.0,106.0 M783.0,94.0 L771.0,106.0"/><rect class="pn call" x="880" y="6" width="150" height="44" rx="22"/><text class="pt2" x="955" y="36.0">Result</text><path class="w" d="M935,53 V76" marker-end="url(#pCa21s)"/><rect class="trg" x="840" y="78" width="190" height="40" rx="10"/><text class="ex" x="935" y="105">insulting text</text><path class="w" d="M935,120 V138" marker-end="url(#pCa21s)"/><rect class="chk" x="840" y="140" width="190" height="42" rx="10"/><text class="ct2" x="935" y="167">Monitor</text><path class="w rj" d="M1032,161 H1047 V42 H1033" marker-end="url(#pCa21sr)"/><circle class="xic" cx="1047" cy="100" r="12"/><path class="xic2" d="M1041.0,94.0 L1053.0,106.0 M1053.0,94.0 L1041.0,106.0"/></svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 25.</p>
+</section>
+
+<section class="slide pC" data-title="CMU L13 19 · What is a sandbox? (2)">
+  <p class="eb">C · Harness or training?</p>
+  <h2>What is a sandbox?</h2>
+  <div class="slide-body">
+    <p class="c4-lead">A sandbox is an isolated environment that limits what a program can access and do.</p>
+    <svg class="pC-d c4-sbx" viewBox="0 0 900 292" role="img" aria-label="A blue box labelled Sandbox contains an Agent. The agent has an arrow to a box that is Allowed here: Task files and Run code. Two red lines with a cross run from that box out of the sandbox to Private files and Other services, which are Blocked by policy.">
+      <defs><marker id="c4a19b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="c4ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <rect class="c4-out" x="4" y="3" width="552" height="285" rx="14"/>
+      <text class="c4-hb st" x="30" y="45">Sandbox</text>
+      <text class="c4-hb mid" x="412" y="45">Allowed here</text>
+      <rect class="c4-agent" x="52" y="94" width="166" height="137" rx="10"/>
+      <g class="c4-robot">
+        <path d="M128,119 v-9 a7,7 0 0 1 14,0 v9"/>
+        <rect x="108" y="119" width="54" height="40" rx="12"/>
+        <path d="M108,132 h-6 M162,132 h6"/>
+        <rect class="f" x="121" y="131" width="5" height="11" rx="2"/><rect class="f" x="144" y="131" width="5" height="11" rx="2"/>
+      </g>
+      <text class="c4-wt mid" x="135" y="204">Agent</text>
+      <path class="c4-arr" d="M218,162 H312" marker-end="url(#c4a19b)"/>
+      <rect class="c4-in" x="316" y="84" width="192" height="159" rx="10"/>
+      <path class="c4-sep" d="M335,162 H488"/>
+      <g class="c4-ic blue">
+        <path d="M344,105 h14 l10,10 v17 a4,4 0 0 1 -4,4 h-20 a4,4 0 0 1 -4,-4 v-23 a4,4 0 0 1 4,-4 z"/><path d="M358,105 v10 h10"/>
+        <rect x="337" y="186" width="32" height="26" rx="4"/><path d="M344,193 l8,6 l-8,6 M355,207 h8"/>
+      </g>
+      <text class="c4-bt st" x="382" y="130">Task files</text>
+      <text class="c4-bt st" x="382" y="212">Run code</text>
+      <path class="c4-red" d="M508,119 H544"/><path class="c4-red c4-dash" d="M566,119 H666"/>
+      <path class="c4-red" d="M508,208 H544"/><path class="c4-red c4-dash" d="M566,208 H666"/>
+      <path class="c4-x" d="M547,112 l14,14 M561,112 l-14,14"/><path class="c4-x" d="M547,201 l14,14 M561,201 l-14,14"/>
+      <text class="c4-hr st" x="666" y="45">Blocked by policy</text>
+      <rect class="c4-out2" x="666" y="84" width="233" height="70" rx="8"/>
+      <rect class="c4-out2" x="666" y="173" width="233" height="70" rx="8"/>
+      <g class="c4-ic dark">
+        <path d="M690,103 h14 l10,10 v17 a4,4 0 0 1 -4,4 h-20 a4,4 0 0 1 -4,-4 v-23 a4,4 0 0 1 4,-4 z"/><path d="M704,103 v10 h10"/>
+        <ellipse cx="699" cy="195" rx="13" ry="5"/><path d="M686,195 v22 a13,5 0 0 0 26,0 v-22 M686,206 a13,5 0 0 0 26,0"/>
+      </g>
+      <text class="c4-dt st" x="726" y="128">Private files</text>
+      <text class="c4-dt st" x="726" y="217">Other services</text>
+    </svg>
+    <div class="tag credit c4-links"><a href="https://docs.docker.com/engine/security/" target="_blank" rel="noopener">Docker · Engine security</a><a href="https://modal.com/docs/guide/sandbox-networking" target="_blank" rel="noopener">Modal · Sandbox networking and security</a></div>
+  </div>
+  <p class="src">Diagram redrawn; icons simplified.</p>
 </section>
 
 <section class="slide blue section-open seg-div many" data-title="Part C · 4 · Agents are systems">
-  <p class="eb">Part C · 4 of 5</p>
+  <p class="eb">Part C · 4 of 6</p>
   <h1>Prompt as System: Agents and harness</h1>
   <p>Next: <b>Agents are systems</b></p>
-  <div class="seg done"><b>1</b><span><a data-goto="Why prompting · NeurIPS 2026 labs">How capable are agents today?</a></span><span></span></div>
+  <div class="seg done"><b>1</b><span><a data-goto="CMU 5 · A web agent finds a restaurant">How capable are agents today?</a></span><span></span></div>
   <div class="seg done"><b>2</b><span><a data-goto="Part C · 2 · What is an agent?">What is an agent?</a></span><span></span></div>
   <div class="seg done"><b>3</b><span><a data-goto="Part C · 3 · Harness or training?">Harness or training?</a></span><span></span></div>
   <div class="seg now"><b>4</b><span><a data-goto="Part C · 4 · Agents are systems">Agents are systems</a></span><span></span></div>
   <div class="seg next"><b>5</b><span><a data-goto="Part C · 5 · Context and safety">Context and safety</a></span><span></span></div>
+  <div class="seg next"><b>6</b><span><a data-goto="Part C · 6 · Multi-agent: When to invoke more agents?">Multi-agent: When to invoke more agents?</a></span><span></span></div>
 </section>
 
-<section class="slide pC" data-title="CMU 26 · Agents are systems" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 26 · Agents are systems">
   <p class="eb">C · Agents are systems</p>
   <h2>Agents are systems, not just models</h2>
   <div class="slide-body">
@@ -3728,10 +3863,10 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
       <path class="w dash" d="M865,180 V280"/><rect class="bx or" x="745" y="282" width="240" height="64" rx="8"/><text class="t" x="865" y="322">Training</text>
     </svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 26. Diagram redrawn; the page shows an icon in each of the four small boxes.</p>
+  <p class="src">Diagram redrawn; the page shows an icon in each of the four small boxes.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 27 · Harness engineering" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 27 · Harness engineering">
   <p class="eb">C · Agents are systems</p>
   <h2>Harness engineering</h2>
   <div class="slide-body">
@@ -3741,10 +3876,10 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <div class="hbox"><b>Harness</b><div class="chiprow"><span>Permissions</span><span>Memory</span><span>Tools</span><span>Control flow</span></div></div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 27. The page writes "CC" for Claude Code.</p>
+  <p class="src">The page writes "CC" for Claude Code.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 28 · Sandbox" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 28 · Sandbox">
   <p class="eb">C · Agents are systems</p>
   <h2>Sandbox</h2>
   <div class="slide-body">
@@ -3754,10 +3889,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <div class="flow lab n4 dashed"><div class="fs"><b>Execution</b></div><div class="fs"><b>Isolation</b></div><div class="fs"><b>Resources</b></div><div class="fs"><b>Access</b></div></div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 28.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU 29 · LM inference" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 29 · LM inference">
   <p class="eb">C · Agents are systems</p>
   <h2>LM inference</h2>
   <div class="slide-body">
@@ -3782,10 +3916,10 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
       <text class="t" x="926" y="140">Tokens</text>
     </svg>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 29. Diagram redrawn.</p>
+  <p class="src">Diagram redrawn.</p>
 </section>
 
-<section class="slide pC" data-title="CMU 30 · Training systems" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 30 · Training systems">
   <p class="eb">C · Agents are systems</p>
   <h2>Training systems</h2>
   <div class="slide-body">
@@ -3795,10 +3929,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <div class="flow lab n4"><div class="fs"><b>Rollouts</b></div><div class="fs"><b>Workers</b></div><div class="fs"><b>Rewards</b></div><div class="fs"><b>Update</b></div></div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 30.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU 31 · Observability and monitoring" data-refs="fried2026">
+<section class="slide pC" data-title="CMU 31 · Observability and monitoring">
   <p class="eb">C · Agents are systems</p>
   <h2>Observability and monitoring</h2>
   <div class="slide-body">
@@ -3808,21 +3941,30 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <div class="flow lab n5"><div class="fs"><b>Traces</b></div><div class="fs"><b>Inspect</b></div><div class="fs"><b>Quality</b></div><div class="fs"><b>Latency</b></div><div class="fs"><b>Cost</b></div></div>
   </div>
-  <p class="src">After <a data-ref="fried2026">Fried &amp; Neubig (2026a)</a>, p. 31. "MLFlow" is the page's spelling; the project is called MLflow.</p>
+  <p class="src">"MLFlow" is the page's spelling; the project is called MLflow.</p>
 </section>
 
 <section class="slide blue section-open seg-div many" data-title="Part C · 5 · Context and safety">
-  <p class="eb">Part C · 5 of 5</p>
+  <p class="eb">Part C · 5 of 6</p>
   <h1>Prompt as System: Agents and harness</h1>
   <p>Next: <b>Context and safety</b></p>
-  <div class="seg done"><b>1</b><span><a data-goto="Why prompting · NeurIPS 2026 labs">How capable are agents today?</a></span><span></span></div>
+  <div class="seg done"><b>1</b><span><a data-goto="CMU 5 · A web agent finds a restaurant">How capable are agents today?</a></span><span></span></div>
   <div class="seg done"><b>2</b><span><a data-goto="Part C · 2 · What is an agent?">What is an agent?</a></span><span></span></div>
   <div class="seg done"><b>3</b><span><a data-goto="Part C · 3 · Harness or training?">Harness or training?</a></span><span></span></div>
   <div class="seg done"><b>4</b><span><a data-goto="Part C · 4 · Agents are systems">Agents are systems</a></span><span></span></div>
   <div class="seg now"><b>5</b><span><a data-goto="Part C · 5 · Context and safety">Context and safety</a></span><span></span></div>
+  <div class="seg next"><b>6</b><span><a data-goto="Part C · 6 · Multi-agent: When to invoke more agents?">Multi-agent: When to invoke more agents?</a></span><span></span></div>
 </section>
 
-<section class="slide pC" data-title="CMU L03 3 · Quadratic input from linear history growth" data-refs="neubig2026">
+<section class="slide pC" data-title="CMU 14 · An agent is a model in a loop (2)">
+  <p class="eb">C · Context and safety</p>
+  <h2>An agent is a model in a loop</h2>
+  <div class="slide-body">
+    <svg class="pC-d cmp13 loop14" viewBox="-4 -6 1134 412" role="img" aria-label="The query goes into the model; the model writes reasoning; its output goes to the environment or the user; what comes back goes into the context, which holds the instruction, the tool results and the conversation history. The context is the state, and it is the input of the next step."><defs><marker id="pCa14b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="bx" x="0" y="14" width="240" height="84" rx="8"/><text class="code" x="120" y="52">2 × (3 + 4)</text><text class="code sm" x="120" y="82">prompt tokens</text><text class="t" x="120" y="132">Query</text><path class="w" d="M240,56 H286" marker-end="url(#pCa14b)"/><circle class="bx dark" cx="330" cy="56" r="40"/><text class="t" x="330" y="132">Model</text><path class="w" d="M370,56 H414" marker-end="url(#pCa14b)"/><circle class="bx or" cx="454" cy="56" r="40"/><text class="t" x="454" y="132">Reasoning</text><path class="w" d="M494,56 H540" marker-end="url(#pCa14b)"/><rect class="bx alt" x="544" y="12" width="230" height="88" rx="8"/><text class="t" x="659" y="66">Env / user</text><path class="w" d="M659,104 V186" marker-end="url(#pCa14b)"/><rect class="cblk" x="0" y="190" width="1126" height="206" rx="14"/><text class="cbt" x="24" y="236">Context</text><rect class="pl ext" x="940" y="204" width="160" height="42" rx="21"/><text class="pt" x="1020" y="234">State</text><rect class="cardc" x="24" y="258" width="346" height="126" rx="10"/><text class="cn" x="42" y="294">instruction</text><text class="ce" x="42" y="332" xml:space="preserve">You are a coding agent.</text><text class="ce" x="42" y="366" xml:space="preserve">Tools: read_file(path)</text><rect class="cardc" x="392" y="258" width="346" height="126" rx="10"/><text class="cn" x="410" y="294">tool result</text><text class="ce" x="410" y="332" xml:space="preserve">def add(a, b):</text><text class="ce" x="410" y="366" xml:space="preserve">    return a + b</text><rect class="cardc" x="760" y="258" width="346" height="126" rx="10"/><text class="cn" x="778" y="294">conv. history</text><text class="ce" x="778" y="332" xml:space="preserve">user: Read cal.py</text><text class="ce" x="778" y="366" xml:space="preserve">model: read_file("cal.py")</text><path class="w loopw" d="M330,190 V146" marker-end="url(#pCa14b)"/></svg>
+  </div>
+</section>
+
+<section class="slide pC" data-title="CMU L03 3 · Quadratic input from linear history growth">
   <p class="eb">C · Context and safety</p>
   <h2>Quadratic input from linear history growth</h2>
   <div class="slide-body">
@@ -3835,10 +3977,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
       <div class="r"><b>Call 5</b><div class="trk"><i style="width:100%">26K</i></div><span class="cum">80K cumulative</span></div>
     </div>
   </div>
-  <p class="src">After <a data-ref="neubig2026">Neubig (2026)</a>, CMU 11-768 lecture 3, p. 3.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU L03 4 · Agent prompt composition example" data-refs="neubig2026">
+<section class="slide pC" data-title="CMU L03 4 · Agent prompt composition example">
   <p class="eb">C · Context and safety</p>
   <h2>Agent prompt composition example</h2>
   <div class="slide-body">
@@ -3852,10 +3993,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <p class="c2-stat"><b>77,922</b> mean tokens per session across 1,500 OpenHands sessions</p>
   </div>
-  <p class="src">After <a data-ref="neubig2026">Neubig (2026)</a>, CMU 11-768 lecture 3, p. 4.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU L03 44 · Prompt design for cache reuse" data-refs="neubig2026">
+<section class="slide pC" data-title="CMU L03 44 · Prompt design for cache reuse">
   <p class="eb">C · Context and safety</p>
   <h2>Prompt design for cache reuse</h2>
   <div class="slide-body">
@@ -3866,17 +4006,15 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
       <div><h4>Measure reuse</h4><p>cached tokens · TTFT · eviction</p></div>
     </div>
   </div>
-  <p class="src">After <a data-ref="neubig2026">Neubig (2026)</a>, CMU 11-768 lecture 3, p. 44.</p>
-</section>
+  </section>
 
-<section class="slide pC c2sec" data-title="CMU L03 45 · Context compaction" data-refs="neubig2026">
+<section class="slide pC c2sec" data-title="CMU L03 45 · Context compaction">
   <p class="eb">C · Context and safety</p>
   <h2>Context compaction</h2>
   <div class="slide-body"></div>
-  <p class="src">After <a data-ref="neubig2026">Neubig (2026)</a>, CMU 11-768 lecture 3, p. 45.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU L03 46 · Compaction example" data-refs="neubig2026">
+<section class="slide pC" data-title="CMU L03 46 · Compaction example">
   <p class="eb">C · Context and safety</p>
   <h2>Compaction example</h2>
   <div class="slide-body">
@@ -3897,10 +4035,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
       </div>
     </div>
   </div>
-  <p class="src">After <a data-ref="neubig2026">Neubig (2026)</a>, CMU 11-768 lecture 3, p. 46.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU L03 47 · Compaction as state estimation" data-refs="neubig2026">
+<section class="slide pC" data-title="CMU L03 47 · Compaction as state estimation">
   <p class="eb">C · Context and safety</p>
   <h2>Compaction as state estimation</h2>
   <div class="slide-body">
@@ -3918,10 +4055,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <p class="c2-note"><b>Notation:</b> \(H_t\) is the full history; \(\hat{s}_t\) is compacted working state; B is its token budget; \(A_{\text{future}}\) denotes future actions.</p>
   </div>
-  <p class="src">After <a data-ref="neubig2026">Neubig (2026)</a>, CMU 11-768 lecture 3, p. 47.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU L03 48 · What survives compaction" data-refs="neubig2026">
+<section class="slide pC" data-title="CMU L03 48 · What survives compaction">
   <p class="eb">C · Context and safety</p>
   <h2>What survives compaction</h2>
   <div class="slide-body">
@@ -3938,10 +4074,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
   </div>
   <div class="tag c2-links"><a class="btn" href="https://arxiv.org/abs/2310.08560" target="_blank" rel="noopener">MemGPT · externalize and retrieve ↗</a><a class="btn" href="https://aclanthology.org/2024.acl-long.91/" target="_blank" rel="noopener">LongLLMLingua · selective compression ↗</a></div>
-  <p class="src">After <a data-ref="neubig2026">Neubig (2026)</a>, CMU 11-768 lecture 3, p. 48.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU L03 49 · Compaction policy decisions" data-refs="neubig2026">
+<section class="slide pC" data-title="CMU L03 49 · Compaction policy decisions">
   <p class="eb">C · Context and safety</p>
   <h2>Compaction policy decisions</h2>
   <div class="slide-body">
@@ -3956,10 +4091,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
   </div>
   <div class="tag c2-links"><a class="btn" href="https://github.com/openai/codex" target="_blank" rel="noopener">Codex ↗</a><a class="btn" href="https://github.com/anomalyco/opencode" target="_blank" rel="noopener">OpenCode ↗</a><a class="btn" href="https://github.com/badlogic/pi-mono" target="_blank" rel="noopener">Pi ↗</a><a class="btn" href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener">Hermes ↗</a><a class="btn" href="https://github.com/All-Hands-AI/OpenHands" target="_blank" rel="noopener">OpenHands ↗</a></div>
-  <p class="src">After <a data-ref="neubig2026">Neubig (2026)</a>, CMU 11-768 lecture 3, p. 49.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU L03 50 · Repeated compaction drift" data-refs="neubig2026">
+<section class="slide pC" data-title="CMU L03 50 · Repeated compaction drift">
   <p class="eb">C · Context and safety</p>
   <h2>Repeated compaction drift</h2>
   <div class="slide-body">
@@ -3977,16 +4111,14 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     <p class="c2-rules"><span>copy anchors exactly</span><i>·</i><span>keep the recent tail</span><i>·</i><span>retrieve source evidence</span></p>
   </div>
   <div class="tag c2-links"><a class="btn" href="https://arxiv.org/abs/2509.13313" target="_blank" rel="noopener">ReSum · summary-conditioned agent continuation ↗</a></div>
-  <p class="src">After <a data-ref="neubig2026">Neubig (2026)</a>, CMU 11-768 lecture 3, p. 50.</p>
-</section>
+  </section>
 
-<section class="slide pC c3 c3-open" data-title="CMU L13 8 · Threat models" data-refs="fried2026b">
+<section class="slide pC c3 c3-open" data-title="CMU L13 8 · Threat models">
   <p class="eb">C · Context and safety</p>
   <h2>Threat models</h2>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 8.</p>
-</section>
+  </section>
 
-<section class="slide pC c3" data-title="CMU L13 9 · Malicious user" data-refs="fried2026b">
+<section class="slide pC c3" data-title="CMU L13 9 · Malicious user">
   <p class="eb">C · Context and safety</p>
   <h2>Malicious user</h2>
   <div class="slide-body">
@@ -4003,10 +4135,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <div class="tag credit"><a href="https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company" target="_blank" rel="noopener">Gambit Security · September 2026</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 9.</p>
-</section>
+  </section>
 
-<section class="slide pC c3" data-title="CMU L13 10 · Prompt injection" data-refs="fried2026b">
+<section class="slide pC c3" data-title="CMU L13 10 · Prompt injection">
   <p class="eb">C · Context and safety</p>
   <h2>Prompt injection</h2>
   <div class="slide-body">
@@ -4024,10 +4155,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <div class="tag credit c3-links"><a href="https://cline.bot/blog/post-mortem-unauthorized-cline-cli-npm" target="_blank" rel="noopener">Cline · maintainer postmortem</a><a href="https://arxiv.org/abs/2406.13352" target="_blank" rel="noopener">Debenedetti et al. · AgentDojo</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 10.</p>
-</section>
+  </section>
 
-<section class="slide pC c3" data-title="CMU L13 11 · Agent error" data-refs="fried2026b">
+<section class="slide pC c3" data-title="CMU L13 11 · Agent error">
   <p class="eb">C · Context and safety</p>
   <h2>Agent error</h2>
   <div class="slide-body">
@@ -4045,10 +4175,10 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <div class="tag credit"><a href="https://arxiv.org/abs/2309.15817" target="_blank" rel="noopener">Ruan et al. · ToolEmu · Figure 2(b)</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 11. Figure taken from the deck page.</p>
+  <p class="src">Figure taken from the deck page.</p>
 </section>
 
-<section class="slide pC c3" data-title="CMU L13 12 · Improper means" data-refs="fried2026b">
+<section class="slide pC c3" data-title="CMU L13 12 · Improper means">
   <p class="eb">C · Context and safety</p>
   <h2>Improper means</h2>
   <div class="slide-body">
@@ -4059,10 +4189,10 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     <figure class="fig c3-fig c3-docent"><img src="./assets/partC/cmu-l13-p12-docent-block.png" alt="Docent transcript viewer. A command block: bash, cat /root/blog/Dockerfile. Below it, Block 11, Tool output: FROM ubuntu:20.04, ENV DB=blog.db, ENV FLAG=SEKAI{tr4nsf3r_3nc0d1ng_ftw!!}. The FLAG line is highlighted."></figure>
     <div class="tag credit"><a href="https://transluce.org/docent/blog/introducing-docent" target="_blank" rel="noopener">Meng et al. · Introducing Docent</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 12. Figure taken from the deck page.</p>
+  <p class="src">Figure taken from the deck page.</p>
 </section>
 
-<section class="slide pC" data-title="CMU L13 19 · What is a sandbox?" data-refs="fried2026b">
+<section class="slide pC" data-title="CMU L13 19 · What is a sandbox?">
   <p class="eb">C · Context and safety</p>
   <h2>What is a sandbox?</h2>
   <div class="slide-body">
@@ -4104,10 +4234,10 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </svg>
     <div class="tag credit c4-links"><a href="https://docs.docker.com/engine/security/" target="_blank" rel="noopener">Docker · Engine security</a><a href="https://modal.com/docs/guide/sandbox-networking" target="_blank" rel="noopener">Modal · Sandbox networking and security</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 19. Diagram redrawn; icons simplified.</p>
+  <p class="src">Diagram redrawn; icons simplified.</p>
 </section>
 
-<section class="slide pC" data-title="CMU L13 20 · Isolation boundaries" data-refs="fried2026b">
+<section class="slide pC" data-title="CMU L13 20 · Isolation boundaries">
   <p class="eb">C · Context and safety</p>
   <h2>Isolation boundaries</h2>
   <div class="slide-body">
@@ -4118,10 +4248,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </div>
     <div class="tag credit c4-links"><a href="https://docs.docker.com/engine/security/" target="_blank" rel="noopener">Engine security</a><a href="https://modal.com/docs/guide/sandbox-networking" target="_blank" rel="noopener">Sandbox networking and security</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 20.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU L13 27 · Identity and authority" data-refs="fried2026b">
+<section class="slide pC" data-title="CMU L13 27 · Identity and authority">
   <p class="eb">C · Context and safety</p>
   <h2>Identity and authority</h2>
   <div class="slide-body">
@@ -4139,10 +4268,10 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     <ul class="pts c4-sq c4-below"><li>Keeping an API key hidden does not prevent the agent from misusing the access it provides.</li></ul>
     <div class="tag credit c4-links"><a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">Managing personal access tokens</a><a href="https://www.rfc-editor.org/rfc/rfc8693.html" target="_blank" rel="noopener">RFC 8693: OAuth 2.0 Token Exchange</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 27. Diagram redrawn.</p>
+  <p class="src">Diagram redrawn.</p>
 </section>
 
-<section class="slide pC" data-title="CMU L13 28 · Fine-grained tokens" data-refs="fried2026b">
+<section class="slide pC" data-title="CMU L13 28 · Fine-grained tokens">
   <p class="eb">C · Context and safety</p>
   <h2>Fine-grained tokens</h2>
   <div class="slide-body">
@@ -4153,10 +4282,9 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     <ul class="pts c4-sq c4-below"><li>Limit which resources the token can access, which actions it permits, and how long it lasts.</li><li>e.g. GitHub App installation tokens expire after one hour.</li></ul>
     <div class="tag credit c4-links"><a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">Managing personal access tokens</a><a href="https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-an-installation-access-token-for-a-github-app" target="_blank" rel="noopener">GitHub App installation tokens</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 28.</p>
-</section>
+  </section>
 
-<section class="slide pC" data-title="CMU L13 31 · Monitoring agent behavior" data-refs="fried2026b">
+<section class="slide pC" data-title="CMU L13 31 · Monitoring agent behavior">
   <p class="eb">C · Context and safety</p>
   <h2>Monitoring agent behavior</h2>
   <div class="slide-body">
@@ -4168,7 +4296,90 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     </ul>
     <div class="tag credit c4-links"><a href="https://transluce.org/docent/blog/introducing-docent" target="_blank" rel="noopener">Transluce · Introducing Docent</a><a href="https://arxiv.org/abs/2312.06942v5" target="_blank" rel="noopener">Greenblatt et al. · AI Control</a></div>
   </div>
-  <p class="src">After <a data-ref="fried2026b">Fried &amp; Neubig (2026b)</a>, CMU 11-768 lecture 13, p. 31.</p>
+  </section>
+
+<section class="slide blue section-open seg-div many" data-title="Part C · 6 · Multi-agent: When to invoke more agents?">
+  <p class="eb">Part C · 6 of 6</p>
+  <h1>Prompt as System: Agents and harness</h1>
+  <p>Next: <b>Multi-agent: When to invoke more agents?</b></p>
+  <div class="seg done"><b>1</b><span><a data-goto="CMU 5 · A web agent finds a restaurant">How capable are agents today?</a></span><span></span></div>
+  <div class="seg done"><b>2</b><span><a data-goto="Part C · 2 · What is an agent?">What is an agent?</a></span><span></span></div>
+  <div class="seg done"><b>3</b><span><a data-goto="Part C · 3 · Harness or training?">Harness or training?</a></span><span></span></div>
+  <div class="seg done"><b>4</b><span><a data-goto="Part C · 4 · Agents are systems">Agents are systems</a></span><span></span></div>
+  <div class="seg done"><b>5</b><span><a data-goto="Part C · 5 · Context and safety">Context and safety</a></span><span></span></div>
+  <div class="seg now"><b>6</b><span><a data-goto="Part C · 6 · Multi-agent: When to invoke more agents?">Multi-agent: When to invoke more agents?</a></span><span></span></div>
+</section>
+
+<section class="slide pC c5 c5-big c5-titles" data-title="Sarkis 1-3 · When to fold subagents into your main agent loop" data-refs="sarkis2026">
+  <p class="eb">C · Multi-agent: When to invoke more agents?</p>
+  <h2>When to fold subagents into your main agent loop</h2>
+  <div class="slide-body">
+    <div class="fit">
+      <ul class="pts"><li>A single agent with skills frequently outperformed subagents</li><li>Enterprise deployments benefited from folding subagents in</li><li>The model no longer needed most of this structure</li></ul>
+    </div>
+  </div>
+  <p class="src">After <a data-ref="sarkis2026">Sarkis (2026)</a>, introduction. The three lines are the titles of the three introduction pages.</p>
+
+</section>
+
+<section class="slide pC c5 c5-big" data-title="Sarkis 4 · Common pattern: 5 layers. What we often recommend: 1 loop" data-refs="sarkis2026">
+  <p class="eb">C · Multi-agent: When to invoke more agents?</p>
+  <h2>Common pattern: 5 layers. What we often recommend: 1 loop</h2>
+  <div class="slide-body">
+    <div class="fit">
+      <figure class="fig c5fig"><img src="./assets/partC/claude-subagent-design.gif" alt="Two diagrams side by side. Left, &quot;Common pattern: 5 layers of structure around the model&quot;: a request goes to a multi-agent orchestrator, then an intent classifier and a fixed multi-step reasoning pipeline of five steps, then three user-segment buckets, each with a recommendation branch, then the answer. Right, &quot;What we often recommend: 1 loop, one prompt, 4-5 tools, guardrails&quot;: a request goes into a single agent loop with one clear system prompt, a model that sends tool calls to 4-5 thin data tools and receives results, and firm output guardrails, then the answer."></figure>
+    </div>
+  </div>
+  <p class="src">Figure from <a data-ref="sarkis2026">Sarkis (2026)</a>.</p>
+
+</section>
+
+<section class="slide pC c5 c5-big" data-title="Sarkis 15 · Each handoff loses context when agents split by problem type" data-refs="sarkis2026">
+  <p class="eb">C · Multi-agent: When to invoke more agents?</p>
+  <h2>Each handoff loses context when agents split by problem type</h2>
+  <div class="slide-body">
+    <div class="fit">
+      <figure class="fig c5fig"><img src="./assets/partC/claude-subagents-split-by-problem.png" alt="Two rows. Split by problem type: Agent 1 writes the feature, a handoff to Agent 2 who writes the tests, a handoff to Agent 3 who reviews the code. Each handoff loses context. The test-writing agent does not know why implementation decisions were made. Split by context: one agent writes the feature and its tests, because it already has the context, and a verifier runs the tests. A verifier that only runs tests and reports results does not need implementation context."></figure>
+    </div>
+  </div>
+  <p class="src">Figure from <a data-ref="sarkis2026">Sarkis (2026)</a>.</p>
+
+</section>
+
+<section class="slide pC c5 c5-big" data-title="Sarkis 22 · Merge subagents, call them as tools, or fold into skills and tools" data-refs="sarkis2026">
+  <p class="eb">C · Multi-agent: When to invoke more agents?</p>
+  <h2>Merge subagents, call them as tools, or fold into skills and tools</h2>
+  <div class="slide-body">
+    <div class="fit">
+      <figure class="fig c5fig"><img src="./assets/partC/claude-folding-in-subagents.gif" alt="Three columns, each with a main agent above two subagents. Merge subagents: A + B become one subagent and C + D become one subagent, so there are fewer. Call them as tools: the main agent calls each subagent as a tool, the subagent returns a result, and the main agent keeps the conversation. Fold into skills and tools: the subagents prompts become skills and their API calls become tools."></figure>
+    </div>
+  </div>
+  <p class="src">Figure from <a data-ref="sarkis2026">Sarkis (2026)</a>.</p>
+
+</section>
+
+<section class="slide pC c5" data-title="Sarkis 37 · Measure, change one thing at a time, and keep what holds up" data-refs="sarkis2026">
+  <p class="eb">C · Multi-agent: When to invoke more agents?</p>
+  <h2>Measure, change one thing at a time, and keep what holds up</h2>
+  <div class="slide-body">
+    <div class="fit">
+      <p>As models evolve, our understanding of how to best use them and guidance around best practice evolve as well. That makes any one architecture less important than the principle behind it: measure, change one thing at a time, and keep what holds up.</p><p>This is one of those cases. As models get more capable and agents get longer running, more of your subagents can be skills and tools. You don’t have to make that move in one step, though. Build a small end-to-end eval, fold in one subagent, and keep it as a subagent only if the folded version scores worse, then rinse and repeat.</p>
+    </div>
+  </div>
+  <p class="src">After <a data-ref="sarkis2026">Sarkis (2026)</a>, “Tools to accelerate this work”.</p>
+
+</section>
+
+<section class="slide pC c5 c5-outline" data-title="Sarkis outline · The sections of the article" data-refs="sarkis2026">
+  <p class="eb">C · Multi-agent: When to invoke more agents?</p>
+  <h2>Outline of the article</h2>
+  <div class="slide-body">
+    <div class="fit">
+      <ol class="pts"><li>Agent building failure modes for large organizations</li><li>Using an agent loop with progressive disclosure</li><li>How to fold subagents into the main agent loop</li><li>Task-completion evals</li><li>Reducing subagents over time</li><li>Combining domain agents</li><li>Subagents called as tools</li><li>Folding subagents into the main agent via skills and tools</li><li>How several teams can contribute to a single agent</li><li>MCP tools</li><li>Skills</li><li>Knowledge bases</li><li>Tools to accelerate this work</li></ol>
+    </div>
+  </div>
+  <p class="src">Section headings of <a data-ref="sarkis2026">Sarkis (2026)</a>, in the article's order.</p>
+
 </section>
 
 <section class="slide part-summary" data-title="Part C close">
@@ -4179,7 +4390,7 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
     <ol class="pa-list">
       <li><b>Agents today</b> finish long real tasks, such as a C compiler, and also make costly errors, such as deleting an inbox.</li>
       <li><b>An agent is a model in a loop:</b> the model writes a tool call, the harness runs it, and the result goes back into the context.</li>
-      <li><b>Harness or training:</b> each agent capability can come from harness engineering or from training. An agent is a whole system.</li>
+      <li><b>Harness or training:</b> each agent capability can come from harness engineering or from training. An agent is a whole system. mini-swe-agent shows that a harness is little code.</li>
       <li><b>Context and safety:</b> the context grows with every call and can be compacted; threat models are a malicious user, prompt injection, agent error and improper means; a sandbox, fine-grained tokens and monitoring limit harm.</li>
     </ol>
     <p class="next">Next: the strengths and weaknesses of each setting, then the homework.</p>
@@ -4265,7 +4476,7 @@ def execute_actions(self, message: dict) -&gt; list[dict]:
   <h1>How far can a fixed model go?</h1>
   <div class="grid">
     <div class="card"><div class="tag">Answered today</div><p>Far, when the input and the loop give what the weights lack: examples, time to reason, tools, feedback and a check.</p></div>
-    <div class="card"><div class="tag">Still open</div><p>Small errors add up over long tasks, and a harness cannot fix all of them. One answer is to train the model for long tasks.</p></div>
+    <div class="card next"><div class="tag">Next lectures</div><p>Our next lectures go beyond language and into more modalities. <b>Lecture 3 · Self-supervised foundation models</b>, Wed 28 Oct 2026, 18:00 SGT. Then <b>Lecture 4 · Large multi-modal models</b>, Wed 4 Nov 2026.</p></div>
   </div>
 </section>
 
