@@ -2,6 +2,14 @@
 
 The version shown on slide 1 is `YYYY.MM.DDvN`. The newest version is at the top.
 
+## 2026.10.28v2
+
+- Slide 138 is removed from Part B: Feedback formats. The deck has 221 slides.
+- Slides 140–141 are removed from Part B: Without an oracle (the question page) and Why it gets worse. The deck has 222 slides.
+- Slides 131–133 are removed from Part B: Agreement predicts accuracy, and the two Majority vote pages (the question and the answer). The deck has 224 slides.
+- Eleven more Part B slides are removed: Self-debugging results, Self-correction with an oracle (two pages), Feedback prompts, Debate vs self-consistency (two pages), Parallel or sequential, and four "CoT limits" pages (is the chain the reason?, biased prompts, reasoning models hide hints, a tool does better). The deck has 227 slides.
+- Slides 136–143 are removed from Part B: USC results, trained verifiers, verifiers beat the vote, Tree of Thoughts (two pages), game of 24, voting on states, and ToT results. The deck has 238 slides; slides after 143 move up by eight.
+
 ## 2026.10.28v1
 
 - The notes on single slides that named the reference lecture slides (Chen; Fried and Neubig; Neubig) are removed. The decks are named once, in the reference list of the Part B and Part C openers. Citations of papers and web pages stay on their slides.
