@@ -1,0 +1,1141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part 2 · Lecture 3 — Self-supervised foundation models · CEG5305</title>
+<meta name="description" content="CEG5305 Part 2, Lecture 3, session 01: self-supervised foundation models — how a model learns from images without labels: pretext tasks, contrastive learning (SimCLR, MoCo, CPC), self-distillation (DINO) and today's vision encoders.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../../../assets/css/site.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.querySelector('main'),{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],ignoredClasses:['viz'],throwOnError:false})"></script>
+<link rel="stylesheet" href="notes.css">
+<link rel="stylesheet" href="notes.css">
+<script type="module" src="../../../assets/js/main.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="inner">
+  <a class="brand" href="../../../">CEG5305 <span>· Generative AI with Foundation Models</span></a>
+  <nav><a href="../../../#lectures">Lectures</a><a href="#resources">Resources</a></nav>
+</div></header>
+
+<div class="wrap">
+<p class="crumbs"><a href="../../../">Home</a> › Part 2 › Lecture 3 › Session 01</p>
+
+<section class="hero" id="overview">
+  <span class="badge">Part 2 - Lecture 3</span>
+  <h1>Self-supervised Foundation Models</h1>
+  <p class="lede">Topic 6, <em>Self-supervised foundation models</em>. One session, three hours. Lectures 1 and 2 were about text. This lecture asks how a model learns from images when nobody writes labels.</p>
+  <div class="meta"><span><b>Session 01</b> · 3 hours, three parts</span><span><b>Lecturer</b> · Junyuan Hong</span><span><b>Slides</b> · <a href="slides/">open the slides</a></span><span><b>Next</b> · Lecture 4, Wed 4 Nov 2026</span><span><b>Homework, deadlines</b> · on Canvas</span></div>
+  <div class="question">
+    <div class="q">What is the general idea of self-supervised learning?</div>
+    <p>An LLM learns from text with no labels: the next word of the text is the label. Self-supervised learning generalizes this. It cuts a label out of the data itself, so any amount of data can be used. This lecture asks what the idea is, when to use it, and how it works for images.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="tag">Part A</div><h4>How learning gets rid of labels</h4><p>Supervised learning needs labels. Pretext tasks (rotation, inpainting, jigsaw, colouring, masking) cut a label from the image. A more general task leads to contrastive learning.</p></div>
+    <div class="card"><div class="tag">Part B</div><h4>Contrastive representation learning</h4><p>The formulation, then SimCLR and MoCo (instance contrast), CPC (sequence contrast), and DINO (self-distillation with no negatives).</p></div>
+    <div class="card"><div class="tag">Part C</div><h4>Advanced topics and today's state of the art</h4><p>What we want from a vision foundation model, DINOv3 and its fix for dense features, and how to choose an encoder.</p></div>
+  </div>
+  <p class="note">Numbers come from the papers cited next to them; arithmetic done for this page is marked “computed here”, and toy values are labeled as toy. Figures are credited under each one.</p>
+</section>
+
+<div class="layout">
+<nav class="toc" aria-label="On this page"><ol>
+  <li><a href="#overview">Overview</a></li>
+  <li class="sub"><a href="#about">About these notes</a></li>
+  <li class="sub"><a href="#oa-recap">Recap of Lectures 1 and 2</a></li>
+  <li class="sub"><a href="#oa-beyond">Transformers beyond language</a></li>
+  <li class="sub"><a href="#oa-pretrain-sft">Pre-training vs SFT: the label</a></li>
+  <li class="sub"><a href="#oa-questions">Three questions for today</a></li>
+  <li><a href="#part-a">A · How learning gets rid of labels</a></li>
+  <li class="sub"><a href="#oa-supervised">Supervised learning needs labels</a></li>
+  <li class="sub"><a href="#oa-features">Features carry meaning</a></li>
+  <li class="sub"><a href="#oa-two-tasks">Pretext and downstream tasks</a></li>
+  <li class="sub"><a href="#oa-pretext-examples">Four example pretext tasks</a></li>
+  <li class="sub"><a href="#oa-evaluate">How to evaluate</a></li>
+  <li class="sub"><a href="#oa-broader">The broader picture</a></li>
+  <li class="sub"><a href="#a1-pretext-tasks">Pretext tasks from transformations</a></li>
+  <li class="sub"><a href="#a1-rotation-task">Rotation prediction</a></li>
+  <li class="sub"><a href="#a1-rotation-pipeline">Rotation as 4-way classification</a></li>
+  <li class="sub"><a href="#a1-rotation-semisup">Rotation: few labels</a></li>
+  <li class="sub"><a href="#a1-rotation-transfer">Rotation: transfer to VOC</a></li>
+  <li class="sub"><a href="#a1-rotation-attention">Rotation: attention maps</a></li>
+  <li class="sub"><a href="#a1-patch-location">Relative patch location</a></li>
+  <li class="sub"><a href="#a1-jigsaw">Jigsaw puzzles</a></li>
+  <li class="sub"><a href="#a1-inpainting-task">Inpainting</a></li>
+  <li class="sub"><a href="#a1-inpainting-loss">Reconstruction and adversarial loss</a></li>
+  <li class="sub"><a href="#a1-inpainting-transfer">Inpainting: transfer</a></li>
+  <li class="sub"><a href="#a1-colouring">Colouring</a></li>
+  <li class="sub"><a href="#a1-splitbrain">Split-brain autoencoder</a></li>
+  <li class="sub"><a href="#a1-splitbrain-transfer">Split-brain: transfer</a></li>
+  <li class="sub"><a href="#a1-colouring-results">Colouring results</a></li>
+  <li class="sub"><a href="#a2-mae-idea">MAE hides most of the image</a></li>
+  <li class="sub"><a href="#a2-masking">Masking: 75% at random</a></li>
+  <li class="sub"><a href="#a2-encoder">MAE encoder</a></li>
+  <li class="sub"><a href="#a2-decoder">MAE decoder</a></li>
+  <li class="sub"><a href="#a2-loss">Loss on masked patches</a></li>
+  <li class="sub"><a href="#a2-probe-finetune">Linear probing, fine-tuning</a></li>
+  <li class="sub"><a href="#a2-mask-ratio">Ablation: masking ratio</a></li>
+  <li class="sub"><a href="#a2-mask-sampling">Ablation: mask sampling</a></li>
+  <li class="sub"><a href="#a2-mae-comparison">MAE against other methods</a></li>
+  <li class="sub"><a href="#a2-pretext-summary">Summary: pretext tasks</a></li>
+  <li class="sub"><a href="#a2-general-task">A more general pretext task</a></li>
+  <li class="sub"><a href="#a2-part-a-close">Part A: key insights</a></li>
+  <li><a href="#part-b">B · Contrastive learning</a></li>
+  <li class="sub"><a href="#b1-part-b-map">What Part A left open</a></li>
+  <li class="sub"><a href="#b1-goal">Positive and negative pairs</a></li>
+  <li class="sub"><a href="#b1-loss">The loss finds the positive</a></li>
+  <li class="sub"><a href="#b1-infonce">InfoNCE and mutual information</a></li>
+  <li class="sub"><a href="#b1-simclr-framework">SimCLR framework</a></li>
+  <li class="sub"><a href="#b1-simclr-augmentation">Augmentations</a></li>
+  <li class="sub"><a href="#b1-simclr-loss">The SimCLR loss</a></li>
+  <li class="sub"><a href="#b1-simclr-linear">Linear evaluation</a></li>
+  <li class="sub"><a href="#b1-simclr-semi">Few labels</a></li>
+  <li class="sub"><a href="#b1-simclr-head">Projection head</a></li>
+  <li class="sub"><a href="#b1-simclr-batch">Batch size</a></li>
+  <li class="sub"><a href="#b1-moco">MoCo: queue and momentum</a></li>
+  <li class="sub"><a href="#b1-moco-code">The MoCo training step</a></li>
+  <li class="sub"><a href="#b1-mocov2">MoCo v2</a></li>
+  <li class="sub"><a href="#b1-mocov2-simclr">MoCo v2 against SimCLR</a></li>
+  <li class="sub"><a href="#b1-mocov2-memory">Memory and time</a></li>
+  <li class="sub"><a href="#b1-instance-sequence">Instance and sequence contrast</a></li>
+  <li class="sub"><a href="#b1-cpc">CPC</a></li>
+  <li class="sub"><a href="#b1-cpc-audio">CPC on audio</a></li>
+  <li class="sub"><a href="#b1-cpc-visual">CPC on images</a></li>
+  <li class="sub"><a href="#b2-dino-idea">DINO: no labels, no negatives</a></li>
+  <li class="sub"><a href="#b2-dino-update">The teacher is an EMA</a></li>
+  <li class="sub"><a href="#b2-dino-algorithm">DINO loss and centring</a></li>
+  <li class="sub"><a href="#b2-dinov2">DINOv2 patch features</a></li>
+  <li class="sub"><a href="#b2-summary-infonce">InfoNCE summary</a></li>
+  <li class="sub"><a href="#b2-summary-simclr-moco">SimCLR and MoCo summary</a></li>
+  <li class="sub"><a href="#b2-summary-cpc">CPC summary</a></li>
+  <li class="sub"><a href="#b2-part-b-summary">Part B in short</a></li>
+  <li><a href="#part-c">C · State of the art</a></li>
+  <li class="sub"><a href="#c1-want">What we want from a model</a></li>
+  <li class="sub"><a href="#c1-families">Three objective families</a></li>
+  <li class="sub"><a href="#c1-degrade">Dense features degrade</a></li>
+  <li class="sub"><a href="#c1-gram">Gram anchoring</a></li>
+  <li class="sub"><a href="#c1-frozen">Frozen backbone results</a></li>
+  <li class="sub"><a href="#c1-cost">Cost of each method</a></li>
+  <li class="sub"><a href="#c1-adapt">Adaptation</a></li>
+  <li class="sub"><a href="#c1-close">Part C in short</a></li>
+  <li><a href="#close">Where we got to</a></li>
+  <li><a href="#resources">Resources</a></li>
+  <li><a href="#references">References</a></li>
+  <li><a href="#next">Next lecture</a></li>
+</ol></nav>
+
+<main>
+<!-- D44/D49: disclosure at the start of the page, one sentence. Format: .claude/skills/make-lecture/references/disclosure.md. -->
+<div class="callout" id="about">
+<h3>About these notes</h3>
+<p>These notes and slides were prepared with the help of AI tools (Claude, by Anthropic), working from the reference slides and papers listed here.</p>
+<p><b>Reference slides</b></p>
+<ul>
+  <li><a data-ref="feifei2026">Stanford CS231n, Lecture 12: <em>Self-supervised learning</em></a>, Fei-Fei Li et al., 2026. Parts A and B.</li>
+  <li><a data-ref="kira2026c">Georgia Tech CS 8803-VLM, Lecture 3: <em>Vision encoders</em></a>, Zsolt Kira, 2026. Part C.</li>
+</ul>
+<p><b>Key papers</b></p>
+<ul>
+  <li><a data-ref="gidaris2018">Gidaris et al. (2018)</a>. <em>Unsupervised representation learning by predicting image rotations</em>. ICLR.</li>
+  <li><a data-ref="he2022">He et al. (2022)</a>. <em>Masked autoencoders are scalable vision learners</em>. CVPR.</li>
+  <li><a data-ref="chen2020a">Chen et al. (2020)</a>. <em>A simple framework for contrastive learning of visual representations</em>. ICML.</li>
+  <li><a data-ref="he2020">He et al. (2020)</a>. <em>Momentum contrast for unsupervised visual representation learning</em>. CVPR.</li>
+  <li><a data-ref="oord2018">van den Oord et al. (2018)</a>. <em>Representation learning with contrastive predictive coding</em>. arXiv:1807.03748.</li>
+  <li><a data-ref="caron2021">Caron et al. (2021)</a>. <em>Emerging properties in self-supervised vision Transformers</em>. ICCV.</li>
+  <li><a data-ref="simeoni2025">Siméoni et al. (2025)</a>. <em>DINOv3</em>. arXiv:2508.10104.</li>
+</ul>
+</div>
+
+
+<!-- ═══════════ fragment OA0 ═══════════ -->
+<h3 id="oa-recap">Lectures 1 and 2 were about text; today is about images and no labels</h3>
+<p>Lectures 1 and 2 covered large language models (LLMs). An LLM is a neural network that reads text and predicts the next word. The table lists the four sessions and the question each one answered.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Session</th><th>Title</th><th>Question</th><th>Keywords</th></tr></thead>
+<tbody>
+<tr><td>Lecture 1, session 01</td><td>Architecture: what an LLM is made of</td><td>Architecture or scale: why do LLMs work so well?</td><td>Transformer, attention, RNN, nanoGPT</td></tr>
+<tr><td>Lecture 1, session 02</td><td>Training: how the model is trained</td><td>How does scale make LLMs work well?</td><td>GPU parallelism, scaling laws, PEFT (LoRA)</td></tr>
+<tr><td>Lecture 2, session 01</td><td>Post-training: from a text predictor to an assistant</td><td>What turns GPT into ChatGPT?</td><td>SFT, RLHF, DPO, GRPO</td></tr>
+<tr><td>Lecture 2, session 02</td><td>Prompting: from one call to a loop</td><td>How far can a fixed model go?</td><td>ICL, chain-of-thought, agent, harness</td></tr>
+</tbody></table></div>
+<p>Today we study images, and we use no labels. This session has three parts and one opening. The opening takes 8 minutes. Part A takes 27 minutes. Part B takes 20 minutes. Part C takes 19 minutes. A summary and a look at the next lecture take 5 minutes. Two breaks of 10 minutes separate the parts.</p>
+<p>Parts A and B follow one source: the slides of Stanford CS231n, Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>). Part C follows Georgia Tech CS 8803-VLM, Lecture 3.</p>
+
+<h3 id="oa-beyond">A Transformer can process more than text</h3>
+<p>Lecture 1 showed that a Transformer also processes tokens that are not text. A token is one small unit of input. Each task needs its own input encoding and its own output layer. The Transformer in the middle stays the same. Six examples:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Data</th><th>Model</th><th>Work</th></tr></thead>
+<tbody>
+<tr><td>Images</td><td>ViT</td><td><a data-ref="dosovitskiy2021">Dosovitskiy et al. (2021)</a></td></tr>
+<tr><td>Image generation</td><td>DiT</td><td><a data-ref="peebles2023">Peebles and Xie (2023)</a></td></tr>
+<tr><td>Video</td><td>ViViT</td><td><a data-ref="arnab2021">Arnab et al. (2021)</a></td></tr>
+<tr><td>Speech</td><td>Whisper</td><td><a data-ref="radford2023">Radford et al. (2023)</a></td></tr>
+<tr><td>Time series</td><td>PatchTST</td><td><a data-ref="nie2023">Nie et al. (2023)</a></td></tr>
+<tr><td>Proteins</td><td>ESM-2</td><td><a data-ref="lin2023">Lin et al. (2023)</a></td></tr>
+</tbody></table></div>
+<p>The architecture can read these inputs. The open question is how to train such a model. The next section recalls how an LLM learns, because the answer for other data starts there.</p>
+
+<h3 id="oa-pretrain-sft">Pre-training and SFT differ in where the label comes from</h3>
+<p>Pre-training is the first training stage of an LLM. The input is a text prefix from the web, for example "The cat sat on the". The model predicts the next word. A prediction here is "mat". The label is the word that follows in the same text. The loss compares the prediction with the label. A training step changes the model weights to make the loss smaller.</p>
+<p>No person wrote this label. The label is cut from the text itself. The prediction target is a part of the input, so the text gives its own label. This needs only text.</p>
+<p>SFT (supervised fine-tuning) trains the model on pairs of an instruction and an answer. A person wrote each answer. The two methods differ in four points:</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>Supervised learning (SFT)</th><th>Pre-training (self-supervised)</th></tr></thead>
+<tbody>
+<tr><td>Data</td><td>Pairs: an instruction and the answer a person wrote</td><td>Raw text, nothing added</td></tr>
+<tr><td>Label</td><td>Given by people, from outside the data</td><td>Cut from the data: the next word</td></tr>
+<tr><td>Cost of more data</td><td>Each label needs a person's time</td><td>Any text on the web works</td></tr>
+<tr><td>What the model learns</td><td>One behaviour: follow instructions</td><td>The structure of language, for many tasks</td></tr>
+</tbody></table></div>
+<div class="callout"><b>Definitions.</b> A <b>label</b> is the correct answer for one input. In <b>supervised learning</b> the label comes from people. In <b>self-supervised learning</b> the label comes from the data.</div>
+<p>The question for this lecture follows from the table. Text has a free label, the next word. We now ask what the free label is for other data.</p>
+
+<h3 id="oa-questions">Three questions for today</h3>
+<p>The lecture answers three questions.</p>
+<ol>
+<li><b>The idea.</b> What is the general idea of self-supervised learning? For text, the data supplies its own label.</li>
+<li><b>When to use it.</b> When is it the right method? The answer depends on the cost of labels and on how much unlabelled data exists.</li>
+<li><b>Beyond language.</b> Does it work for other modalities, such as images? A modality is one kind of data, such as text, images or speech.</li>
+</ol>
+<p>Question 3 is hard. For text, the next word is a free label. An image has no next word. A model also takes any shortcut that makes the loss small, so a task must be chosen with care.</p>
+<p>The three parts answer these questions. Part A shows how the field answered, one problem at a time, from the first pretext tasks to masked autoencoders. Part B covers contrastive representation learning, from the formulation to DINO. Part C covers today's best encoders and how to choose one.</p>
+
+<div class="part" id="part-a"><div class="label">PART A</div><h2>How learning gets rid of labels</h2><p>Part A is a history of 15 years of learning from images without labels. Each step fixed one problem and left another. It has three segments: self-supervised learning, pretext tasks from image transformations, and a lead-in to contrastive representation learning.</p></div>
+<p class="note">This part follows Stanford CS231n, Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>), in its own page order. The text is ours; the results come from the papers cited.</p>
+
+<h3 id="oa-supervised">Supervised learning needs a label for every image</h3>
+<p>The standard way to train a vision model is supervised learning. It has three parts.</p>
+<ul>
+<li><b>Task.</b> Predict the category from a given image.</li>
+<li><b>Dataset.</b> Pairs of an image \(x\) and a category \(y\). People wrote the category. ImageNet is one example. It has 1,281,167 training images in 1,000 categories.</li>
+<li><b>Learning objective.</b> Give the correct category \(y\) a high probability \(p(y \mid x)\). This is the probability that the model assigns to \(y\) when it sees \(x\). The model minimises the cross-entropy loss, which is
+\[ L = -\log p(y \mid x). \]
+\(L\) is the loss. It is small when \(p(y \mid x)\) is close to 1, and large when it is close to 0.</li>
+</ul>
+<p>The model in the standard example is a convolutional network (Conv Net). The input is an image of a cat. The convolution layers find features: numbers that describe what the image contains. The fully connected layers then give one score per category. In the example, category 1 (cat) scores 0.9 and category 2 (dog) scores 0.1. The prediction is the category with the highest score: index 1, cat. The scores 0.9 and 0.1 are an illustration (toy values).</p>
+<div class="callout">Every image needs a label that a person wrote. This cost is the bottleneck of supervised learning. The next sections show how it limits large-scale training.</div>
+
+<h3 id="oa-features">Features of a trained network carry meaning, but they came from labels</h3>
+<p>A <b>feature</b> (also called a <b>representation</b>) is a vector of numbers that a network computes for an image. The figure compares two ways to find similar images. The left side searches in pixel space: it compares the raw pixel values of the images. The right side searches in the 4096-dimensional feature space of AlexNet, an early convolutional network trained on ImageNet labels (<a data-ref="krizhevsky2012">Krizhevsky et al., 2012</a>). The test images are at the far left of each block. The nearest neighbours are the images with the closest vectors.</p>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partA/cs231n-p009-nn-features.png" width="1800" height="787" loading="lazy" alt="Left: five test images with their nearest neighbours in pixel space, which do not match the class. Centre: five test images (flower, elephant, ship, pumpkin, dog), each with six nearest neighbours in AlexNet feature space, all of the same class. Right: the AlexNet layer of 4096 numbers, marked with a red box."><figcaption>Nearest neighbours in pixel space (left) and in the 4096-dimensional feature space (right). Figure: <a data-ref="krizhevsky2012">Krizhevsky et al. (2012)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>In pixel space the matches are poor. In feature space, flowers match flowers, elephants match elephants, and ships, pumpkins and dogs match their own class. So the features of a trained network carry meaning.</p>
+<p>These features came from labels. The network was trained on ImageNet, which has a label for each image. The next figure shows the network: an image goes through five convolution layers and three fully connected layers. The red box marks the 4096-dimensional layer before the class labels.</p>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partA/cs231n-p010-alexnet.png" width="1800" height="609" loading="lazy" alt="The AlexNet network. An image of a dog goes through five convolution layers and three fully connected layers. A red box marks the layer of 4096 numbers before the class labels."><figcaption>The AlexNet network with its 4096-dimensional layer marked. Figure: <a data-ref="krizhevsky2012">Krizhevsky et al. (2012)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The problem is large-scale training: it needs a lot of labelled data. The question for the whole lecture follows: can we train neural networks without huge, manually labelled datasets?</p>
+
+<h3 id="oa-two-tasks">A pretext task trains the encoder; a downstream task uses it</h3>
+<p>Self-supervised learning uses two datasets and two tasks.</p>
+<ol>
+<li><b>Pretext task.</b> We define a task from the data itself. No person annotates anything. This could be called an unsupervised task. But we train it with supervised-style objectives, for example classification or regression.</li>
+<li><b>Downstream task.</b> This is the application that we care about. We do not have a large dataset for it. The dataset is labelled.</li>
+</ol>
+<p>The <b>encoder</b> is the part of the network that turns an input into a representation. We train the encoder on the pretext task. Then we move the trained encoder to the downstream task. This move is called <b>transfer</b>. <b>Pre-training</b> is the first stage, on the pretext task, that gives the encoder its starting weights.</p>
+<figure class="paper" style="--fig-w: 420px"><img src="slides/assets/partA/cs231n-p011-ssl-diagram.png" width="1778" height="1269" loading="lazy" alt="Two dashed boxes. Top: a dataset with no labels goes into an encoder, with a pretext objective on the right. Bottom: a dataset with labels goes into the same encoder, with a downstream objective on the right. An arrow labelled trained encoder links the two."><figcaption>One encoder serves two tasks: first the pretext objective on unlabelled data, then the downstream objective on labelled data. Diagram: CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>In the pretext step, data with no labels goes into an encoder. The encoder gives a learned representation. A decoder, a classifier or a regressor reads that representation. A decoder is a network that turns a representation back into an output such as an image. The labels or outputs are generated automatically from the data. A person writes none of them.</p>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partA/cs231n-p012-pretext-diagram.png" width="1800" height="502" loading="lazy" alt="Pretext step. Unlabelled data goes into an encoder, which gives a learned representation. The representation goes into a decoder, classifier or regressor. Labels are generated automatically."><figcaption>The pretext step. Diagram: CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>In the downstream step, we use a dataset with labels. The data goes into the same encoder. The pretext decoder is dropped. We train a small fully connected layer on the learned representation, with the labels. The source marks this step as supervised (it also calls it semi-supervised, because the labelled set is small).</p>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partA/cs231n-p013-downstream-diagram.png" width="1800" height="724" loading="lazy" alt="Downstream step. Labelled data goes into the same encoder. The pretext decoder is faded out. A small fully connected layer is trained on the learned representation with the labels."><figcaption>The downstream step. Diagram: CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The next question is which pretext tasks make the encoder learn good features.</p>
+
+<h3 id="oa-pretext-examples">A good pretext task lets us make labels automatically</h3>
+<p>The figure shows four pretext tasks on one cat photo.</p>
+<ul>
+<li><b>Image completion.</b> The top half of the image is hidden. The model completes it.</li>
+<li><b>Rotation prediction.</b> The image is turned by an unknown angle. The model predicts the angle.</li>
+<li><b>Jigsaw.</b> Four tiles are shuffled. The model puts them back in order.</li>
+<li><b>Colouring.</b> The image is grey. The model adds colour.</li>
+</ul>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partA/cs231n-p014-pretext-examples.png" width="1800" height="500" loading="lazy" alt="Four versions of one cat photo: with the top half hidden, rotated, cut into shuffled tiles, and in grey."><figcaption>Four pretext tasks on one photo. Figure: CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>We make the label for all four tasks automatically from the image. The hidden half, the angle, the tile order and the colours are all known before we change the image. To solve the task, the model must learn good features. Part A studies several of these tasks.</p>
+
+<h3 id="oa-evaluate">We evaluate a method by training a shallow network on a small labelled set</h3>
+<p>The source lists five ways to evaluate a self-supervised method.</p>
+<ol>
+<li><b>Pretext task performance.</b> How well does the model do on the task it trained on, without labels?</li>
+<li><b>Representation quality.</b> Train a linear classifier on the learned representations (the linear evaluation protocol). Measure clustering performance. Draw a t-SNE plot, a 2-D map of the representations that shows how well the classes separate.</li>
+<li><b>Robustness and generalisation.</b> How well does the model work on other datasets, and when the input changes?</li>
+<li><b>Computational efficiency.</b> How much training time and how many resources does the method need?</li>
+<li><b>Transfer and downstream performance.</b> Move the representations to a downstream supervised task and measure the result.</li>
+</ol>
+<p>The common protocol has two steps. First, learn a good feature extractor from a pretext task. The example in the source is the prediction of image rotations. Second, attach a shallow network to the feature extractor. Train only the shallow network on the target task, with a small amount of labelled data.</p>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partA/cs231n-p017-eval-pipeline.png" width="1800" height="567" loading="lazy" alt="Pipeline from left to right. Lots of unlabelled data goes into self-supervised learning, which gives a feature extractor such as a convnet. A small amount of labelled data goes into supervised learning, and the result is evaluated on the target task, such as classification or detection. Below, a bird image goes through conv and fully connected layers and the pretext output is 90 degrees. Then the same conv layers with a linear classifier give the output bird."><figcaption>Step 1 trains the encoder on a rotation task (output 90°). Step 2 trains a linear classifier on top of it (output "bird"). Figure: CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<div class="callout"><b>Linear probe.</b> A linear probe is a linear classifier trained on top of a fixed encoder. Its accuracy measures how good the representation is, because the probe is too simple to add much knowledge of its own. The lecture uses this protocol many times.</div>
+
+<h3 id="oa-broader">Self-supervised learning works in other fields, but images need an invented task</h3>
+<p>Self-supervised learning is not only for images. The figure shows four fields with one work each.</p>
+<ul>
+<li><b>Computer vision</b>: predict the relative position of image patches (<a data-ref="doersch2015">Doersch et al., 2015</a>). This is today's lecture.</li>
+<li><b>Language modelling</b>: GPT-4 (<a data-ref="openai2023">OpenAI, 2023</a>), which is pre-trained to predict the next token.</li>
+<li><b>Speech synthesis</b>: WaveNet (<a data-ref="oord2016">van den Oord et al., 2016</a>).</li>
+<li><b>Robot and reinforcement learning</b>: Dense Object Net (<a data-ref="florence2018">Florence et al., 2018</a>).</li>
+</ul>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partA/cs231n-p018-broader-picture.png" width="1800" height="781" loading="lazy" alt="Four fields. Computer vision, boxed in green, shows a cat photo with eight numbered patches. Language modelling shows the GPT-4 technical report. Speech synthesis shows the WaveNet layer diagram. Robot and reinforcement learning shows Dense Object Net images."><figcaption>Self-supervised learning in four fields. Figures: <a data-ref="doersch2015">Doersch et al. (2015)</a>, <a data-ref="openai2023">OpenAI (2023)</a>, <a data-ref="oord2016">van den Oord et al. (2016)</a> and <a data-ref="florence2018">Florence et al. (2018)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>Language solved the problem first, as Lecture 1 showed. An image has no next word, so we must invent a pretext task. The next section starts with the simplest invented task, the prediction of image rotations.</p>
+
+<!-- ═══════════ fragment A1 ═══════════ -->
+<h3 id="a1-pretext-tasks">Pretext tasks make labels from image transformations</h3>
+<p>The previous section ended with the broader picture: one pretext task is one way to get a training signal without human labels. This section looks at the first family of pretext tasks. The goal is that the model learns visual semantics, which means the meaning of what is in the image. The method is to change an image in a known way and to use the change as the target. The model must predict the change, and no person writes a label.</p>
+<p>The lecture covers five tasks of this kind, then a sixth that is a larger idea. The terms pretext task, downstream task and representation are defined in <a href="#part-a">Part A</a>.</p>
+<ol>
+<li>Rotation prediction: the model finds out how far an image was turned.</li>
+<li>Relative patch location: the model finds out where one patch lies compared with another.</li>
+<li>Jigsaw puzzle: the model finds out how shuffled tiles were rearranged.</li>
+<li>Inpainting: the model predicts the pixels of a removed region.</li>
+<li>Colouring: the model predicts the colour of a grey image.</li>
+<li>Masked autoencoder (MAE): reconstruction at a larger scale. It comes after these five.</li>
+</ol>
+<p>Each task needs a different skill, but all five work in the same way. The model can solve the task only if it learns something about objects, parts or scenes. The first task is rotation.</p>
+
+<h3 id="a1-rotation-task">Rotation prediction: the model finds out how far an image was turned</h3>
+<p>Rotation prediction (<a data-ref="gidaris2018">Gidaris et al., 2018</a>) turns each training image by 0, 90, 180 or 270 degrees. The model must say which of the four turns it received. The lecture states the hypothesis of the paper in these words: a model can find the correct rotation only if it has "visual commonsense" of how the object looks unperturbed.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p021-rotations.png" width="1800" height="414" loading="lazy" alt="Five photographs, each turned by a known angle: a bird at 90 degrees, a dog at 270 degrees, a person at 180 degrees, a frog at 0 degrees and an object at 270 degrees."><figcaption>Five images with their rotation. The bird is turned 90 degrees, the dog 270, the person 180, the frog 0 and the object 270. Figure: <a data-ref="gidaris2018">Gidaris et al. (2018)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The idea is that a person can see at once when a photo is upside down. A person knows that a dog stands on its legs and that sky is above a field. A model that answers the rotation question correctly must also know these facts. So it must learn what objects look like and which way up they stand.</p>
+
+<h3 id="a1-rotation-pipeline">The rotation task is a four-way classification with free labels</h3>
+<p>The procedure has four steps. Let \(X\) be one training image.</p>
+<ol>
+<li>Make four copies of \(X\). Turn them by 0, 90, 180 and 270 degrees. Call the turned images \(X^0, X^1, X^2, X^3\). The label \(y\) is 0, 1, 2 or 3 and names the turn.</li>
+<li>Give each turned image to the same convolutional network \(F(\cdot)\). A ConvNet is a neural network built from convolution layers. It reads an image and gives one score for each class.</li>
+<li>The network outputs four probabilities, one for each turn. The probability for turn \(y\) is written \(F^{y}(X^{y})\).</li>
+<li>Training makes the probability of the correct turn as high as possible.</li>
+</ol>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partA/cs231n-p023-rotation-pipeline.png" width="1800" height="1075" loading="lazy" alt="One image X is turned four times. Each turned copy goes into the same ConvNet F. For each copy the objective is to maximise the probability of the correct rotation label y."><figcaption>One image gives four training examples. The same network F reads all four. Figure: <a data-ref="gidaris2018">Gidaris et al. (2018)</a>, Fig. 2, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>This is a classification with four classes. It is the same kind of task as supervised image classification, but the labels cost nothing. The program made the rotations, so it knows the labels.</p>
+<p>A model learns any signal that solves the task. A bad pretext task has a shortcut that does not need the object. The paper chooses turns by multiples of 90 degrees for this reason. A program makes them with flip and transpose operations, and these leave no easily detectable low-level artifacts (§2.2). A model that used such a trace would learn nothing useful. In the ablation of §3.1, four turns gave better recognition than eight turns. The paper suggests that the four extra turns can add visible traces of the rotation, such as empty image areas.</p>
+<div class="callout"><strong>Key point.</strong> A pretext task works only if the model cannot solve it by a shortcut. Several later tasks need special steps to remove shortcuts.</div>
+
+<h3 id="a1-rotation-semisup">With few labels, rotation features beat training from scratch</h3>
+<p>The first test is a semi-supervised test. Semi-supervised means that the model uses many images without labels and a few images with labels. The data set is CIFAR-10. It has small images in ten classes, and its full training set has 5,000 images per class.</p>
+<ol>
+<li>Pre-train the network by rotation prediction on the entire CIFAR-10 training set. No labels are used.</li>
+<li>Freeze the first two convolution blocks (conv1 and conv2). Frozen layers keep their weights during later training.</li>
+<li>Train the third convolution block and a linear classifier on a labelled subset. The subset has 20, 100, 400, 1,000 or 5,000 labelled images per class (§3.1).</li>
+<li>Compare with a supervised network that trains only on the same labelled subset.</li>
+</ol>
+<figure class="paper" style="--fig-w: 440px"><img src="slides/assets/partA/cs231n-p024-semisup-curve.png" width="1675" height="1178" loading="lazy" alt="Line chart. Horizontal axis: number of training examples, 20 to 5000, on a log scale. Vertical axis: test accuracy, 20 to 100. The yellow semi-supervised curve is above the blue supervised curve at small sizes and the two meet near 1000 to 2000."><figcaption>Test accuracy against the number of labelled training examples. Yellow: rotation features. Blue: supervised only. The paper counts the examples per category. Figure: <a data-ref="gidaris2018">Gidaris et al. (2018)</a>, Fig. 5b, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The yellow curve starts near 65% at 20 examples per class, and the blue curve starts near 38% (read from the figure, approximate). The gap becomes smaller as the number of labels grows. The curves meet at about 1,000 labels per class. The paper says the self-supervised model is better when the number of examples per category drops below 1,000. At 5,000 the supervised model is slightly higher, near 93% against 91% (read from the figure).</p>
+<p>The conclusion: when labels are rare, features from a pretext task give a large gain. When labels are plentiful, they give no gain.</p>
+
+<h3 id="a1-rotation-transfer">On a harder test, rotation is far above no pre-training but below full supervision</h3>
+<p>The second test uses larger data. The network is AlexNet, a convolutional network with five convolution layers and three fully connected layers (fc6 to fc8 are the last three). The steps are:</p>
+<ol>
+<li>Pre-train AlexNet by rotation prediction on all of ImageNet (1,281,167 training images). No labels are used.</li>
+<li>Transfer the weights to PASCAL VOC 2007 tasks. Fine-tune on its labelled data (5,011 images in the trainval set).</li>
+<li>Score three tasks: classification, detection and segmentation.</li>
+</ol>
+<p>The table gives three scores. Classification and detection use mAP, mean average precision. It averages, over object classes, how well the model ranks correct detections. Segmentation uses mIoU, mean intersection over union. It measures how much the predicted region of each class overlaps the true region. For all three scores, higher is better. In the "Trained layers" row, "fc6-8" means that only the last three layers train, and "all" means that the whole network trains.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Initial weights</th><th>Classification (%mAP, all layers)</th><th>Detection (%mAP)</th><th>Segmentation (%mIoU)</th></tr></thead>
+<tbody>
+<tr><td>ImageNet labels (supervised)</td><td>79.9</td><td>56.8</td><td>48.0</td></tr>
+<tr><td>Random</td><td>53.3</td><td>43.4</td><td>19.8</td></tr>
+<tr><td>RotNet (rotation pre-training)</td><td>72.97</td><td>54.4</td><td>39.1</td></tr>
+</tbody></table></div>
+<p>Source: <a data-ref="gidaris2018">Gidaris et al. (2018)</a>, Table 7 (the rows of the table in the figure below that carry the three results).</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p025-rotnet-table.png" width="1800" height="1200" loading="lazy" alt="Table of PASCAL VOC 2007 and 2012 results for many methods. Boxes mark the ImageNet-labels row, the two random rows and the RotNet row."><figcaption>Results of many pre-training methods. The boxes are the lecture's own marks. Figure: <a data-ref="gidaris2018">Gidaris et al. (2018)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>RotNet is the name of the network that the paper trains with rotation prediction. It scores far above random weights on all three tasks: 72.97 against 53.3 in classification, and 39.1 against 19.8 in segmentation. It scores below the supervised model: 72.97 against 79.9. In this table RotNet is also higher than every earlier self-supervised method in each of the three columns, including jigsaw puzzles and colouring (computed here by comparing the columns). The table has a second random row, "Random rescaled" (Krähenbühl et al. (2015)), with 56.6, 45.6 and 32.6. This random start is better than plain random, and RotNet is still higher.</p>
+
+<h3 id="a1-rotation-attention">The rotation model looks at the same object parts as a supervised model</h3>
+<p>The paper argues that rotation prediction forces the network to find the main objects in the image. To test this, it draws attention maps. An attention map is built from the size of the activations at each place in a convolution layer. It shows where the network puts its focus.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p026-attention-maps.png" width="1800" height="1014" loading="lazy" alt="Attention maps at conv1, conv3 and conv5 for three images. Row (a) is a supervised model. Row (b) is the model trained by rotation prediction. The two rows highlight similar regions."><figcaption>Attention maps from three layers (conv1, conv3, conv5). Row (a): a supervised model. Row (b): the self-supervised rotation model. Figure: <a data-ref="gidaris2018">Gidaris et al. (2018)</a>, Fig. 3, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The two rows highlight roughly the same regions. The paper says that the rotation model focuses on object parts such as eyes, noses, tails and heads (§2.1). This agrees with the hypothesis: to predict rotation, the network learns to look at objects.</p>
+<p>Rotation gives one global label for the whole image. The next task asks the model to compare parts of an image.</p>
+
+<h3 id="a1-patch-location">Patch location: the model finds out where one patch lies compared with another</h3>
+<p>Relative patch location (<a data-ref="doersch2015">Doersch et al., 2015</a>) works with small square patches. The steps are:</p>
+<ol>
+<li>Cut a centre patch from the image.</li>
+<li>Choose one of the eight patches that touch the centre patch (above, below, left, right and the four corners).</li>
+<li>The input \(X\) is the pair of patches. The label \(Y\) is the position of the second patch, a number from 1 to 8.</li>
+<li>The model classifies the pair into one of the eight positions. In the lecture's example, \(Y = 3\).</li>
+</ol>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partA/cs231n-p027-patch-locations.png" width="1800" height="840" loading="lazy" alt="A photograph with a centre patch and eight numbered neighbour positions. A pair of patches is the input X. The label Y is the position of the second patch, here 3."><figcaption>A centre patch, eight numbered neighbours, and one chosen pair. Figure: <a data-ref="doersch2015">Doersch et al. (2015)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>To answer, the model must know how parts of an object fit together. It must know, for example, that an eye lies above a nose. The paper uses two towers with shared weights, one for each patch, and joins their outputs (Fig. 3).</p>
+<p>This task has shortcuts too. Straight lines that cross from one patch to the next give the answer. So the paper leaves a gap between the patches and moves each patch by a random jitter. A second shortcut is chromatic aberration, a small colour shift that a lens makes and that depends on the position in the image. The paper reduces it by changing the colour channels (§3 and §4.2).</p>
+
+<h3 id="a1-jigsaw">Jigsaw: the model finds out how shuffled tiles were rearranged</h3>
+<p>The jigsaw task (<a data-ref="noroozi2016">Noroozi &amp; Favaro, 2016</a>) extends the patch task from a pair to a whole puzzle. The steps are:</p>
+<ol>
+<li>Cut a crop from the image and divide it into a 3 by 3 grid. Take one tile from each cell. The paper uses 64 by 64 pixel tiles from 75 by 75 pixel cells, with a random gap between tiles (Fig. 3, §3.3).</li>
+<li>Shuffle the nine tiles with a permutation. A permutation is one fixed order. It is chosen from a predefined set of permutations.</li>
+<li>Give the nine tiles to nine copies of one network with shared weights. The paper names this network the Context-Free Network. Each copy sees one tile alone.</li>
+<li>Join the nine outputs. The final layer is a softmax, a layer that gives one probability for each permutation in the set. The model predicts the index of the permutation that was used.</li>
+</ol>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p028-jigsaw.png" width="1800" height="635" loading="lazy" alt="A car photo with a 3 by 3 grid of tiles, nine numbered tiles shuffled, nine parallel networks with shared weights, and an output index 64 for the permutation 9,4,6,8,3,2,5,1,7."><figcaption>The jigsaw pipeline. The output "64" in the figure is the index of one permutation in the set. Figure: <a data-ref="noroozi2016">Noroozi &amp; Favaro (2016)</a>, Fig. 3, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The model predicts the arrangement of the tiles, not the object category. To do this it must know what the parts of a car look like and where each part goes. The size of the permutation set controls how hard the task is. With more permutations the task is harder, and the paper reports that detection performance rises with the number of permutations (§4.2, Table 4). The figure uses a set with 100 permutations (the last layer before the softmax has 100 outputs).</p>
+<p>Like the patch task, the jigsaw task has shortcuts: edges that continue from one tile to the next, and chromatic aberration. The paper adds a random gap between tiles and jitters the colour channels to remove them (§3.3).</p>
+<p>All three tasks so far change the image and ask a question about the change. The next task removes pixels and asks the model to write them back.</p>
+
+<h3 id="a1-inpainting-task">Inpainting: the model predicts the pixels of a removed region</h3>
+<p>Inpainting means to fill a removed region of an image. The context encoder (<a data-ref="pathak2016">Pathak et al., 2016</a>) cuts a square from the centre of the image, and the model must predict the missing pixels. To do this, it must know what usually lies next to the visible parts.</p>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partA/cs231n-p030-inpainting.png" width="1800" height="819" loading="lazy" alt="A street photo with a white square in the centre, and the same photo with the square filled by the model."><figcaption>Left: the input with a white square removed. Right: the filled result. Figure: <a data-ref="pathak2016">Pathak et al. (2016)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The model is an autoencoder. An autoencoder has an encoder and a decoder. The encoder turns the input into a feature vector. The decoder builds an image from that feature vector. The data flow has four steps:</p>
+<ol>
+<li>The image with the missing region goes into the encoder.</li>
+<li>The encoder features go through a channel-wise fully connected layer. This layer connects all places inside one feature map, but it has no connections between different feature maps. With \(m\) feature maps of size \(n \times n\), it has \(m n^4\) parameters. A normal fully connected layer has \(m^2 n^4\) (§3.1). So it is much smaller.</li>
+<li>The decoder builds an image from the result.</li>
+<li>The loss \(L\) compares the decoder output with the true content of the missing region.</li>
+</ol>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p031-inpaint-ae.png" width="1800" height="673" loading="lazy" alt="A football photo with a missing square goes into an encoder, then a channel-wise fully connected layer, then a decoder that outputs the missing region. The loss L compares this output with the true region."><figcaption>The context encoder as an autoencoder. Figure: <a data-ref="pathak2016">Pathak et al. (2016)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>This model does not rebuild its whole input. Its job is only to predict a hidden part, so it does not need a small bottleneck. The paper uses features of size 6 by 6 by 256, which is 9,216 values, in both the encoder and the decoder (§3.1).</p>
+
+<h3 id="a1-inpainting-loss">A reconstruction loss gives blurry fills; an adversarial loss makes them sharp</h3>
+<p>The first loss is the reconstruction loss. It measures how far the output is from the true pixels. The plain version gives a blurry fill. The rough colours are right, and the detail is lost.</p>
+<figure class="paper" style="--fig-w: 380px"><img src="slides/assets/partA/cs231n-p032-inpaint-eval-recon.png" width="1369" height="819" loading="lazy" alt="An image with a blurry filled square from a model trained with the reconstruction loss only."><figcaption>A fill from the reconstruction loss only. It is blurry. Figure: <a data-ref="pathak2016">Pathak et al. (2016)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The paper gives the reason. A hole can have many correct fills. For a squared error, the safest output is the average of the possible fills, and an average of sharp images is blurry (§3.2). So the paper adds a second loss. The full loss is:</p>
+\[ L(x) = L_{recon}(x) + L_{adv}(x) \]
+<p>Here \(x\) is the input image. \(L_{recon}\) is the reconstruction loss. \(L_{adv}\) is the adversarial loss. The paper also gives each term a weight: 0.999 for \(L_{recon}\) and 0.001 for \(L_{adv}\) (Eq. 3 and §3.2). The lecture slide omits these weights.</p>
+<p><strong>Reconstruction loss, step by step.</strong></p>
+\[ L_{recon}(x) = \lVert M * (x - F_\theta((1 - M) * x)) \rVert_2^2 \]
+<ol>
+<li>\(M\) is the mask. It has the value 1 where a pixel is masked (removed) and 0 where it is not. The symbol \(*\) means element-wise multiplication: each pixel is multiplied by the pixel at the same place.</li>
+<li>\((1 - M) * x\) is the image with a hole. It keeps the pixels outside the mask and sets the masked pixels to zero.</li>
+<li>\(F_\theta\) is the network that we train, with weights \(\theta\). The paper calls it the context encoder. It takes the image with a hole and gives a full image.</li>
+<li>\(x - F_\theta(\cdot)\) is the error at each pixel: the true image minus the predicted image.</li>
+<li>\(M * (\cdot)\) keeps only the errors inside the hole. Errors outside the hole do not count.</li>
+<li>\(\lVert \cdot \rVert_2^2\) is the squared L2 norm. It squares each error and adds them up.</li>
+</ol>
+<p><strong>Adversarial loss, step by step.</strong> The adversarial loss uses a second network \(D\), the discriminator. It takes an image and outputs the probability that the image is real, and not an inpainted image.</p>
+\[ L_{adv} = \max_D \; \mathbb{E}\big[ \log D(x) + \log\big(1 - D(F((1 - M) * x))\big) \big] \]
+<ol>
+<li>\(\mathbb{E}\) is the average over the training images.</li>
+<li>\(D(x)\) is the probability that \(D\) gives to a real image. \(\log D(x)\) is large when \(D(x)\) is near 1.</li>
+<li>\(D(F((1 - M) * x))\) is the probability that \(D\) gives to an inpainted image. \(\log(1 - D(\cdot))\) is large when this probability is near 0.</li>
+<li>The maximum over \(D\) means that \(D\) learns to tell real images from inpainted ones.</li>
+<li>The network \(F\) has the opposite aim. It trains so that \(D\) cannot tell the difference: it pushes \(D(F(\cdot))\) towards 1. The paper trains \(F\) and \(D\) together, one after the other (§3.2).</li>
+</ol>
+<p>This course does not cover adversarial training in detail. The one fact that matters here is the effect: the term pushes the output to look like a real image.</p>
+<p>The deck's slide writes the adversarial term with the bracket of the expectation closed after \(\log D(x)\) and one bracket too many at the end. In the paper both terms are inside one expectation. The idea is the same.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p034-inpaint-eval-adv.png" width="1800" height="535" loading="lazy" alt="Four images of one wall with a hole. Input; reconstruction loss only (blurry); adversarial loss only (sharp but wrong texture); reconstruction plus adversarial (sharp and plausible)."><figcaption>Four versions of the same image. From left to right: the input, the reconstruction loss only, the adversarial loss only, and both losses. Figure: <a data-ref="pathak2016">Pathak et al. (2016)</a>, Fig. 6, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>With the reconstruction loss only, the fill is blurry. With the adversarial loss only, the fill is sharp, but its texture does not fit the wall. With both losses, the fill is sharp and plausible. The two terms fix different faults.</p>
+<div class="verdict"><strong>What each loss does.</strong> The reconstruction loss gives the right layout and colours, but blurry detail. The adversarial loss gives sharp detail, but not always the right content. The sum gives a sharp and coherent fill.</div>
+
+<h3 id="a1-inpainting-transfer">Inpainting helps transfer, but it is far from full supervision</h3>
+<p>The test is the same as for rotation. The model learns on the ImageNet training set without labels. Then the weights transfer to PASCAL VOC. The paper tests classification and detection on VOC 2007 and segmentation on VOC 2012. For these transfer results the paper uses a context encoder with random-region masks and the reconstruction loss (§5.2).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Pre-training method</th><th>Supervision</th><th>Pre-training time</th><th>Classification</th><th>Detection</th><th>Segmentation</th></tr></thead>
+<tbody>
+<tr><td>ImageNet</td><td>1,000 class labels</td><td>3 days</td><td>78.2%</td><td>56.8%</td><td>48.0%</td></tr>
+<tr><td>Random Gaussian</td><td>initialisation</td><td>under 1 minute</td><td>53.3%</td><td>43.4%</td><td>19.8%</td></tr>
+<tr><td>Autoencoder</td><td>none</td><td>14 hours</td><td>53.8%</td><td>41.9%</td><td>25.2%</td></tr>
+<tr><td>Agrawal et al.</td><td>egomotion</td><td>10 hours</td><td>52.9%</td><td>41.8%</td><td>-</td></tr>
+<tr><td>Wang et al.</td><td>motion</td><td>1 week</td><td>58.7%</td><td>47.4%</td><td>-</td></tr>
+<tr><td>Doersch et al.</td><td>relative context</td><td>4 weeks</td><td>55.3%</td><td>46.6%</td><td>-</td></tr>
+<tr><td><strong>Context encoder (ours)</strong></td><td>context</td><td>14 hours</td><td>56.5%</td><td>44.5%</td><td>30.0%</td></tr>
+</tbody></table></div>
+<p>Source: <a data-ref="pathak2016">Pathak et al. (2016)</a>, Table 2. The lecture's figure shows the full table; the rows are listed here in the paper's order.</p>
+<p>The context encoder is above the plain autoencoder and above random weights on all three tasks, with one exception: in detection, the autoencoder is 41.9% and the context encoder is 44.5%, which is still higher. The gain is largest in segmentation: 30.0% against 19.8% for random weights. Full ImageNet supervision stays far above: 78.2%, 56.8% and 48.0%. In classification and detection, the methods of Wang et al. and Doersch et al. score higher than the context encoder, but they need 1 week and 4 weeks of pre-training, against 14 hours. Do not compare these numbers with the rotation table: the two papers use different set-ups, and they report different values for the same supervised row (79.9 and 78.2).</p>
+<p>The conclusion: inpainting gives useful features, but they are far from the features of full supervision. The next task uses colour.</p>
+
+<h3 id="a1-colouring">Colouring: the model predicts the colour of a grey image</h3>
+<p>Colouring (<a data-ref="zhang2016">Zhang et al., 2016</a>) gives the model a grey image and asks for the colours. The paper writes the image in the Lab colour space. Lab splits an image into three channels. \(L\) is lightness: how bright each pixel is, from black to white. \(a\) and \(b\) are two colour channels. Channel \(a\) runs from green to red. Channel \(b\) runs from blue to yellow. The \(L\) channel alone is a grey image.</p>
+<ol>
+<li>Convert a colour image to Lab.</li>
+<li>The input \(X\) is the \(L\) channel, with \(X \in \mathbb{R}^{H \times W \times 1}\). \(H\) is the height and \(W\) is the width in pixels. There is one value per pixel.</li>
+<li>The network \(F\) predicts the colour channels \(\hat{Y} \in \mathbb{R}^{H \times W \times 2}\). There are two values per pixel, \(a\) and \(b\).</li>
+<li>The training target is the true \(a\) and \(b\) channels of the same image. The label is free, because the colour image is the source of both.</li>
+</ol>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partA/cs231n-p036-coloring-ab.png" width="1800" height="932" loading="lazy" alt="A grey fish image, the L channel, goes into a network F that outputs the two colour channels a and b."><figcaption>The L channel is the input. The network F predicts the a and b channels. Figure: Zhang and Isola, credited in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>); the method is in <a data-ref="zhang2016">Zhang et al. (2016)</a>.</figcaption></figure>
+<p>To see the result, join the input \(X\) and the prediction \(\hat{Y}\). The output is a colour image. In the lecture's example the fish is yellow and dark blue.</p>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partA/cs231n-p037-coloring-lab.png" width="1800" height="919" loading="lazy" alt="The L channel X and the predicted ab channels Y-hat are concatenated into a colour image of a fish."><figcaption>The L channel and the predicted colour channels together give a colour image. Figure: Zhang and Isola, credited in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>); the method is in <a data-ref="zhang2016">Zhang et al. (2016)</a>.</figcaption></figure>
+<details class="callout"><summary>Why the loss of the paper is not a plain squared error</summary>
+<p>A grey object can have several correct colours. A car can be red, blue or black. A squared error would give the average colour, which is a dull brown-grey. The paper avoids this. It divides the \(a\)-\(b\) plane into 313 values and treats colouring as classification: the network outputs a probability for each value (<a data-ref="zhang2016">Zhang et al., 2016</a>, Fig. 3). This is background; the lecture only shows the task.</p></details>
+<p>To solve this task, the model must know what the objects are. It must know that grass is usually green and that the sky is usually blue. The same idea leads to a better way to use the task.</p>
+
+<h3 id="a1-splitbrain">Split-brain autoencoder: two networks, each predicts what the other one sees</h3>
+<p>A colouring network sees only the grey channel, so it learns only about one part of the data. The split-brain autoencoder (<a data-ref="zhang2017">Zhang et al., 2017</a>) fixes this with two networks:</p>
+<ul>
+<li>\(F_1\) sees only the grey channel and predicts the colour channels.</li>
+<li>\(F_2\) sees only the colour channels and predicts the grey channel.</li>
+<li>Together the two predictions give the predicted image \(\hat{X}\).</li>
+</ul>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p038-splitbrain.png" width="1800" height="727" loading="lazy" alt="Input image X is split into a grey channel and colour channels. F1 maps grey to colour. F2 maps colour to grey. The two outputs together form the predicted image X-hat."><figcaption>F1 predicts colour from grey. F2 predicts grey from colour. Figure: <a data-ref="zhang2017">Zhang et al. (2017)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The general idea is cross-channel prediction. Split the input \(X\) into two parts, \(X_1\) and \(X_2\). The network \(F_1\) predicts \(\hat{X}_2\) from \(X_1\). The network \(F_2\) predicts \(\hat{X}_1\) from \(X_2\). The two predictions form \(\hat{X}\). Each half of the model learns to predict one part of the data from the other part. The split in the figure uses the lightness channel and the colour channels, but the idea also works with other splits (the paper gives an example with depth channels).</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p039-splitbrain-idea.png" width="1800" height="659" loading="lazy" alt="The input X is split into X1 and X2. F1 predicts X2-hat from X1. F2 predicts X1-hat from X2. The two predictions form X-hat."><figcaption>The idea: cross-channel predictions. Figure: <a data-ref="zhang2017">Zhang et al. (2017)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The paper joins the two networks by putting their feature maps side by side, layer by layer. The result is one network \(F\) that sees all channels. The next section shows what this gives.</p>
+
+<h3 id="a1-splitbrain-transfer">Split-brain features are the best self-supervised features in this test</h3>
+<p>The test checks the features of each layer with a linear classifier. A linear classifier is one linear layer on top of frozen features. If it works well, the features already separate the classes. The steps are:</p>
+<ol>
+<li>Pre-train the network on all of ImageNet without labels. Concatenate the features of \(F_1\) and \(F_2\).</li>
+<li>Freeze the network. For each layer from conv1 to pool5, train a linear classifier on the labelled Places data set (<a data-ref="zhou2016">Zhou et al., 2016</a>). It has 205 scene classes (<a data-ref="zhang2017">Zhang et al., 2017</a>, Table 3).</li>
+<li>Measure top-1 accuracy. Top-1 accuracy is the share of images for which the highest-scoring class is correct.</li>
+</ol>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partA/cs231n-p040-splitbrain-curve.png" width="1800" height="1094" loading="lazy" alt="Line chart of top-1 accuracy on Places for linear classifiers on layers conv1 to pool5. Places-labels and ImageNet-labels are the two highest curves. The split-brain autoencoder is the highest of the self-supervised curves."><figcaption>Top-1 accuracy of a linear classifier at each layer. The two supervised curves are the highest. The split-brain autoencoder is the best self-supervised curve. Figure: <a data-ref="zhang2017">Zhang et al. (2017)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The two supervised curves (trained with Places labels and with ImageNet labels) are the highest, near 44% and 38% at the last layer (read from the figure, approximate). The split-brain autoencoder is at or near the top of the self-supervised methods at every layer from conv2 on, and clearly the highest from conv3 on. At pool5 it is near 31.5% (read from the figure). All self-supervised curves are below the supervised ones.</p>
+
+<h3 id="a1-colouring-results">Colouring results: plausible colours, not true colours</h3>
+<p>Two examples show what a colouring model gives. These are results, not methods. In the first, an old black-and-white photo of a thylacine (also called a Tasmanian tiger) is coloured automatically. In the second, a black-and-white photo of Yosemite shows a bridge, trees, a lake and Half Dome, and the model colours it.</p>
+<figure class="paper" style="--fig-w: 420px"><img src="slides/assets/partA/cs231n-p041-coloring-photo1.png" width="1764" height="1114" loading="lazy" alt="An old black-and-white photo of a thylacine and the automatically coloured version."><figcaption>A black-and-white photo of a thylacine, coloured automatically. Figure: Zhang and Isola, credited in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>); the method is in <a data-ref="zhang2016">Zhang et al. (2016)</a>.</figcaption></figure>
+<figure class="paper" style="--fig-w: 420px"><img src="slides/assets/partA/cs231n-p042-coloring-photo2.png" width="1528" height="1153" loading="lazy" alt="A black-and-white photo of Yosemite with a bridge, trees, a lake and Half Dome, and the automatically coloured version."><figcaption>A black-and-white photo of Yosemite, coloured automatically. Figure: Zhang and Isola, credited in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>); the method is in <a data-ref="zhang2016">Zhang et al. (2016)</a>.</figcaption></figure>
+<p>The colours look plausible. They are a guess and not a record of the true colours. The model learned what is likely, for example that grass is green. It does not know the real colours of that photo.</p>
+<div class="verdict"><strong>What these five tasks did.</strong> Each task gave useful features without labels. Rotation, inpainting and split-brain features were all above random weights in the transfer tests, and none reached full supervision. Each task also needs design care against shortcuts. The next section covers a task that reconstructs an image from a small visible part: the masked autoencoder.</div>
+
+<!-- ═══════════ fragment A2 ═══════════ -->
+<h3 id="a2-mae-idea">Masked autoencoders hide most of the image and still rebuild it</h3>
+<p>The last pretext tasks asked a model to predict a missing part of an image: a missing region (inpainting) or missing colour channels (colouring). The <strong>masked autoencoder (MAE)</strong> of <a data-ref="he2022">He et al. (2022)</a> takes the inpainting idea further. It hides a much larger part of the image and asks the model to rebuild it.</p>
+<p>The figure shows one photo at two masking levels. The top row hides 50% of the patches. The bottom row hides 75%. A <strong>patch</strong> is a small square piece of the image. A <strong>mask</strong> is the set of patches that the model cannot see.</p>
+<p>Each row has four images, from left to right:</p>
+<ol>
+<li>the masked input, where grey squares replace the hidden patches;</li>
+<li>the reconstruction, which is the model output for the whole image;</li>
+<li>the reconstruction with the visible patches pasted back;</li>
+<li>the original image.</li>
+</ol>
+<p>At 75% masking the reconstruction is blurrier, but it still has the correct layout, and it is still close to the original.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/cs231n-p048-mae-masking.png" width="1800" height="835" loading="lazy" alt="Two rows of four images of a cat being stroked. Columns: masked input, reconstruction, reconstruction plus visible patches, original. The top row masks 50% of the patches, the bottom row 75%."><figcaption>Masked input, reconstruction, reconstruction with visible patches, and original, at 50% (top) and 75% (bottom) masking. The slide credits <a data-ref="he2022">He et al.</a>; we did not find this cat photo among the numbered figures of the paper. Shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The next sections follow MAE step by step, as the figure below shows. The input image has most of its patches masked. Only the visible patches go into a large <strong>encoder</strong>. The encoder outputs, together with grey <strong>mask tokens</strong>, go into a small <strong>decoder</strong>. A mask token is one shared, learned vector that stands for a missing patch (<a data-ref="he2022">He et al., 2022</a>, §3). The decoder outputs the target image.</p>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partB1/he2022-fig1.png" width="992" height="612" loading="lazy" alt="MAE architecture. An input with most patches masked; the visible patches go into a large encoder; the encoder output and grey mask tokens go into a small decoder; the decoder output is the target image."><figcaption>The MAE design: visible patches, large encoder, mask tokens, small decoder, target. Figure: <a data-ref="he2022">He et al. (2022)</a>, Fig. 1.</figcaption></figure>
+<p>First question: how does MAE choose the patches to hide?</p>
+
+<h3 id="a2-masking">The mask hides 75% of the patches, chosen at random</h3>
+<p>MAE copies the first step of the original Vision Transformer (ViT). A ViT cuts an image into patches that do not overlap and gives the patches to a Transformer. MAE then picks a very large share of these patches, 75%, uniformly at random, and masks them.</p>
+<p>For a 224 × 224 image and 16 × 16 patches, the image has 14 × 14 = 196 patches (<a data-ref="he2022">He et al., 2022</a>, ViT-L/16 on 224 × 224 inputs). A 75% mask hides 147 of them. The encoder sees the other 49 (computed here).</p>
+<p>The high ratio has two effects.</p>
+<ul>
+<li><strong>The task is hard enough to be useful.</strong> If the model could fill the gaps by copying nearby pixels, it would learn little. At 75%, it must use the content of the whole image.</li>
+<li><strong>The encoder can be very large.</strong> The encoder uses no mask tokens. It sees only the visible 25%, so its input is short and its cost is low.</li>
+</ul>
+<p>The paper reports that skipping the mask tokens in the encoder reduces the total training FLOPs by 3.3× (Table 1c). FLOPs are floating-point operations, a count of arithmetic work.</p>
+<p>Next: what does the encoder do with the visible patches?</p>
+
+<h3 id="a2-encoder">The encoder reads only the visible patches</h3>
+<p>The encoder works only on the unmasked patches, which are 25% of the image. It has three steps:</p>
+<ol>
+<li>It turns each visible patch into a vector with a linear projection.</li>
+<li>It adds a positional embedding to each vector. This embedding tells the model where the patch lies in the image.</li>
+<li>It passes the vectors through a stack of Transformer blocks.</li>
+</ol>
+<p>The visible patches are a small part of the input, so the encoder can be very large. The default decoder has 9% of the FLOPs per token of the encoder (ViT-L), as <a data-ref="he2022">He et al. (2022)</a>, §4.1 report. The encoder therefore costs about 11 times more per token than the decoder (computed here, 1 ÷ 0.09).</p>
+<p>Next: how does the model go from encoder outputs to a full image?</p>
+
+<h3 id="a2-decoder">The decoder rebuilds the pixels and is thrown away after training</h3>
+<p>The decoder receives two kinds of vectors: the encoder outputs for the visible patches, and the shared mask tokens placed at the masked positions. It adds positional encodings to all of them, so each mask token knows which place it fills. It then uses Transformer blocks. A final linear projection gives the pixel values of each patch.</p>
+<p>The decoder exists only for reconstruction. After pre-training, the model uses only the encoder to produce image representations. For this reason the decoder design does not depend on the encoder design. It can be narrow and shallow. The paper's default decoder has 8 blocks and a width of 512, against 24 blocks and a width of 1024 for ViT-L (§4.1).</p>
+<p>The deck calls this an <strong>asymmetric autoencoder</strong> design. A classical autoencoder uses an encoder and a decoder of about the same size. In MAE, the encoder is large and sees few patches, and the decoder is small and sees all patches.</p>
+<p>Next: what does the model learn from the decoder output?</p>
+
+<h3 id="a2-loss">The loss is the pixel error on the masked patches only</h3>
+<p>The <strong>reconstruction loss</strong> is the mean squared error (MSE) in pixel space between the input image and the reconstructed image. MAE computes it only on the masked patches.</p>
+<p>The deck states the loss in words. We write it with our own symbols, so that each term has a name:</p>
+\[
+\mathcal{L} \;=\; \frac{1}{|M|}\sum_{i \in M} \frac{1}{P} \sum_{j=1}^{P} \left( x_{i,j} - \hat{x}_{i,j} \right)^2
+\]
+<ul>
+<li>\(M\) is the set of masked patches, and \(|M|\) is how many there are.</li>
+<li>\(P\) is the number of pixel values in one patch. For a 16 × 16 colour patch, \(P = 16 \times 16 \times 3 = 768\) (computed here).</li>
+<li>\(x_{i,j}\) is the true value of pixel value \(j\) in patch \(i\).</li>
+<li>\(\hat{x}_{i,j}\) is the value that the decoder predicts for it.</li>
+</ul>
+<p>Step by step: for each masked patch, take the squared difference of every pixel value; average these over the patch; then average over all masked patches. Visible patches do not enter the sum. The paper chose this rule because it gave slightly higher accuracy: a loss on all pixels lowered accuracy by about 0.5% (<a data-ref="he2022">He et al., 2022</a>, §3, footnote 1).</p>
+<details class="callout"><summary>Extra: the paper's normalised-pixel variant</summary>
+<p>The paper also tests a target in which each patch is first normalised with its own mean and standard deviation. In Table 1d this gives 85.4 for fine-tuning and 73.9 for linear probing, against 84.9 and 73.5 for raw pixels. The comparison with other methods below uses the normalised target and 1600 epochs of pre-training (Table 3 caption).</p>
+</details>
+<p>To compare MAE with other methods we need two ways of testing the encoder. They come next.</p>
+
+<h3 id="a2-probe-finetune">Linear probing and fine-tuning test the features in two ways</h3>
+<p>After pre-training, we test the encoder on a labelled task. There are two common protocols.</p>
+<ul>
+<li><strong>Linear probing.</strong> The pre-trained model stays fixed. We add one linear layer at the end and train only this layer to predict the labels. The score measures the quality of the learned representation under strict conditions.</li>
+<li><strong>Fine-tuning.</strong> The pre-trained model is trained further. It is not fixed. We add one or more layers, possibly with non-linearities. The score shows how well the model adapts to a new task.</li>
+</ul>
+<p>The diagram has the encoder at the left and the new layer at the right. In the top diagram, a snowflake marks the frozen encoder and a flame marks the trained linear layer. In the bottom diagram, both the encoder and the new layer carry a flame.</p>
+<figure class="paper" style="--fig-w: 260px"><img src="slides/assets/partB1/cs231n-p54-probe-finetune.png" width="821" height="1254" loading="lazy" alt="Two diagrams. Top, linear probing: a frozen encoder (snowflake) gives a learned representation to a trained linear layer (flame). Bottom, fine-tuning: both the encoder and the linear or fully connected layer are trained (flames)."><figcaption>Top: linear probing, with a frozen encoder. Bottom: fine-tuning, with a trained encoder. Diagrams from CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>In MAE the two scores can differ a lot, so the paper reports both. The ablation studies below show this.</p>
+
+<h3 id="a2-mask-ratio">A high masking ratio works best, and linear probing reacts more to it</h3>
+<p>MAE has many design choices. An <strong>ablation study</strong> changes one choice at a time and keeps the others fixed. It shows which choices matter. The paper's list includes:</p>
+<ul>
+<li>masking ratio, mask sampling method, and mask token (used or not in the encoder);</li>
+<li>decoder depth and decoder width;</li>
+<li>reconstruction target and data augmentation;</li>
+<li>training schedule.</li>
+</ul>
+<p>The first study varies the masking ratio. The paper trains a ViT-L with ratios from 10% to 90%. The figure has two panels with the ratio on the horizontal axis. The vertical axis is ImageNet-1K validation accuracy in percent. The top panel is fine-tuning. The bottom panel is linear probing.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partB1/he2022-fig5.png" width="1008" height="554" loading="lazy" alt="Two line charts of accuracy against masking ratio from 10 to 90 percent. Fine-tuning rises from 83.2 to a peak of 85.0 at 60 percent, then falls to 83.0 at 90 percent. Linear probing rises from 54.6 to a peak of 73.5 at 75 percent, then falls to 66.1 at 90 percent."><figcaption>Accuracy against masking ratio for ViT-L. Figure: <a data-ref="he2022">He et al. (2022)</a>, Fig. 5.</figcaption></figure>
+<div class="table-wrap"><table>
+<thead><tr><th>Masking ratio (%)</th><th>10</th><th>20</th><th>30</th><th>40</th><th>50</th><th>60</th><th>70</th><th>75</th><th>80</th><th>90</th></tr></thead>
+<tbody>
+<tr><th>Fine-tuning (%)</th><td>83.2</td><td>83.4</td><td>83.4</td><td>84.7</td><td>84.9</td><td>85.0</td><td>84.9</td><td>84.9</td><td>84.5</td><td>83.0</td></tr>
+<tr><th>Linear probing (%)</th><td>54.6</td><td>58.9</td><td>61.7</td><td>67.0</td><td>69.9</td><td>71.8</td><td>73.2</td><td>73.5</td><td>71.8</td><td>66.1</td></tr>
+</tbody></table></div>
+<p>Fine-tuning is almost flat from 40% to 80%, between 84.5 and 85.0. Its peak is 85.0 at 60%, and 75% gives 84.9. Linear probing changes much more. It rises from 54.6 at 10% to a peak of 73.5 at 75%, then falls to 66.1 at 90%.</p>
+<div class="callout">MAE hides 75% of the patches. BERT, a text model, hides a typical 15% of its tokens (<a data-ref="he2022">He et al., 2022</a>, §4.1). A high ratio works best for MAE, and the linear probe is much more sensitive to the ratio than fine-tuning is.</div>
+<p>The ratio is not the only choice. The way the hidden patches are picked also matters.</p>
+
+<h3 id="a2-mask-sampling">Random masks beat block and grid masks</h3>
+<p>A second study compares three ways to choose the masked patches (<a data-ref="he2022">He et al., 2022</a>, §4.1):</p>
+<ul>
+<li><strong>Random:</strong> pick patches uniformly at random. This is the default.</li>
+<li><strong>Block:</strong> remove large blocks of neighbouring patches.</li>
+<li><strong>Grid:</strong> keep one patch in every four, in a regular pattern.</li>
+</ul>
+<p>The figure shows an ambulance and a fox. Each has the masked input and the reconstruction for each of the three methods.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partB1/he2022-fig6.png" width="1000" height="442" loading="lazy" alt="Two images, an ambulance and a fox, each with three masked versions and their reconstructions: random 75 percent, block 50 percent, grid 75 percent."><figcaption>Random, block and grid masks, and the reconstructions that follow. Figure: <a data-ref="he2022">He et al. (2022)</a>, Fig. 6.</figcaption></figure>
+<p>The table gives the ImageNet-1K accuracy of a ViT-L for each choice. Here "ft" is fine-tuning and "lin" is linear probing.</p>
+<figure class="paper" style="--fig-w: 360px"><img src="slides/assets/partB1/he2022-tab1f.png" width="604" height="229" loading="lazy" alt="Table of mask sampling. Random 75 percent: fine-tuning 84.9, linear 73.5. Block 50 percent: 83.9, 72.3. Block 75 percent: 82.8, 63.9. Grid 75 percent: 84.0, 66.0."><figcaption>Mask sampling, with fine-tuning (ft) and linear probing (lin) accuracy. Figure: <a data-ref="he2022">He et al. (2022)</a>, Table 1f.</figcaption></figure>
+<p>Random sampling is best on both scores, with 84.9 and 73.5. Block sampling works at a ratio of 50% (83.9 and 72.3), but it degrades at 75% (82.8 and 63.9). Block masks make the task harder: the paper reports a higher training loss and blurrier reconstructions. Grid sampling makes the task easier. The paper reports a lower training loss and sharper reconstructions, but the features are worse (84.0 and 66.0).</p>
+<p>These choices set the default recipe. The next question is how this recipe compares with other methods.</p>
+
+<h3 id="a2-mae-comparison">MAE has the best fine-tuning accuracy at every model size</h3>
+<p>The left of the figure shows four MAE examples with 80% of the patches masked. Each has the masked image, the MAE reconstruction and the original. The images show a clock, a bus, a dog and a lamp.</p>
+<figure class="paper" style="--fig-w: 300px"><img src="slides/assets/partB1/he2022-fig2-col1.png" width="521" height="688" loading="lazy" alt="Four triplets of masked image, MAE reconstruction and original, for a clock, a bus, a dog and a lamp, with 80 percent of the patches masked."><figcaption>MAE reconstructions with 80% of the patches masked. Figure: <a data-ref="he2022">He et al. (2022)</a>, Fig. 2 (first column).</figcaption></figure>
+<p>The table gives ImageNet-1K fine-tuning accuracy. ViT-B, ViT-L and ViT-H are three sizes of the Vision Transformer, from smaller to larger. "ViT-H<sub>448</sub>" is ViT-H at image size 448 instead of 224. "Scratch" means training with no pre-training. DINO and MoCo v3 are contrastive-type methods, which Part B covers. BEiT also hides patches, like MAE, but it predicts discrete tokens from a tokenizer pre-trained on 250M DALL-E images (§4.1, Table 3).</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partB1/he2022-tab3.png" width="1000" height="296" loading="lazy" alt="Table of ImageNet-1K fine-tuning accuracy. Scratch: 82.3, 82.6, 83.1. DINO: 82.8 for ViT-B. MoCo v3: 83.2, 84.1. BEiT: 83.2, 85.2, with IN1K plus DALLE data. MAE: 83.6, 85.9, 86.9 and 87.8 for ViT-H at 448."><figcaption>Fine-tuning accuracy on ImageNet-1K. Figure: <a data-ref="he2022">He et al. (2022)</a>, Table 3.</figcaption></figure>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Pre-train data</th><th>ViT-B</th><th>ViT-L</th><th>ViT-H</th><th>ViT-H<sub>448</sub></th></tr></thead>
+<tbody>
+<tr><td>scratch</td><td>none</td><td>82.3</td><td>82.6</td><td>83.1</td><td>-</td></tr>
+<tr><td>DINO</td><td>IN1K</td><td>82.8</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>MoCo v3</td><td>IN1K</td><td>83.2</td><td>84.1</td><td>-</td><td>-</td></tr>
+<tr><td>BEiT</td><td>IN1K + DALL-E</td><td>83.2</td><td>85.2</td><td>-</td><td>-</td></tr>
+<tr><td><strong>MAE</strong></td><td>IN1K</td><td><strong>83.6</strong></td><td><strong>85.9</strong></td><td><strong>86.9</strong></td><td><strong>87.8</strong></td></tr>
+</tbody></table></div>
+<p>MAE has the best score in every column. The gap to the other methods is small for ViT-B and larger for ViT-L. The gain over training from scratch grows with model size: 1.3 points for ViT-B, 3.3 for ViT-L and 3.8 for ViT-H (computed here from the table). The paper says that for bigger models the challenge is to reduce overfitting (§4.2).</p>
+<p>MAE is one of several pretext tasks. The next section sums up what they share and where they fail.</p>
+
+<h3 id="a2-pretext-summary">Pretext tasks teach visual common sense, but each is tedious to invent</h3>
+<p>All the tasks in this part work from image transformations. They are rotation prediction, jigsaw, inpainting, colouring and, in its newest form, MAE. They share one idea.</p>
+<ul>
+<li>The tasks focus on "visual common sense". To solve them, the model must learn good features of natural images. One example is a semantic representation of an object category.</li>
+<li>We often do not care how well the model solves the pretext task. We care how useful the learned features are for downstream tasks: classification, detection and segmentation.</li>
+</ul>
+<p>The summary names two problems.</p>
+<ol>
+<li>Each pretext task is tedious to invent by hand.</li>
+<li>The learned representations may not be general.</li>
+</ol>
+<p>The second problem leads to the last topic of this part.</p>
+
+<h3 id="a2-general-task">A more general pretext task: pull together the same object, push apart different objects</h3>
+<p>The four pretext tasks, shown below on one cat photo, are image completion, rotation prediction, a jigsaw puzzle and colouring. The deck warns that the learned representations may be tied to the one task that trained them. A model trained to predict rotations may learn what it needs for rotations and nothing more. The question is: can we find a more general pretext task?</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/cs231n-p059-pretext-row.png" width="1800" height="490" loading="lazy" alt="Four transformed versions of a cat photo: image completion, rotation prediction, jigsaw puzzle, colourisation."><figcaption>The four pretext tasks on one photo. Shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The idea in the next figure uses the same transformed versions in a new way. All four transformed versions of the cat photo come from one original, so they show the same object. A puppy photo shows a different object. We can say what should be close and what should be far apart, without any class label.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/cs231n-p061-general-task.png" width="1800" height="806" loading="lazy" alt="The original cat photo in the centre. Green two-way arrows join it to four transformed versions, labelled same object. A red two-way arrow joins it to a puppy photo, labelled different object."><figcaption>Transformed versions of one photo show the same object. A different photo shows a different object. Shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>This is <strong>contrastive representation learning</strong>. The model learns a representation in which the cat and its transformed versions attract (are close), and the cat and the puppy repel (are far apart). Part B defines the loss and the methods.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/cs231n-p062-attract-repel.png" width="1800" height="806" loading="lazy" alt="The same diagram, with the green arrows labelled attract and the red arrow labelled repel."><figcaption>Attract the transformed versions of the same photo. Repel a different photo. Shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+
+<h3 id="a2-part-a-close">Part A: key methods and insights</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Topic</th><th>What to keep</th></tr></thead>
+<tbody>
+<tr><td>Pretext task</td><td>It makes the label from the data itself, with no manual annotation. We keep the learned features for a downstream task.</td></tr>
+<tr><td>Examples</td><td>Predict rotations, inpaint, rearrange pieces (jigsaw), colourise.</td></tr>
+<tr><td>MAE</td><td>It hides patches of the image and reconstructs the missing pixels.</td></tr>
+<tr><td>What we measure</td><td>How useful the features are downstream, not the pretext score.</td></tr>
+<tr><td>Problems</td><td>Each pretext task is tedious to invent, and the features may not be general.</td></tr>
+</tbody></table></div>
+<p>Next in <a href="#part-b">Part B</a>: contrastive learning, which tries to remove these two problems.</p>
+
+<!-- ═══════════ fragment B1 ═══════════ -->
+<div class="part" id="part-b"><div class="label">PART B</div><h2>Contrastive representation learning</h2><p>Part A made a label from the data with one hand-built task at a time. Can one general rule learn features from pairs of samples instead? Part B answers in four steps: the idea and its loss, instance contrast (SimCLR and MoCo), sequence contrast (CPC), and self-distillation (DINO).</p></div>
+<p class="note">This part follows Stanford CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>). The text is ours; the results come from the papers cited.</p>
+
+<h3 id="b1-part-b-map">What Part A left open</h3>
+<p>Part A used pretext tasks. A pretext task makes a label from the data itself (rotation, inpainting, jigsaw, colouring). A masked autoencoder (MAE) hides patches of an image and reconstructs them. After training, we keep the features and use them for a downstream task.</p>
+<p>Each pretext task is slow to invent, and the features may not be general. Part B asks for one rule that works for many kinds of data. The rule is contrastive learning. It compares samples with each other. It does not predict a label or a pixel.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Segment</th><th>Question</th><th>Methods</th></tr></thead>
+<tbody>
+<tr><td>1. Intuition and formulation</td><td>What is the loss?</td><td>InfoNCE</td></tr>
+<tr><td>2. Instance contrast</td><td>How do we get positive and negative samples from images?</td><td>SimCLR, MoCo, MoCo v2</td></tr>
+<tr><td>3. Sequence contrast</td><td>How do we use the order of a sequence?</td><td>CPC</td></tr>
+<tr><td>4. Self-distillation without labels</td><td>Can a network learn from itself?</td><td>DINO</td></tr>
+</tbody></table></div>
+
+<h3 id="b1-goal">The goal: high score for positive pairs, low score for negative pairs</h3>
+<p>Contrastive learning uses three kinds of sample. The <em>reference</em> sample is \(x\). A <em>positive</em> sample \(x^+\) is a transformed copy of the reference. A <em>negative</em> sample \(x^-\) is a different image. In the example, the reference is a photo of a cat. The positives are a rotated cat, a cat with part of the image hidden, patches of the cat, and a grey-scale cat. The negative is a photo of a puppy.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p065-reference-pos-neg.png" width="1800" height="790" loading="lazy" alt="A cat photo in the centre is the reference x. Four transformed versions of it (a cat with the top half hidden, a rotated cat, four patches, a grey-scale cat) are marked x plus and joined to it by green arrows. A puppy photo is marked x minus and joined by a red arrow."><figcaption>The reference, four positives and one negative. Figure: crop of a slide, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>We choose a score function \(s\). It gives a high number for two similar vectors and a low number for two different vectors. We then train an encoder \(f\). The encoder maps an input to a feature vector. We want:</p>
+\[ \mathrm{score}(f(x), f(x^+)) \gg \mathrm{score}(f(x), f(x^-)) \]
+<p>In words: the encoder must give the reference and its positive a much higher score than the reference and a negative. The sign \(\gg\) means "much larger than". The sections below turn this wish into a loss.</p>
+
+<h3 id="b1-loss">The loss finds the positive among N samples</h3>
+<p>Take one reference \(x\), one positive \(x^+\) and \(N-1\) negatives \(x^-_1, \dots, x^-_{N-1}\). The loss is:</p>
+\[ L = -\mathbb{E}_X\left[\log\frac{\exp(s(f(x), f(x^+)))}{\exp(s(f(x), f(x^+))) + \sum_{j=1}^{N-1}\exp(s(f(x), f(x^-_j)))}\right] \]
+<ol>
+<li>Score the reference against the positive: \(s(f(x), f(x^+))\). Take its exponential. This is the top of the fraction.</li>
+<li>Score the reference against each of the \(N-1\) negatives. Take the exponential of each and add them. Add the positive term. This is the bottom of the fraction.</li>
+<li>The fraction is a number between 0 and 1. It is large when the positive scores much higher than the negatives.</li>
+<li>Take the logarithm and change the sign. A large fraction gives a small loss. \(\mathbb{E}_X\) is the average over many sets of samples \(X\).</li>
+</ol>
+<p>This form is known from classification. It is the cross-entropy loss of a softmax classifier with \(N\) classes. A softmax turns \(N\) scores into \(N\) probabilities that add up to 1. The task is to find the positive sample among the \(N\) samples. The same photo can appear in a negative role: in the example, a second cat photo is a negative, because the method does not know classes.</p>
+<figure class="paper" style="--fig-w: 300px"><img src="slides/assets/partB2/cs231n-p68-negatives.png" width="783" height="704" loading="lazy" alt="A cat photo x on the left. On the right, three negatives: a puppy x1 minus, a container ship x2 minus, and a second cat x3 minus, followed by three dots."><figcaption>One reference and its negatives. The second cat is still a negative. Figure: crop of a slide, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+
+<h3 id="b1-infonce">This loss is called InfoNCE and it bounds mutual information</h3>
+<p>The loss above has a name: the InfoNCE loss (<a data-ref="oord2018">van den Oord et al., 2018</a>). The name comes from noise-contrastive estimation. Mutual information (MI) measures how much one vector tells us about another vector. InfoNCE gives a lower bound on the MI between \(f(x)\) and \(f(x^+)\):</p>
+\[ MI[f(x), f(x^+)] - \log(N) \geq -L \]
+<p>Here \(N\) is the number of samples (one positive and \(N-1\) negatives), and \(L\) is the loss. A lower loss gives a higher guaranteed MI. The bound gets tighter when \(N\) is larger. So more negative samples make the loss a better measure. The original paper states the same bound as \(I(x_{t+k}, c_t) \geq \log N - L_N\) (<a data-ref="oord2018">van den Oord et al., 2018</a>, Sec. 2.3). <a data-ref="poole2019">Poole et al. (2019)</a> give a detailed derivation. We do not derive the bound here.</p>
+<div class="callout"><strong>Key point.</strong> Contrastive learning is a classification task with no human label. The "class" is "which of these \(N\) samples is the positive". More negatives make this task harder and the bound tighter. This is why the batch size and the number of negatives matter in the next section.</div>
+<p>The next question is practical: how do we make positive pairs from images? SimCLR answers with data augmentation.</p>
+
+<h3 id="b1-simclr-framework">SimCLR: a simple framework with augmentation, an encoder and a projection head</h3>
+<p>SimCLR is a framework for contrastive learning of visual representations (<a data-ref="chen2020a">Chen et al., 2020</a>). It makes four choices.</p>
+<ul>
+<li><strong>Positive samples.</strong> It takes one image and applies two random <em>data augmentations</em> (random changes to an image). Each result is one <em>view</em>. The two views of one image form a positive pair. The augmentations are random cropping, random colour distortion and random blur.</li>
+<li><strong>Encoder.</strong> A network \(f(\cdot)\) maps each view to a representation \(h\).</li>
+<li><strong>Projection head.</strong> A small network \(g(\cdot)\) maps \(h\) to a vector \(z\). Contrastive learning is applied on \(z\).</li>
+<li><strong>Score.</strong> The score is the cosine similarity of two vectors \(u\) and \(v\):</li>
+</ul>
+\[ s(u, v) = \frac{u^T v}{\lVert u\rVert\,\lVert v\rVert} \]
+<p>Here \(u^T v\) is the dot product, and \(\lVert u\rVert\) is the length of \(u\). The result is between -1 and 1. It is 1 when the two vectors point the same way.</p>
+<figure class="paper" style="--fig-w: 420px"><img src="slides/assets/partB2/chen2020a-fig2-framework.png" width="800" height="608" loading="lazy" alt="Diagram of SimCLR. An image x goes through two augmentations t and t prime to give two views. Each view goes through the encoder f to give h, then through the projection head g to give z. The loss maximises the agreement between z i and z j."><figcaption>An image gives two views. Each view passes through \(f\) and then \(g\). The loss maximises the agreement of \(z_i\) and \(z_j\). Figure: <a data-ref="chen2020a">Chen et al. (2020)</a>, Fig. 2.</figcaption></figure>
+<p>The loss pulls \(z_i\) and \(z_j\) of the same image together. It pushes them away from the vectors of other images. The next section shows what the augmentations are.</p>
+
+<h3 id="b1-simclr-augmentation">Augmentations make positive pairs, and each one changes the picture differently</h3>
+<p>The figure shows one photo of a dog under ten changes: (a) the original; (b) crop and resize; (c) crop, resize and flip; (d) colour drop; (e) colour jitter; (f) rotate; (g) cutout; (h) Gaussian noise; (i) Gaussian blur; (j) Sobel filtering. Each change alters a different property of the picture: position, size, colour, sharpness or edges. The encoder has to give similar vectors for all of them. So the encoder must ignore these properties and keep what stays the same: the content, a dog.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partB2/chen2020a-fig4-augmentations.png" width="2058" height="867" loading="lazy" alt="Ten panels of one dog photo: original, crop and resize, crop resize and flip, colour drop, colour jitter, rotate, cutout, Gaussian noise, Gaussian blur, Sobel filtering."><figcaption>Ten augmentations of one photo (photo: CC BY, Von.grzanka). Figure: <a data-ref="chen2020a">Chen et al. (2020)</a>, Fig. 4.</figcaption></figure>
+<p>The deck uses three of these in its list: random cropping, colour distortion and blur. The choice of augmentation decides what the encoder learns to ignore. We return to this in the MoCo v2 comparison.</p>
+
+<h3 id="b1-simclr-loss">The SimCLR loss uses every other image in the batch as a negative</h3>
+<p>SimCLR does not draw negatives from a separate set. It uses the other images in the same batch. Algorithm 1 of <a data-ref="chen2020a">Chen et al. (2020)</a> runs as follows for one minibatch of \(N\) images.</p>
+<ol>
+<li>For each image, sample two augmentation functions \(t\) and \(t'\). Make two views. This gives \(2N\) views.</li>
+<li>Pass each view through the encoder \(f\) to get \(h\). Pass \(h\) through the projection head \(g\) to get \(z\).</li>
+<li>Compute the cosine similarity \(s_{i,j}\) of every pair of the \(2N\) vectors \(z\).</li>
+<li>Define the loss for the positive pair \((i, j)\):</li>
+</ol>
+\[ \ell(i,j) = -\log\frac{\exp(s_{i,j}/\tau)}{\sum_{k=1}^{2N}\mathbb{1}_{[k\neq i]}\exp(s_{i,k}/\tau)} \]
+<p>The symbol \(\tau\) is the <em>temperature</em>. It is a number that scales the similarities before the exponential. The symbol \(\mathbb{1}_{[k\neq i]}\) is 1 when \(k\) is not \(i\) and 0 otherwise. So the sum runs over all views except the view \(i\) itself. For one positive pair, the other \(2(N-1)\) views are negatives (<a data-ref="chen2020a">Chen et al., 2020</a>, Sec. 2.1).</p>
+<ol start="5">
+<li>Average \(\ell\) over both orders of every positive pair: \((i,j)\) and \((j,i)\). Use each of the \(2N\) views once as the reference.</li>
+<li>Update \(f\) and \(g\) to reduce this average.</li>
+</ol>
+<p>At the end of training, we keep \(f\) and throw away \(g\). The projection head is used only during training. A batch of 8,192 images gives 16,382 negatives for each positive pair (<a data-ref="chen2020a">Chen et al., 2020</a>, Sec. 2.2). The loss has the same form as InfoNCE: one positive, many negatives, and a softmax over them.</p>
+<figure class="paper" style="--fig-w: 480px"><img src="slides/assets/partB2/chen2020a-alg1.png" width="1008" height="1171" loading="lazy" alt="Algorithm 1, SimCLR's main learning algorithm, as pseudocode: sample a minibatch, make two augmented views of each image, compute h and z, compute pairwise similarities, define the loss, and update f and g."><figcaption>Pseudocode of the training step. Figure: <a data-ref="chen2020a">Chen et al. (2020)</a>, Algorithm 1.</figcaption></figure>
+
+<h3 id="b1-simclr-linear">A linear classifier on SimCLR features matches a supervised ResNet-50</h3>
+<p>The first test is linear evaluation. We train the encoder on the whole ImageNet training set with SimCLR and no labels. We then freeze the encoder. We train one linear classifier on top of the features with labelled data. The accuracy of this classifier measures the quality of the features. The encoder is a ResNet-50 (a standard image network) or a wider version of it.</p>
+<p>The figure plots ImageNet top-1 accuracy (y-axis) against the number of parameters (x-axis, in millions). Each dot is one method. The red stars are SimCLR. The grey cross is a supervised ResNet-50.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Encoder</th><th>Parameters</th><th>Top-1 accuracy (%)</th></tr></thead>
+<tbody>
+<tr><td>SimCLR, ResNet-50</td><td>24 M</td><td>69.3</td></tr>
+<tr><td>SimCLR, ResNet-50 (2×)</td><td>94 M</td><td>74.2</td></tr>
+<tr><td>SimCLR, ResNet-50 (4×)</td><td>375 M</td><td>76.5</td></tr>
+</tbody></table></div>
+<p>The label "2×" and "4×" means that the network is 2 or 4 times wider. Numbers from <a data-ref="chen2020a">Chen et al. (2020)</a>, Table 6 and Fig. 1. The 4× model reaches the level of the supervised ResNet-50 marker. All other self-supervised methods in the figure lie below it.</p>
+<figure class="paper" style="--fig-w: 440px"><img src="slides/assets/partB2/chen2020a-fig1-linear-eval.png" width="1021" height="754" loading="lazy" alt="Scatter plot of ImageNet top-1 accuracy against number of parameters in millions. SimCLR at 69.3, SimCLR 2x at 74.2 and SimCLR 4x at 76.5 are red stars. Other methods such as CPC v2, MoCo, Rotation and BigBiGAN are blue dots below them. A grey cross marks the supervised ResNet-50 at the top left."><figcaption>Linear evaluation on ImageNet. Figure: <a data-ref="chen2020a">Chen et al. (2020)</a>, Fig. 1.</figcaption></figure>
+<details class="callout"><summary>Background: the supervised baseline in the paper</summary>
+<p>The grey cross in Fig. 1 is at 76.5. In its appendix, the paper reports its own supervised ResNet-50 baseline at 76.3 and its supervised ResNet-50 (4×) at 78.3. So the 4× SimCLR model (76.5) matches the supervised ResNet-50, and is 1.8 points below the supervised 4× model (computed here).</p></details>
+<p>Linear evaluation uses all the labels. The next test asks what happens when most labels are missing.</p>
+
+<h3 id="b1-simclr-semi">With 1% of the labels, SimCLR features beat supervised training by a wide margin</h3>
+<p>In the second test, we train the encoder with SimCLR on all of ImageNet without labels. Then we fine-tune it with only 1% or 10% of the labels. Fine-tuning trains the whole network on the labelled data. The table gives top-5 accuracy (the correct class is among the five best guesses).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Network</th><th>1% of labels</th><th>10% of labels</th></tr></thead>
+<tbody>
+<tr><td>Supervised baseline</td><td>ResNet-50</td><td>48.4</td><td>80.4</td></tr>
+<tr><td>SimCLR</td><td>ResNet-50</td><td>75.5</td><td>87.8</td></tr>
+<tr><td>SimCLR</td><td>ResNet-50 (2×)</td><td>83.0</td><td>91.2</td></tr>
+<tr><td>SimCLR</td><td>ResNet-50 (4×)</td><td>85.8</td><td>92.6</td></tr>
+</tbody></table></div>
+<p>Source: <a data-ref="chen2020a">Chen et al. (2020)</a>, Table 7. The paper's table has more rows; the 4× row is the best of all rows. With 1% of the labels, SimCLR on a ResNet-50 is 27.1 points above the supervised baseline (computed here). Self-supervised pre-training helps most when labels are scarce.</p>
+<p>Two design choices of SimCLR explain much of this result. The first is the projection head.</p>
+
+<h3 id="b1-simclr-head">The projection head helps because the loss discards information</h3>
+<p>The figure plots the top-1 linear accuracy against the output size of the projection head, from 32 to 2,048. There are three kinds of head. A non-linear head (a small network with a non-linear layer) gives about 63 to 65. A linear head gives about 60 to 61. With no head, the accuracy is about 50 (measured only at size 2,048). So both heads improve the features, and the non-linear head helps most. The size of the output matters little.</p>
+<figure class="paper" style="--fig-w: 400px"><img src="slides/assets/partB2/chen2020a-fig8-projection-head.png" width="742" height="458" loading="lazy" alt="Bar chart. The x-axis is the projection output dimensionality from 32 to 2048. The y-axis is top-1 accuracy from 30 to 70. Non-linear bars are about 63 to 65, linear bars about 60 to 61, and one bar with no projection at 2048 is about 50."><figcaption>Linear, non-linear and no projection head. Figure: <a data-ref="chen2020a">Chen et al. (2020)</a>, Fig. 8.</figcaption></figure>
+<p>The deck gives a possible explanation. The contrastive loss may discard information that is useful for downstream tasks. It trains the vector \(z\) to be the same under all augmentations. Colour and orientation, for example, may be removed. With the head \(g(\cdot)\) in between, the representation \(h\) can keep more information. We use \(h\) for the downstream task. The paper reports that \(h\) is more than 10 points better than \(z\) (<a data-ref="chen2020a">Chen et al., 2020</a>, Sec. 4.2).</p>
+
+<h3 id="b1-simclr-batch">SimCLR needs a large batch, and a large batch needs a lot of memory</h3>
+<p>The figure shows top-1 linear accuracy of a ResNet-50. Each group of bars is one training length, from 100 to 1,000 epochs. Each bar in a group is one batch size, from 256 to 8,192. Larger batches score higher. The effect is largest at 100 epochs: 57.5 with batch 256, and about 64.7 with batch 8,192. The gap shrinks as training gets longer. Each bar is one run from scratch.</p>
+<figure class="paper" style="--fig-w: 440px"><img src="slides/assets/partB2/chen2020a-fig9-batch-size.png" width="1008" height="800" loading="lazy" alt="Grouped bar chart. The x-axis is training epochs from 100 to 1000. The y-axis is top-1 accuracy from 50 to 70. Six bars in each group are batch sizes 256, 512, 1024, 2048, 4096 and 8192. Bars rise with batch size, most at 100 epochs, and the groups come closer together at 1000 epochs."><figcaption>Linear evaluation with different batch sizes and epochs. Figure: <a data-ref="chen2020a">Chen et al. (2020)</a>, Fig. 9.</figcaption></figure>
+<p>The reason follows from the bound in the InfoNCE section. In SimCLR the negatives come from the batch. A larger batch gives more negatives \(N\), and the bound \(MI[f(x), f(x^+)] - \log(N) \geq -L\) gets tighter. The cost is memory: backpropagation must keep the values of all samples in the batch. The ImageNet experiments need distributed training on TPUs (a type of accelerator chip). The paper uses 32 to 128 TPU cores, depending on the batch size.</p>
+<div class="verdict"><strong>What SimCLR did not fix.</strong> The number of negatives is tied to the batch size, so good results need a large batch and a lot of memory. MoCo separates the two.</div>
+
+<h3 id="b1-moco">MoCo keeps a queue of keys, so the batch size and the number of negatives are separate</h3>
+<p>Momentum Contrast (MoCo) uses the words query and key (<a data-ref="he2020">He et al., 2020</a>). A <em>query</em> \(q\) is the vector of one view. A <em>key</em> \(k\) is the vector of another sample to compare with. The positive key comes from another view of the same image. Negative keys come from other images.</p>
+<p>The figure shows the parts. The query view goes through an encoder to give \(q\). The key views go through a momentum encoder to give \(k_0, k_1, k_2, \dots\). The keys form a queue. The model computes the similarity of \(q\) with the keys, and then the contrastive loss. No gradient flows into the keys (marked "no_grad").</p>
+<figure class="paper" style="--fig-w: 380px"><img src="slides/assets/partA/cs231n-p082-moco-diagram.png" width="1292" height="1075" loading="lazy" alt="Diagram of MoCo. On the left, x query goes through an encoder to give q. On the right, x key 0, 1, 2 go through a momentum encoder to give a queue of keys k0, k1, k2. A similarity between q and the keys leads to the contrastive loss. A red mark labelled no_grad cuts the path from the keys."><figcaption>Query encoder, momentum encoder and queue. Figure: <a data-ref="he2020">He et al. (2020)</a>, Fig. 1, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>MoCo differs from SimCLR in three ways.</p>
+<ul>
+<li>It keeps a running <em>queue</em> of keys. These keys are the negative samples. A queue is first in, first out: new keys enter and the oldest keys leave.</li>
+<li>It computes gradients and updates the encoder only through the queries.</li>
+<li>It separates the mini-batch size from the number of keys. So it supports a large number of negatives with a small batch. The paper sets the queue size \(K\) to 65,536 for its ImageNet runs (<a data-ref="he2020">He et al., 2020</a>, Sec. 4.1).</li>
+</ul>
+<p>Old keys in the queue came from older versions of the encoder. They must stay consistent with new keys. So the key encoder changes slowly. Its parameters \(\theta_k\) follow the parameters \(\theta_q\) of the query encoder by a momentum update:</p>
+\[ \theta_k \leftarrow m\,\theta_k + (1-m)\,\theta_q \]
+<p>Here \(m\) is the momentum coefficient, a number from 0 to 1. A value near 1 means that \(\theta_k\) moves only a little in each step. Back-propagation updates only \(\theta_q\). The paper uses \(m = 0.999\) (<a data-ref="he2020">He et al., 2020</a>, Sec. 3.2).</p>
+
+<h3 id="b1-moco-code">The MoCo training step: loss on queries, momentum update on keys, queue update</h3>
+<p>Algorithm 1 of <a data-ref="he2020">He et al. (2020)</a> is short. For each minibatch of \(N\) images:</p>
+<ol>
+<li>Make two random augmentations of each image: \(x_q\) and \(x_k\). This makes a positive pair.</li>
+<li>The query encoder gives the queries \(q\) from \(x_q\). The key encoder gives the keys \(k\) from \(x_k\). The code calls <code>k.detach()</code>, so no gradient goes to the keys.</li>
+<li>Compute the positive logits (the scores before the softmax): the dot product of each \(q\) with its own \(k\).</li>
+<li>Compute the negative logits: the dot product of each \(q\) with every key in the queue.</li>
+<li>Join the positive and negative logits. Divide them by the temperature \(t\) (0.07 in the paper, Sec. 3.3). The label of the correct class is index 0, the positive. Apply the cross-entropy loss. This is the InfoNCE loss.</li>
+<li>Update the query encoder by gradient descent (SGD) on the loss.</li>
+<li>Update the key encoder by the momentum update above.</li>
+<li>Add the new keys to the queue and remove the oldest keys.</li>
+</ol>
+<p>Next: how does MoCo compare with SimCLR, and what happens when we combine them?</p>
+
+<h3 id="b1-mocov2">MoCo v2 combines the ideas of SimCLR and MoCo</h3>
+<p>MoCo v2 is a hybrid (<a data-ref="chen2020b">Chen et al., 2020b</a>). From SimCLR it takes the non-linear projection head and strong data augmentation. From MoCo it takes the momentum-updated queue, which allows a large number of negatives. The deck notes that it needs no TPU.</p>
+<p>Table 1 of the MoCo v2 paper tests the changes one by one. It uses a ResNet-50. "MLP" is a projection head with a hidden layer. "aug+" is extra blur augmentation. "cos" is a cosine learning-rate schedule. The score is ImageNet linear accuracy.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Case</th><th>MLP</th><th>aug+</th><th>cos</th><th>Epochs</th><th>Accuracy (%)</th></tr></thead>
+<tbody>
+<tr><td>MoCo v1</td><td></td><td></td><td></td><td>200</td><td>60.6</td></tr>
+<tr><td>(a)</td><td>yes</td><td></td><td></td><td>200</td><td>66.2</td></tr>
+<tr><td>(b)</td><td></td><td>yes</td><td></td><td>200</td><td>63.4</td></tr>
+<tr><td>(c)</td><td>yes</td><td>yes</td><td></td><td>200</td><td>67.3</td></tr>
+<tr><td>(d)</td><td>yes</td><td>yes</td><td>yes</td><td>200</td><td>67.5</td></tr>
+<tr><td>(e)</td><td>yes</td><td>yes</td><td>yes</td><td>800</td><td>71.1</td></tr>
+</tbody></table></div>
+<p>Source: <a data-ref="chen2020b">Chen et al. (2020b)</a>, Table 1. The projection head alone adds 5.6 points, and the extra augmentation alone adds 2.8 points (computed here). Together with the cosine schedule they reach 67.5 at 200 epochs. A longer run of 800 epochs reaches 71.1. A non-linear projection head and strong data augmentation are crucial for contrastive learning.</p>
+
+<h3 id="b1-mocov2-simclr">MoCo v2 beats SimCLR with a much smaller batch</h3>
+<p>Table 2 compares MoCo v2 with SimCLR. Both use a ResNet-50 and the same three changes (MLP, aug+, cos).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Epochs</th><th>Batch size</th><th>Accuracy (%)</th></tr></thead>
+<tbody>
+<tr><td>MoCo v1</td><td>200</td><td>256</td><td>60.6</td></tr>
+<tr><td>SimCLR</td><td>200</td><td>256</td><td>61.9</td></tr>
+<tr><td>SimCLR</td><td>200</td><td>8,192</td><td>66.6</td></tr>
+<tr><td>MoCo v2</td><td>200</td><td>256</td><td>67.5</td></tr>
+<tr><td colspan="4"><em>Longer training</em></td></tr>
+<tr><td>SimCLR</td><td>1,000</td><td>4,096</td><td>69.3</td></tr>
+<tr><td>MoCo v2</td><td>800</td><td>256</td><td>71.1</td></tr>
+</tbody></table></div>
+<p>Source: <a data-ref="chen2020b">Chen et al. (2020b)</a>, Table 2. At 200 epochs, SimCLR with batch 256 scores 61.9 and with batch 8,192 scores 66.6. MoCo v2 scores 67.5 with batch 256. With longer training, MoCo v2 reaches 71.1 and SimCLR reaches 69.3, and the SimCLR run uses a batch 16 times larger (4,096 against 256; computed here). The cause is that MoCo v2 separates the mini-batch size from the number of negatives.</p>
+
+<h3 id="b1-mocov2-memory">MoCo needs much less memory and time</h3>
+<p>Table 3 gives the cost on 8 V100 GPUs with 16 GB each. "End-to-end" means the SimCLR way: the negatives come from the same batch, and the gradient goes through all of them.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Mechanism</th><th>Batch size</th><th>Memory per GPU</th><th>Time for 200 epochs</th></tr></thead>
+<tbody>
+<tr><td>MoCo</td><td>256</td><td>5.0 GB</td><td>53 hours</td></tr>
+<tr><td>End-to-end</td><td>256</td><td>7.4 GB</td><td>65 hours</td></tr>
+<tr><td>End-to-end</td><td>4,096</td><td>93.0 GB (estimate)</td><td>not available</td></tr>
+</tbody></table></div>
+<p>Source: <a data-ref="chen2020b">Chen et al. (2020b)</a>, Table 3. The end-to-end run with batch 4,096 needs an estimated 93.0 GB per GPU. This is about 18.6 times the MoCo value and far above the 16 GB of the GPU (computed here). It does not fit, so the authors give no time.</p>
+<div class="verdict"><strong>What MoCo v2 fixed.</strong> It reaches a higher accuracy than SimCLR with a batch of 256, and with a small memory footprint. It still works on pairs of images. The next section asks what to do when the data is a sequence.</div>
+
+<h3 id="b1-instance-sequence">Instance contrast uses images; sequence contrast uses order in time</h3>
+<p>There are two kinds of contrastive learning. <em>Instance-level</em> contrastive learning compares positive and negative instances. SimCLR and MoCo are examples. <em>Sequence-level</em> contrastive learning uses the order of a sequence in time. Contrastive Predictive Coding (CPC) is the example (<a data-ref="oord2018">van den Oord et al., 2018</a>).</p>
+<p>In CPC, an encoder \(g_{enc}\) maps the data at each time step \(x_t\) to a vector \(z_t\). An autoregressive model \(g_{ar}\) reads the steps in order and gives a context vector \(c_t\). An autoregressive model predicts each element from the elements before it. The context \(c_t\) must predict the vectors \(z\) of later steps.</p>
+
+<h3 id="b1-cpc">CPC predicts future codes from a context and uses InfoNCE to pick the true one</h3>
+<p>The name has three words.</p>
+<ul>
+<li><strong>Contrastive:</strong> the model contrasts "right" and "wrong" sequences.</li>
+<li><strong>Predictive:</strong> the model predicts future patterns from the current context.</li>
+<li><strong>Coding:</strong> the model learns useful feature vectors, called a code, for downstream tasks.</li>
+</ul>
+<p>The figure shows CPC on a sequence of digit patches. The context is the digits 2, 3, 4 and 5. The true future is the digits 6, 7, 8 and 9. The wrong futures are other patches (for example 9, 5, 0, 4). The model must pick the true future. The digit examples were added by CS231n; the diagram is from the paper.</p>
+<figure class="paper" style="--fig-w: 480px"><img src="slides/assets/partA/cs231n-p089-cpc-fig.png" width="1600" height="1119" loading="lazy" alt="CPC diagram. Encoders g enc turn the inputs x t minus 3 to x t plus 4 into vectors z. An autoregressive model g ar reads the vectors z up to time t and gives a context c t. Dashed arrows from c t point to z t plus 1 to z t plus 4 as predictions. Below, context digits 2, 3, 4, 5, positive digits 6, 7, 8, 9 and negative digits 9, 5, 0, 4 are shown."><figcaption>CPC with context, positive future and negative patches. Figure: <a data-ref="oord2018">van den Oord et al. (2018)</a>, Fig. 1, with digit examples added in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The method has three steps.</p>
+<ol>
+<li>Encode every sample in the sequence: \(z_t = g_{enc}(x_t)\).</li>
+<li>Summarise the context (for example, half of the sequence) into a context code \(c_t\) with the autoregressive model \(g_{ar}\). The original paper uses a GRU, a type of recurrent network.</li>
+<li>Compute an InfoNCE loss between the context \(c_t\) and a future code \(z_{t+k}\), where \(k\) is the number of steps ahead. The score depends on \(k\):</li>
+</ol>
+\[ s_k(z_{t+k}, c_t) = z_{t+k}^T W_k c_t \]
+<p>Here \(W_k\) is a trainable matrix. It has one value for each step \(k\). The score is high when \(c_t\) predicts \(z_{t+k}\) well. The positive is the true future code. The negatives are codes of other samples. The loss is the InfoNCE loss from the first section, with this score in place of \(s\).</p>
+
+<h3 id="b1-cpc-audio">CPC on audio gives features that classify speakers almost as well as supervised training</h3>
+<p>In the first example, CPC reads raw audio. The waveform is cut into time steps \(x\). The encoder \(g_{enc}\) turns each step into \(z\). The model \(g_{ar}\) summarises the past into \(c_t\). The context \(c_t\) predicts \(z\) for the next steps. The figure on the page shows four steps ahead; the paper's audio runs predict 12 steps (<a data-ref="oord2018">van den Oord et al., 2018</a>, Sec. 3.1).</p>
+<p>The left side of the next figure is a t-SNE plot of the CPC representations of 10 speakers (out of 251). t-SNE draws high-dimensional vectors in two dimensions. Each colour is one speaker. The speakers form separate groups. The right side is a table of linear classification on LibriSpeech (accuracy in %).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Features</th><th>Phone classification</th><th>Speaker classification</th></tr></thead>
+<tbody>
+<tr><td>Random initialization</td><td>27.6</td><td>1.87</td></tr>
+<tr><td>MFCC features</td><td>39.7</td><td>17.6</td></tr>
+<tr><td>CPC</td><td>64.6</td><td>97.4</td></tr>
+<tr><td>Supervised</td><td>74.6</td><td>98.5</td></tr>
+</tbody></table></div>
+<p>Source: <a data-ref="oord2018">van den Oord et al. (2018)</a>, Table 1. A phone is a basic speech sound. MFCC features are a standard hand-made audio feature. For speaker classification, CPC is 1.1 points below the supervised model (computed here). For phone classification, it is 10.0 points below.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/cs231n-p094-cpc-audio-results.png" width="1800" height="785" loading="lazy" alt="Left: a t-SNE plot with ten separate coloured clusters, one for each speaker. Right: a table with the accuracy of random initialization, MFCC features, CPC and supervised models for phone classification and speaker classification."><figcaption>Speaker clusters and linear classification results. Figure and table: <a data-ref="oord2018">van den Oord et al. (2018)</a>, Fig. 2 and Table 1, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+
+<h3 id="b1-cpc-visual">CPC on images treats rows of patches as a sequence</h3>
+<p>CPC also works for images. We split the image into patches. We treat the rows of patches, from top to bottom, as a sequence. The top rows are the context. They predict the bottom rows.</p>
+<p>In the figure, a 256 by 256 pixel image is cut into patches of 64 by 64 pixels, with 50% overlap. The paper uses a 7 by 7 grid of patches (<a data-ref="oord2018">van den Oord et al., 2018</a>, Sec. 3.2). The encoder gives a code \(z\) for each patch. The autoregressive model reads the codes of the upper rows and gives a context \(c_t\). The context predicts the codes \(z_{t+2}\), \(z_{t+3}\) and \(z_{t+4}\) of patches in the rows below.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p095-cpc-visual.png" width="1800" height="856" loading="lazy" alt="CPC for images. A 256 pixel image is cut into overlapping 64 pixel patches with 50 percent overlap. The encoder output is a grid of codes. The autoregressive output gives a context c t, which predicts the codes z t plus 2, z t plus 3 and z t plus 4 in rows further down."><figcaption>Patch rows as a sequence. Figure: <a data-ref="oord2018">van den Oord et al. (2018)</a>, Fig. 4, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>SimCLR, MoCo and CPC all use positive and negative samples. The last segment of Part B asks if a network can learn without labels in a different way: self-distillation, in DINO.</p>
+
+<!-- ═══════════ fragment B2 ═══════════ -->
+<h3 id="b2-dino-idea">DINO: a student learns from a teacher, with no labels and no negatives</h3>
+<p>Part B so far used negatives. SimCLR and MoCo push a positive pair together and push other images away. CPC does the same for sequences. A last family of methods needs no negatives. DINO is the example in this part (<a data-ref="caron2021">Caron et al., 2021</a>). The name stands for "self-distillation with no labels".</p>
+<p><strong>Self-distillation</strong> means that a student network learns to match the output of a teacher network, and the teacher comes from the student itself. The teacher is not a separate pre-trained model. The next sections show how the teacher is built.</p>
+<p>The paper trains a Vision Transformer (ViT) with no labels. A ViT cuts an image into patches and reads them as a sequence of tokens. It adds one extra token, the CLS token, to stand for the whole image. The paper looks at the self-attention of the CLS token in the last layer. Self-attention is the step that sets how much one token reads from each other token.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p096-dino-fig1.png" width="1800" height="1049" loading="lazy" alt="Eight photos, each next to a dark map. The maps are bright on one object in each photo: a bird, a toothbrush, a building, two giraffes, a boat, a bicycle, a dog and a plane."><figcaption>Each photo has a map next to it. The map shows where the CLS token of a ViT looks. The ViT had no labels in training. The bright areas follow the outline of the object. Figure: <a data-ref="caron2021">Caron et al. (2021)</a>, Fig. 1, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The conclusion: a ViT trained with no labels still learns where the objects are. The next section shows the training steps that produce this result.</p>
+
+<h3 id="b2-dino-update">The teacher is a slow average of past students</h3>
+<p>DINO uses two networks with the same architecture. They are the student \(g_{\theta_{student}}\) and the teacher \(g_{\theta_{teacher}}\). The symbols \(\theta_{student}\) and \(\theta_{teacher}\) stand for their weights. The steps for one image \(x\) are:</p>
+<ol>
+<li>Apply two random augmentations to \(x\). This gives two views, \(x_1\) and \(x_2\).</li>
+<li>The student reads one view. The teacher reads the other view.</li>
+<li>Each network ends in a softmax. A softmax turns the output scores into positive numbers that sum to 1. The student gives \(p_1\) and the teacher gives \(p_2\).</li>
+<li>The teacher output is centred (see the next section). The teacher gets no gradient. The paper marks this as "sg", for stop gradient.</li>
+<li>The loss is \(-p_2 \log p_1\). It is small when the student output \(p_1\) matches the teacher output \(p_2\).</li>
+</ol>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/cs231n-p097-dino-arch.png" width="1800" height="618" loading="lazy" alt="Left: a diagram with image x giving views x1 and x2, a student and a teacher network, a softmax on each, centering on the teacher, a stop-gradient mark, and the loss minus p2 log p1. Right: the same steps drawn as teacher and student rows with bar charts, and the update formula for the teacher weights."><figcaption>Left: the DINO diagram. Right: the same steps with the teacher update. Figure (left): <a data-ref="caron2021">Caron et al. (2021)</a>, Fig. 2; the right drawing is as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>Backpropagation changes the student only. The teacher changes through an exponential moving average (EMA) of the student weights. An EMA is an average in which older values count less and less. The update at each step is:</p>
+\[ \theta_{teacher} \leftarrow \tau\,\theta_{teacher} + (1-\tau)\,\theta_{student} \]
+<ul>
+<li>\(\theta_{teacher}\) and \(\theta_{student}\) are the weights of the teacher and the student.</li>
+<li>\(\tau\) is a number close to 1. It sets how slowly the teacher moves. The deck gives 0.996.</li>
+<li>With \(\tau = 0.996\), each step keeps 99.6% of the old teacher and adds 0.4% of the student (computed here).</li>
+</ul>
+<p>The paper says the weight \(\tau\) (called \(\lambda\) there) follows a cosine schedule from 0.996 to 1 during training (<a data-ref="caron2021">Caron et al., 2021</a>, Sec. 3.1). So 0.996 is the start value.</p>
+<p>The teacher is an average of past students. So it changes more slowly than the student, and its targets are steadier. The paper also finds that the teacher performs better than the student during training (Sec. 3.1). In the paper's tests (Sec. 5.2), a teacher that copies the recent student weights does not converge. A teacher that is the student from the previous epoch does not collapse and gives results close to other methods. The EMA teacher gives the best results of the options tested (Fig. 6, right).</p>
+<div class="callout">DINO has no negatives and no queue. Only the student receives gradients. The teacher is an EMA of the student, so the method needs no second model and no labels.</div>
+<p>The loss compares two output distributions. The next section gives the exact loss, the centre and the sharpening that stop the networks from collapsing.</p>
+
+<h3 id="b2-dino-algorithm">The loss, the centre and the sharpening are three short steps</h3>
+<p>The paper gives the method as pseudocode (<a data-ref="caron2021">Caron et al., 2021</a>, Algorithm 1; the version without multi-crop). Multi-crop means that the paper also feeds small local views of an image to the student. The deck does not use it, and this page does not use it either.</p>
+<figure class="paper" style="--fig-w: 460px"><img src="slides/assets/partA/cs231n-p098-dino-algorithm.png" width="1614" height="1375" loading="lazy" alt="PyTorch-style pseudocode of the DINO training loop: two augmented views, student and teacher outputs, the loss H(t1,s2)/2 + H(t2,s1)/2, SGD on the student, EMA updates of the teacher and the centre, and the function H with stop gradient, softmax and centering plus sharpening."><figcaption>The DINO training loop as pseudocode. Figure: <a data-ref="caron2021">Caron et al. (2021)</a>, Algorithm 1, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The symbols in the pseudocode are:</p>
+<ul>
+<li>\(g_s\) and \(g_t\): the student and the teacher network. Each gives a vector of \(K\) numbers for one view. The paper's default is \(K = 65536\) (the ablation on output dimension).</li>
+<li>\(s_1, s_2\) and \(t_1, t_2\): the student and teacher outputs for views 1 and 2. Each has size \(n \times K\), where \(n\) is the number of images in the minibatch.</li>
+<li>\(C\): the centre, a vector of \(K\) numbers.</li>
+<li>\(\tau_s\) and \(\tau_t\): the student and teacher temperatures. A temperature divides the scores before the softmax. A low temperature makes the output more peaked. The paper uses \(\tau_s = 0.1\), and \(\tau_t\) rises from 0.04 to 0.07 during the first 30 epochs.</li>
+<li>\(l\) and \(m\): the momentum rates of the teacher and of the centre. In the notation of the previous section, \(l\) is \(\tau\).</li>
+</ul>
+<p>One training step has these parts:</p>
+<ol>
+<li><strong>Two views.</strong> Make two random views of each image. Give both to the student and to the teacher.</li>
+<li><strong>The loss.</strong> The loss is \(H(t_1, s_2)/2 + H(t_2, s_1)/2\). Each term compares the teacher output for one view with the student output for the other view. The loss averages the two terms. The student never matches the teacher on the same view.</li>
+<li><strong>The function H.</strong> It has three steps:
+<ol>
+<li>Stop the gradient into \(t\), with <code>t.detach()</code>. The teacher gets no gradient.</li>
+<li>Compute the student distribution: \(s \leftarrow \mathrm{softmax}(s/\tau_s)\).</li>
+<li>Compute the teacher distribution: \(t \leftarrow \mathrm{softmax}((t-C)/\tau_t)\). Subtracting \(C\) is <strong>centring</strong>. Dividing by the low \(\tau_t\) is <strong>sharpening</strong>.</li>
+</ol>
+Then \(H\) returns the cross-entropy, \(-\sum_k t^{(k)} \log s^{(k)}\), averaged over the minibatch. Cross-entropy is small when the student puts its probability on the same entries as the teacher.</li>
+<li><strong>Update the student.</strong> Run backpropagation and one step of stochastic gradient descent (SGD) on the student.</li>
+<li><strong>Update the teacher.</strong> Use the EMA rule of the previous section.</li>
+<li><strong>Update the centre.</strong> \(C \leftarrow m\,C + (1-m)\,\mathrm{mean}([t_1, t_2])\). The centre is a moving average of the teacher outputs over the minibatch.</li>
+</ol>
+<p>Centring and sharpening exist to avoid collapse. In a <strong>collapse</strong>, the output is the same for every input. It is either uniform over all \(K\) entries or dominated by one entry. The paper says that centring stops one entry from dominating, but pushes the output toward uniform. Sharpening has the opposite effect. Together they balance each other, and this is enough to avoid collapse when a momentum teacher is used (<a data-ref="caron2021">Caron et al., 2021</a>, Sec. 3.1 and Sec. 5.3).</p>
+<div class="callout">The student matches a teacher that sees a different view of the same image. Centring and sharpening keep the teacher output from collapsing. No negatives are needed.</div>
+<p>The deck next shows what a later version of the method learns. It is called DINOv2.</p>
+
+<h3 id="b2-dinov2">DINOv2 patch features show the same parts in different images</h3>
+<p>DINOv2 is the second version of DINO (<a data-ref="oquab2024">Oquab et al., 2024</a>). The deck uses one figure from it. The figure uses <strong>PCA</strong> (principal component analysis), a method that finds the main directions in which a set of feature vectors differ.</p>
+<p>For each column of images (a to d), the authors compute a PCA over the patch features of all images in that column. A patch feature is the feature that the network gives for one image patch. They keep the first three PCA components and show each one as one colour channel (red, green, blue). They also remove the background by thresholding the first component (Fig. 1 caption).</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/cs231n-p099-dinov2-pca.png" width="1800" height="984" loading="lazy" alt="Four columns of photos with colour maps beside them. Column a shows birds and planes, column b elephants and a statue, column c horses and a drawing of a horse, column d cars and buses. Matching parts have matching colours."><figcaption>The first three PCA components of the patch features, drawn as colours. Figure: <a data-ref="oquab2024">Oquab et al. (2024)</a>, Fig. 1 (DINOv2), as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>The same parts get the same colours in different images. A wing has one colour on a bird and on a plane. This holds across changes of pose, style and even object, as the paper's caption says. The conclusion: the patch features of DINOv2 carry the meaning of image parts, not only of whole images. Part C returns to the DINO family and to patch features.</p>
+<div class="callout">The slide credits <a data-ref="caron2021">Caron et al. (2021)</a>, but the figure comes from the DINOv2 paper, <a data-ref="oquab2024">Oquab et al. (2024)</a>. The caption above names the right source.</div>
+
+<h3 id="b2-summary-infonce">Summary: all contrastive methods use one formula</h3>
+<p>The next four sections repeat the four methods of Part B in short form. The first one gives the common formula. Let \(f(x)\) be the feature of an input \(x\). Let \(x^+\) be a positive example of \(x\), and \(x^-\) a negative one. The general idea is that a score function \(\text{score}\) should give a much higher value to the positive pair than to a negative pair:</p>
+\[ \text{score}(f(x), f(x^+)) \gg \text{score}(f(x), f(x^-)) \]
+<p>The InfoNCE loss turns this into an \(N\)-way classification. The model must pick the one positive among \(N\) candidates: one positive and \(N-1\) negatives (<a data-ref="oord2018">van den Oord et al., 2018</a>). The loss is:</p>
+\[ L = -\mathbb{E}_X \left[ \log \frac{\exp\big(s(f(x), f(x^+))\big)}{\exp\big(s(f(x), f(x^+))\big) + \sum_{j=1}^{N-1} \exp\big(s(f(x), f(x_j^-))\big)} \right] \]
+<ul>
+<li>\(s(\cdot,\cdot)\): the score of two features. A higher score means that the model finds the two features more alike.</li>
+<li>\(x_j^-\): the \(j\)-th negative example. There are \(N-1\) of them.</li>
+<li>The fraction is the share of the positive in the sum over all \(N\) candidates. It is close to 1 when the positive scores far above the negatives.</li>
+<li>\(\mathbb{E}_X\): the average over many inputs \(x\). The minus sign turns "high share" into "low loss".</li>
+</ul>
+<p>The loss is also a lower bound on the mutual information between \(f(x)\) and \(f(x^+)\). Mutual information measures how much one of them tells about the other. The bound is:</p>
+\[ \mathrm{MI}[f(x), f(x^+)] - \log N \ge -L \]
+<p>A low loss therefore shows that the mutual information is at least \(\log N - L\). More negatives raise \(\log N\), so the bound can become larger when \(N\) is larger.</p>
+<p class="note">The deck's slide has one closing bracket missing in the numerator and in both terms of the denominator. The equation above has the balanced form.</p>
+
+<h3 id="b2-summary-simclr-moco">Summary: SimCLR needs a large batch, MoCo does not</h3>
+<p><strong>SimCLR</strong> is a simple framework for contrastive learning (<a data-ref="chen2020a">Chen et al., 2020</a>, Fig. 2). Two augmentations \(t\) and \(t'\) of an image \(x\) give two views. The encoder \(f\) gives the representations \(h_i\) and \(h_j\). The projection head \(g\) gives \(z_i\) and \(z_j\). Training maximises the agreement of \(z_i\) and \(z_j\).</p>
+<figure class="paper" style="--fig-w: 360px"><img src="slides/assets/partA/cs231n-p101-simclr-fig.png" width="1069" height="806" loading="lazy" alt="The SimCLR framework: an image x gives two augmented views, the encoder f gives representations h, the projection head g gives z, and the two z vectors are pulled together."><figcaption>The SimCLR framework. Figure: <a data-ref="chen2020a">Chen et al. (2020)</a>, Fig. 2, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<ul>
+<li>Key idea: a non-linear projection head allows more flexible representation learning.</li>
+<li>Strength: the method is simple to implement and effective for visual representations.</li>
+<li>Weakness: it needs a large training batch to be effective, and it has a large memory footprint. The negatives come from the same batch, so a larger batch gives more negatives.</li>
+</ul>
+<p><strong>MoCo</strong> (versions 1 and 2) uses a momentum encoder for the samples (<a data-ref="he2020">He et al., 2020</a>, Fig. 1). The momentum encoder is an EMA of the query encoder, in the same way as the DINO teacher. MoCo keeps its negatives in a queue of earlier keys. This separates the number of negatives from the minibatch size. So MoCo allows large-batch training without a TPU. A TPU is a special accelerator chip for training.</p>
+<figure class="paper" style="--fig-w: 360px"><img src="slides/assets/partA/cs231n-p102-moco-small.png" width="1028" height="833" loading="lazy" alt="The MoCo diagram: a query encoder, a momentum key encoder and a queue of keys, with a contrastive loss between the query and the keys."><figcaption>The MoCo diagram. Figure: <a data-ref="he2020">He et al. (2020)</a>, Fig. 1, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>MoCo v2 adds the key ideas of SimCLR to MoCo (<a data-ref="chen2020b">Chen et al., 2020</a>): the non-linear projection head and strong data augmentation. The details of both methods are in <a href="#part-b">Part B</a>.</p>
+<p>These two methods use instances of images as the unit. The next section gives the third method, which uses sequences.</p>
+
+<h3 id="b2-summary-cpc">Summary: CPC contrasts sequences and works less well for images</h3>
+<p><strong>CPC</strong> is sequence-level contrastive learning (<a data-ref="oord2018">van den Oord et al., 2018</a>). It contrasts the right sequence with a wrong sequence. It uses an InfoNCE loss with a time-dependent score function: the score depends on how many steps ahead the model predicts.</p>
+<figure class="paper" style="--fig-w: 420px"><img src="slides/assets/partA/cs231n-p103-cpc-small.png" width="1222" height="875" loading="lazy" alt="The CPC diagram: an encoder g_enc maps each input x_t to a vector z_t, an autoregressive model g_ar gives a context vector c_t, and c_t predicts z_t+1 to z_t+4. Below, digit images show the context, the positive sequence 6, 7, 8, 9 and a negative sequence."><figcaption>The CPC diagram. The model reads the context digits 2, 3, 4, 5 and must tell the positive continuation from a negative one. Figure: <a data-ref="oord2018">van den Oord et al. (2018)</a>, as shown in CS231n Lecture 12 (<a data-ref="feifei2026">Fei-Fei et al., 2026</a>).</figcaption></figure>
+<p>CPC applies to many kinds of data, for example audio and images. But it is not as effective for learning image representations as the instance-level methods, SimCLR and MoCo.</p>
+<p>That ends the four methods. The next section puts them in one table.</p>
+
+<h3 id="b2-part-b-summary">Part B in short: what each method contrasts and what it needs</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Main idea</th><th>What it needs or costs</th></tr></thead>
+<tbody>
+<tr><td>Contrastive learning (general)</td><td>Pull a positive pair together. Push negatives away. The InfoNCE loss is an \(N\)-way classification among positive and negative samples.</td><td>Negatives</td></tr>
+<tr><td>SimCLR</td><td>A non-linear projection head and strong augmentation.</td><td>A large batch</td></tr>
+<tr><td>MoCo</td><td>A momentum key encoder and a queue of keys.</td><td>The number of negatives no longer depends on the batch size</td></tr>
+<tr><td>CPC</td><td>Contrast the right sequence with a wrong one.</td><td>Works less well than instance-level methods for images</td></tr>
+<tr><td>DINO</td><td>Self-distillation with no labels. A student matches a teacher.</td><td>No negatives</td></tr>
+</tbody></table></div>
+<p>Part C covers today's best vision encoders and how to choose one among the families of methods in <a href="#part-a">Part A</a> and Part B.</p>
+
+<!-- ═══════════ fragment C1 ═══════════ -->
+<div class="part" id="part-c"><div class="label">PART C</div><h2>Advanced topics and today's state of the art</h2><p>Today's best encoders combine the three methods, at scale. Which one should we use for a given task?</p></div>
+<p class="note">This part follows Georgia Tech CS 8803-VLM Lecture 3 (<a data-ref="kira2026c">Kira, 2026</a>), with two sections of our own on trade-offs. The text is ours; the results come from the papers cited.</p>
+<p>Part B ended with these methods. Contrastive learning pulls a positive pair together and pushes negatives apart, with the InfoNCE loss. SimCLR needs a large batch. MoCo uses a momentum encoder and a queue of keys. CPC contrasts sequences. DINO makes a student match a teacher, with no negatives and no labels. Part C asks what we want from an encoder, which methods give it, and how to choose.</p>
+
+<h3 id="c1-want">What we want from a vision foundation model</h3>
+<p>A <strong>vision foundation model</strong> is, in this lecture, one encoder whose features are good enough that a linear head on top is competitive. We want five properties.</p>
+<ol>
+  <li><strong>General purpose.</strong> One frozen backbone (the encoder, with its weights not changed) serves many tasks. No task needs its own fine-tuning.</li>
+  <li><strong>Global features.</strong> One vector for the whole image. They serve classification, retrieval and image-text matching. A [CLS] token gives this vector.</li>
+  <li><strong>Dense features.</strong> One vector for each patch. They serve segmentation, depth, correspondence, tracking and grounding.</li>
+  <li><strong>Scales.</strong> The encoder gets better with more data and compute, with no more annotation.</li>
+  <li><strong>A token interface for a language model.</strong> A grid of h×w patch embeddings is already a sequence of tokens.</li>
+</ol>
+<div class="callout">Global quality and dense quality are decoupled. A model can get better at ImageNet while it gets worse at segmentation. The rest of Part C explains how this happens and how to avoid it.</div>
+<p>Which training objective gives both kinds of features?</p>
+
+<h3 id="c1-families">Three families of self-supervised objectives</h3>
+<p>Parts A and B give three families of objectives. Each has a strength and a weakness.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Family</th><th>Idea</th><th>Examples</th><th>Strong at</th><th>Weak at</th></tr></thead>
+<tbody>
+<tr><td>Contrastive (joint embedding)</td><td>Two augmented views of one image attract. Different images repel.</td><td>SimCLR, MoCo</td><td>Global, linear-probe semantics</td><td>Needs negatives and large batches. Dense features are mediocre.</td></tr>
+<tr><td>Masked image modelling (MIM)</td><td>Hide most patches. Reconstruct the missing pixels or tokens.</td><td>BEiT (<a data-ref="bao2022">Bao et al., 2022</a>), MAE, iBOT</td><td>Scalable pre-training. Strong after fine-tuning.</td><td>Frozen and linear-probe features are weak.</td></tr>
+<tr><td>Self-distillation (no negatives)</td><td>A student matches the output distribution of an EMA teacher across views.</td><td>BYOL (<a data-ref="grill2020">Grill et al., 2020</a>), DINO, DINOv2, DINOv3</td><td>Frozen features. Object structure appears without labels.</td><td>The training must prevent collapse explicitly.</td></tr>
+</tbody></table></div>
+<p>DINOv2 and DINOv3 deliberately combine the last two families. An image-level self-distillation loss gives global semantics. A patch-level masked loss, iBOT, gives dense features (<a data-ref="oquab2024">Oquab et al., 2024</a>; <a data-ref="simeoni2025">Siméoni et al., 2025</a>). The next question: does this combination keep the dense features good over a long training run?</p>
+
+<h3 id="c1-degrade">Dense features degrade during long training</h3>
+<p>The DINOv3 authors trained a model for a long time and watched two kinds of score. ImageNet linear-probe accuracy (a linear classifier on the global feature) rose all the time. Segmentation quality on dense tasks fell after about 200,000 iterations (<a data-ref="simeoni2025">Siméoni et al., 2025</a>, §4.1).</p>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partC/gt-l3-p48-dense-degrade.jpg" width="2400" height="460" loading="lazy" alt="Left: a photo of sheep on grass with a red mark on one patch. Five heat maps follow, at 200k, 400k, 600k, 800k and 1M iterations. At 200k the bright area sits tight around the sheep. At 1M iterations many bright patches appear far from the sheep."><figcaption>Each map shows the cosine similarity between the patch marked in red and every other patch, at increasing training iterations. Bright means similar. The maps get noisier and less localised. Figure: <a data-ref="simeoni2025">Siméoni et al. (2025)</a>, Fig. 6; panels cropped, as shown in Georgia Tech CS 8803-VLM Lecture 3 (<a data-ref="kira2026c">Kira, 2026</a>).</figcaption></figure>
+<p>Cosine similarity measures how closely two feature vectors point in the same direction. At 200k iterations the bright area covers the sheep and little else. Later, unrelated patches also become bright. The patch features lose their locality.</p>
+<p>The authors explain it this way. The global objective slowly dominates the patch-level iBOT loss, and the iBOT loss cannot hold the balance. So training for longer or with a bigger model had stopped paying off for dense tasks. Is there a way to keep the patch structure fixed without freezing the features?</p>
+
+<h3 id="c1-gram">Gram anchoring repairs the patch similarities</h3>
+<p>Gram anchoring adds a loss on the structure of patch-to-patch similarities. It works in these steps.</p>
+<ol>
+  <li>Take an image with \(P\) patches. The network gives each patch a feature vector of dimension \(d\), and we normalise each vector to length 1 (L2 normalisation).</li>
+  <li>Stack the vectors of the student into a matrix \(X_s\) of size \(P\times d\). Do the same for the <strong>Gram teacher</strong> to get \(X_G\). The Gram teacher is an earlier EMA checkpoint, from a time when the dense maps were still clean.</li>
+  <li>The product \(X X^{\top}\) is the <strong>Gram matrix</strong>. Entry \((i,j)\) is the dot product of patch \(i\) and patch \(j\), so it records how similar the two patches are.</li>
+  <li>The loss compares the two Gram matrices. \(\lVert\cdot\rVert_F\) is the Frobenius norm: the square root of the sum of the squares of all entries.</li>
+</ol>
+\[ L_{\text{Gram}} = \lVert X_s X_s^{\top} - X_G X_G^{\top} \rVert_F^2 \]
+<p>The loss constrains only the table of similarities. The individual features stay free to move, as long as their similarities keep the same structure. The authors compute it on the global crops only.</p>
+<p>They apply it as a refinement stage that starts after 1M iterations. They refresh the Gram teacher every 10k iterations, when it becomes identical to the main EMA teacher (<a data-ref="simeoni2025">Siméoni et al., 2025</a>, §4.2). The refinement objective is:</p>
+\[ L_{\text{Ref}} = w_D\, L_{\text{DINO}} + L_{\text{iBOT}} + w_{DK}\, L_{\text{DKoleo}} + w_{\text{Gram}}\, L_{\text{Gram}} \]
+<p>Here \(L_{\text{DINO}}\) is the image-level self-distillation loss and \(L_{\text{iBOT}}\) is the patch-level masked loss. \(L_{\text{DKoleo}}\) is a third loss term of the DINOv3 recipe that the deck does not define. The weights \(w_D\), \(w_{DK}\) and \(w_{\text{Gram}}\) set the size of each term.</p>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partC/gt-l3-p49-gram-anchoring.jpg" width="1381" height="978" loading="lazy" alt="Two photos, a yellow flower and geese on a path, each with two heat maps. The left map, without Gram anchoring, is noisy. The right map, with Gram anchoring, is smooth and highlights the whole flower petal or the whole goose around the red query patch."><figcaption>Cosine maps from one query patch (red), without and with Gram anchoring. The maps with Gram anchoring are smooth and follow object shapes. Figure: <a data-ref="simeoni2025">Siméoni et al. (2025)</a>, Fig. 10; panels cropped.</figcaption></figure>
+<p>The authors observe that the late application still repairs features that were already degraded. On the ADE20k dense linear probe (segmentation, mean intersection over union, mIoU, higher is better) the score goes from 50.3 to 55.7. NYUv2 depth error (RMSE, lower is better) goes from 0.307 to 0.281 (<a data-ref="simeoni2025">Siméoni et al., 2025</a>, Fig. 10 and the ablation table in §4.2).</p>
+<div class="verdict">The 55.7 mIoU and 0.281 values use a higher input resolution (the paper's "×2" row). ImageNet linear accuracy changes from 88.2 to 88.0, so it is almost unchanged, not exactly unchanged. The deck says "unchanged".</div>
+<p>With the repair known, how do the resulting encoders compare with encoders trained on image-text pairs?</p>
+
+<h3 id="c1-frozen">On a frozen backbone, self-supervised encoders lead on dense tasks</h3>
+<p>The table compares five backbones with no fine-tuning. Every score comes from a linear probe on frozen features. "Image–text (weak)" means that image captions supervise the encoder. The columns:</p>
+<ul>
+  <li>ADE20k: segmentation, mIoU, higher is better.</li>
+  <li>NYUv2: depth, RMSE, lower is better.</li>
+  <li>DAVIS: video object tracking, J&amp;F, higher is better. The values are at medium resolution.</li>
+  <li>IN1k linear: ImageNet-1k top-1 accuracy of a linear classifier, higher is better.</li>
+</ul>
+<div class="table-wrap"><table>
+<thead><tr><th>Backbone</th><th>Supervision</th><th>ADE20k mIoU ↑</th><th>NYUv2 RMSE ↓</th><th>DAVIS J&amp;F ↑</th><th>IN1k linear ↑</th></tr></thead>
+<tbody>
+<tr><td>SigLIP 2 g/16</td><td>image–text (weak)</td><td>42.7</td><td>0.494</td><td>62.3</td><td>89.1</td></tr>
+<tr><td>PE core G/14</td><td>image–text (weak)</td><td>38.9</td><td>0.590</td><td>53.1</td><td>89.3</td></tr>
+<tr><td>DINOv2 g/14</td><td>self-supervised</td><td>49.5</td><td>0.372</td><td>73.6</td><td>87.3</td></tr>
+<tr><td>PE spatial G/14</td><td>image–text + distillation</td><td>49.3</td><td>0.362</td><td>74.5</td><td>not reported</td></tr>
+<tr><td>DINOv3 7B/16</td><td>self-supervised</td><td>55.9</td><td>0.309</td><td>79.7</td><td>88.4</td></tr>
+</tbody></table></div>
+<p class="note">Source: <a data-ref="simeoni2025">Siméoni et al. (2025)</a>, Tables 3, 5 and 7, as in <a data-ref="kira2026c">Kira (2026)</a>. SigLIP 2: <a data-ref="tschannen2025">Tschannen et al. (2025)</a>. The numbers match the DINOv3 paper.</p>
+<p>The ImageNet column favours the image–text encoders: 89.1 and 89.3 against 87.3 for DINOv2. They lead on global, nameable semantics. On every dense and spatial column, the self-supervised encoders lead, often by a wide margin. DINOv3 has the best dense scores and, at 88.4, nearly closes the global gap.</p>
+<div class="callout">For dense tasks on a frozen backbone, choose a self-supervised encoder such as DINOv3. MAE does not appear in this table, because its frozen features are weak (see the section on adaptation below).</div>
+<p>The table shows what each encoder scores. What does each method need to get there?</p>
+
+<h3 id="c1-cost">Each method puts its cost in a different place</h3>
+<p>The table lists the data processing and the compute of each method. Each number comes from that paper's own set-up, so this is not a controlled comparison.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Data processing</th><th>Compute</th></tr></thead>
+<tbody>
+<tr><td>MAE</td><td>ImageNet. A random crop is enough.</td><td>The encoder reads 25% of the patches. ViT-L: 31 hours on 128 TPU v3 cores.</td></tr>
+<tr><td>SimCLR, MoCo</td><td>Crop and colour change are necessary.</td><td>Many negatives: a batch of 4,096, or a queue of 65,536.</td></tr>
+<tr><td>CLIP</td><td>400M web image–text pairs.</td><td>Batch 32,768. ViT-L/14: 12 days on 256 V100 GPUs.</td></tr>
+<tr><td>DINO, DINOv2</td><td>Multi-crop. 1.2B web images, curated to 142M.</td><td>Two networks. DINOv2 g/14: 22,016 A100 GPU-hours.</td></tr>
+</tbody></table></div>
+<p class="note">Sources: <a data-ref="he2022">He et al. (2022)</a>, Table 1e and §4.2 (1,600 epochs); <a data-ref="chen2020a">Chen et al. (2020)</a>, Fig. 5 and §2.2; <a data-ref="he2020">He et al. (2020)</a>, §4; <a data-ref="radford2021">Radford et al. (2021)</a>, §2.2 and §2.5; <a data-ref="caron2021">Caron et al. (2021)</a>, §3.2; <a data-ref="oquab2024">Oquab et al. (2024)</a>, §3 and Table 14.</p>
+<p>MAE saves compute because the encoder reads only a quarter of the patches. SimCLR and MoCo need strong augmentation and many negatives. CLIP needs a very large set of captioned images. DINO and DINOv2 train two networks and, for DINOv2, curate the data first. The best choice depends on the data and the compute you have. The next question is how to use the trained encoder.</p>
+
+<h3 id="c1-adapt">Adaptation: train none, some or all of the weights</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Level</th><th>What you train</th><th>Cost and fit</th></tr></thead>
+<tbody>
+<tr><td>Zero-shot</td><td>Nothing, and you give no labels.</td><td>Image–text models: CLIP, SigLIP 2, or DINOv3 with dino.txt.</td></tr>
+<tr><td>Frozen + k-NN or linear head</td><td>At most a linear layer.</td><td>Few labels, little compute. The features must be good as they are: DINOv3, CLIP.</td></tr>
+<tr><td>LoRA</td><td>Small low-rank updates. The original weights stay frozen.</td><td>Described in Lecture 1, session 02.</td></tr>
+<tr><td>Full fine-tuning</td><td>All weights.</td><td>Most labels and compute. MAE is strong here.</td></tr>
+</tbody></table></div>
+<p class="note">Zero-shot: <a data-ref="radford2021">Radford et al. (2021)</a>. k-NN: <a data-ref="caron2021">Caron et al. (2021)</a>. LoRA: <a data-ref="hu2022">Hu et al. (2022)</a>.</p>
+<p>The test can change the winner. For a ViT-L, MoCo v3 (<a data-ref="chen2021b">Chen et al., 2021</a>) and MAE give these ImageNet accuracies (%), read from the plot labels of <a data-ref="he2022">He et al. (2022)</a>, Fig. 9:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Test</th><th>MoCo v3</th><th>MAE</th><th>Winner</th></tr></thead>
+<tbody>
+<tr><td>Frozen backbone</td><td>77.6</td><td>73.5</td><td>MoCo v3</td></tr>
+<tr><td>Tune one block</td><td>79.9</td><td>81.0</td><td>MAE</td></tr>
+</tbody></table></div>
+<div class="callout">No labels does not mean no data problems. Nobody checks billions of web images for consent or bias. DINOv2 removed unsafe images and blurred faces before training (<a data-ref="oquab2024">Oquab et al., 2024</a>, §3).</div>
+
+<h3 id="c1-close">Part C in short</h3>
+<ul>
+  <li>A vision foundation model is one frozen backbone for many tasks. It gives global and dense features and scales without annotation.</li>
+  <li>There are three families of objectives: contrastive (SimCLR, MoCo), masked image modelling (MAE) and self-distillation (DINO). DINOv2 and DINOv3 combine the last two.</li>
+  <li>In DINOv3, dense features degrade in long training. Gram anchoring repairs them.</li>
+  <li>On a frozen backbone, self-supervised encoders lead on dense tasks: segmentation, depth and tracking. Language-supervised encoders lead on global, nameable semantics.</li>
+  <li>Each method puts its cost in a different place, and the test can change the winner. Choose by the task, the data, the compute and the adaptation.</li>
+</ul>
+
+<h2 id="close">Where we got to</h2>
+<p>The lecture began with one question. Without labels, what should a model predict? There are three answers. Each has one design choice that stops the model from cheating, which means finding a trivial solution that satisfies the loss.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>What the model predicts</th><th>How it can cheat</th><th>What stops the cheat</th></tr></thead>
+<tbody>
+<tr><td>MAE (<a data-ref="he2022">He et al., 2022</a>)</td><td>The hidden image patches</td><td>Copy from the neighbouring patches</td><td>Hide 75% of the patches</td></tr>
+<tr><td>SimCLR (<a data-ref="chen2020a">Chen et al., 2020</a>)</td><td>Which other view belongs to this image</td><td>Give every image the same vector</td><td>The other images in the batch (negatives)</td></tr>
+<tr><td>DINO (<a data-ref="caron2021">Caron et al., 2021</a>)</td><td>The teacher's output for another view of the image</td><td>The same output for every image</td><td>Centring, sharpening and a slow teacher</td></tr>
+</tbody></table></div>
+<p>One point stays open. Captions help with the names of things. Images alone give better features for each patch. Today's encoders combine both. Next week we connect an encoder to an LLM.</p>
+
+<!-- ═══════════════════════════════ RESOURCES ═══════════════════════════════ -->
+<h2 id="resources">Resources</h2>
+<h3>Reading</h3>
+<ul>
+  <li>Gidaris et al., <a href="https://arxiv.org/abs/1803.07728"><em>Unsupervised Representation Learning by Predicting Image Rotations</em></a>, ICLR 2018. The rotation task (Part A).</li>
+  <li>He et al., <a href="https://arxiv.org/abs/2111.06377"><em>Masked Autoencoders Are Scalable Vision Learners</em></a>, CVPR 2022. §3 (the method).</li>
+  <li>Chen et al., <a href="https://arxiv.org/abs/2002.05709"><em>A Simple Framework for Contrastive Learning of Visual Representations</em></a>, ICML 2020. §2 (the framework) and §3 (design choices).</li>
+  <li>He et al., <a href="https://arxiv.org/abs/1911.05722"><em>Momentum Contrast for Unsupervised Visual Representation Learning</em></a>, CVPR 2020. §3.</li>
+  <li>van den Oord et al., <a href="https://arxiv.org/abs/1807.03748"><em>Representation Learning with Contrastive Predictive Coding</em></a>, 2018. §2.</li>
+  <li>Caron et al., <a href="https://arxiv.org/abs/2104.14294"><em>Emerging Properties in Self-Supervised Vision Transformers</em></a>, ICCV 2021. §3 (the method).</li>
+  <li>Siméoni et al., <a href="https://arxiv.org/abs/2508.10104"><em>DINOv3</em></a>, 2025. The Gram anchoring section.</li>
+</ul>
+<p class="note">The official reading list for the module is on Canvas.</p>
+<h3>Code</h3>
+<ul>
+  <li><a href="https://github.com/facebookresearch/dino">facebookresearch/dino</a> — the reference code of DINO.</li>
+  <li><a href="https://github.com/facebookresearch/mae">facebookresearch/mae</a> — the reference code of MAE.</li>
+  <li><a href="https://github.com/facebookresearch/moco">facebookresearch/moco</a> — the reference code of MoCo.</li>
+</ul>
+
+<h2 id="references">References</h2>
+<p class="note">Every work cited on this page, in APA style with shortened author lists. Titles link to the paper.</p>
+<ul class="refs-list" data-refs-list></ul>
+
+<h2 id="next">Next: Lecture 4, large multi-modal models</h2>
+<p>This lecture used images only. Lecture 4, on Wed 4 Nov 2026, joins images and text: it extends LLMs to large multi-modal models.</p>
+<div class="grid">
+  <div class="card"><div class="tag">Lecture 4</div><h4>Large multi-modal models</h4><p>How an LLM takes visual data as input, and what such models do.</p></div>
+</div>
+
+</main>
+</div>
+</div>
+
+<footer><div class="wrap">
+  <p>CEG5305 · Department of Electrical and Computer Engineering, National University of Singapore · AY2026/27 Semester 1. Part 2 page maintained by Junyuan Hong.</p>
+  <p>Figures on this page are redrawn in HTML; the papers they follow are cited where used. Embedded demos are the work of their authors and are loaded from their own sites.</p>
+</div></footer>
+</body>
+</html>
