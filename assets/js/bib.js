@@ -585,6 +585,10 @@ export const BIB = {
   kim2026neurips: { a: "Kim, J. [@jueun_kim_]", y: 2026, t: "What does each top lab actually work on at NeurIPS 2026?", v: "X post, 19 October", u: "https://x.com/jueun_kim_/status/2112184788174164176" }, // X page and thread read 20 Oct 2026; figure: NeurIPS 2026 poster by the author, from neurips.cc program data of 17 Oct 2026
   wilmers2026: { a: "Wilmers, N., Catipon, R., Massenkoff, M., & McCrory, P.", y: 2026, t: "How employment is changing at Anthropic", v: "The Anthropic Institute, Technical Report, 16 October", u: "https://www.anthropic.com/research/employment-at-anthropic" }, // page read 20 Oct 2026; suggested citation on the page: techreport wilmers2026employment, Oct 2026; Figure 6 caption "Reading Claude as a full-time job"
   zhang2025dgm: { a: "Zhang, J., et al.", y: 2025, t: "Darwin Gödel Machine: Open-ended evolution of self-improving agents", v: "arXiv:2505.22954", u: "https://arxiv.org/abs/2505.22954" },
+  // Lecture 4 session 01 lecture notes, added 4 Nov 2026
+  lu2022sqa: { a: "Lu, P., et al.", y: 2022, t: "Learn to explain: Multimodal reasoning via thought chains for science question answering", v: "NeurIPS", u: "https://arxiv.org/abs/2209.09513" }, // checked arXiv abs page, 4 Nov 2026
+  lin2014coco: { a: "Lin, T.-Y., et al.", y: 2014, t: "Microsoft COCO: Common objects in context", v: "ECCV", u: "https://arxiv.org/abs/1405.0312" }, // checked arXiv abs page, 4 Nov 2026 (venue ECCV 2014 from the paper's reference list)
+  sharma2018cc: { a: "Sharma, P., et al.", y: 2018, t: "Conceptual Captions: A cleaned, hypernymed, image alt-text dataset for automatic image captioning", v: "ACL", u: "https://aclanthology.org/P18-1238/" }, // checked ACL Anthology page, 4 Nov 2026
 };
 
 const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");

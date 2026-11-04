@@ -1,0 +1,1309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part 2 · Lecture 4 — Extending LLMs to large multi-modal models · CEG5305</title>
+<meta name="description" content="CEG5305 Part 2, Lecture 4, session 01: extending LLMs to large multi-modal models — how LLMs learned to see (CLIP, Flamingo, BLIP-2, Qwen-VL), building a vision-language model step by step (LLaVA, nanoVLM), and advanced topics: Qwen3-VL, computer-use agents, robot actions, world models and safety.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="../../../assets/css/site.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.querySelector('main'),{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],ignoredClasses:['viz'],throwOnError:false})"></script>
+<link rel="stylesheet" href="notes.css">
+<link rel="stylesheet" href="notes.css">
+<script type="module" src="../../../assets/js/main.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="inner">
+  <a class="brand" href="../../../">CEG5305 <span>· Generative AI with Foundation Models</span></a>
+  <nav><a href="../../../#lectures">Lectures</a><a href="#resources">Resources</a></nav>
+</div></header>
+
+<div class="wrap">
+<p class="crumbs"><a href="../../../">Home</a> › Part 2 › Lecture 4 › Session 01</p>
+
+<section class="hero" id="overview">
+  <span class="badge">Part 2 - Lecture 4</span>
+  <h1>Extending LLMs to Large Multi-modal Models</h1>
+  <p class="lede">Topic 7, <em>Extending LLMs to large multi-modal models</em>. One session, three hours. Lecture 3 trained image encoders without labels. This lecture connects such an encoder to an LLM, and asks what the combined model can do.</p>
+  <div class="meta"><span><b>Session 01</b> · 3 hours, three parts</span><span><b>Lecturer</b> · Junyuan Hong</span><span><b>Slides</b> · <a href="slides/">open the slides</a></span><span><b>Place in Part 2</b> · the last lecture</span><span><b>Homework, deadlines</b> · on Canvas</span></div>
+  <div class="question">
+    <div class="q">How did LLMs learn to see, and how do you build one?</div>
+    <p>An LLM reads a sequence of vectors. An image must become vectors that the LLM can use. Part A follows how the methods developed. Part B builds one model step by step, with code. Part C covers advanced topics and today's state of the art.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="tag">Part A</div><h4>How LLMs learned to see</h4><p>Multi-modal models before LLMs, then vision-language models (CLIP, Flamingo, BLIP and BLIP-2), then the state of the art (the Qwen-VL family).</p></div>
+    <div class="card"><div class="tag">Part B</div><h4>Make VLM chat</h4><p>LLaVA step by step: the instruction data, the architecture, two training stages, and how it is tested. Then the same steps in code with nanoVLM.</p></div>
+    <div class="card"><div class="tag">Part C</div><h4>Advanced topics and today's state of the art</h4><p>The Qwen3-VL recipe, one model for all modalities, computer-use agents, robot actions and world models, and safety.</p></div>
+  </div>
+  <p class="note">Numbers come from the papers cited next to them; arithmetic done for this page is marked “computed here”, and toy values are labeled as toy. Figures are credited under each one.</p>
+</section>
+
+<div class="layout">
+<nav class="toc" aria-label="On this page"><ol>
+  <li><a href="#overview">Overview</a></li>
+  <li class="sub"><a href="#about">About these notes</a></li>
+  <li class="sub"><a href="#a1-recap">Recap of Lecture 3</a></li>
+  <li class="sub"><a href="#a1-today">Today's question</a></li>
+  <li><a href="#part-a">A · How LLMs learned to see</a></li>
+  <li class="sub"><a href="#a1-motivation">Motivation</a></li>
+  <li class="sub"><a href="#a1-history">History of multi-modal AI</a></li>
+  <li class="sub"><a href="#a1-captioning">Neural image captioning</a></li>
+  <li class="sub"><a href="#a1-unimodal">Unimodal models</a></li>
+  <li class="sub"><a href="#a1-questions">The design questions</a></li>
+  <li class="sub"><a href="#a1-representations">Image representations</a></li>
+  <li class="sub"><a href="#a1-taxonomy">Architecture taxonomy</a></li>
+  <li class="sub"><a href="#a1-fusion">Early and late fusion</a></li>
+  <li class="sub"><a href="#a1-clip">CLIP</a></li>
+  <li class="sub"><a href="#a1-owl">Open-vocabulary detection</a></li>
+  <li class="sub"><a href="#a2-design-again">Four open design questions</a></li>
+  <li class="sub"><a href="#a2-alignment">Embedding space alignment</a></li>
+  <li class="sub"><a href="#a2-flamingo-icl">Flamingo: few-shot prompting</a></li>
+  <li class="sub"><a href="#a2-flamingo-gated">Gated cross-attention</a></li>
+  <li class="sub"><a href="#a2-flamingo-overview">Flamingo: full model</a></li>
+  <li class="sub"><a href="#a2-perceiver-resampler">Perceiver Resampler</a></li>
+  <li class="sub"><a href="#a2-flamingo-data">Flamingo: training data</a></li>
+  <li class="sub"><a href="#a2-flamingo-results">Flamingo: scaling results</a></li>
+  <li class="sub"><a href="#a2-blip">BLIP: CapFilt</a></li>
+  <li class="sub"><a href="#a2-blip2">BLIP-2: Q-Former</a></li>
+  <li class="sub"><a href="#a2-vqa">BLIP-2 vs Flamingo on VQA</a></li>
+  <li class="sub"><a href="#a2-gap">The gap to GPT-4V</a></li>
+  <li class="sub"><a href="#a3-what-improved">What improved in VLMs</a></li>
+  <li class="sub"><a href="#a3-qwen-vl">Qwen-VL: three training stages</a></li>
+  <li class="sub"><a href="#a3-qwen2-vl">Qwen2-VL: any resolution</a></li>
+  <li class="sub"><a href="#a3-qwen3-vl">Qwen3-VL: MoE and DeepStack</a></li>
+  <li class="sub"><a href="#a3-qwen3-vl-abilities">Qwen3-VL: eight abilities</a></li>
+  <li class="sub"><a href="#a3-summary">Summary of the state of the art</a></li>
+  <li class="sub"><a href="#a3-part-a-close">Part A close</a></li>
+  <li><a href="#part-b">B · Make VLM chat</a></li>
+  <li class="sub"><a href="#b1-recap">Part A methods name objects</a></li>
+  <li class="sub"><a href="#b1-follow">Naming is not following</a></li>
+  <li class="sub"><a href="#b1-captions">Captions are not enough</a></li>
+  <li class="sub"><a href="#b1-idea">The LLaVA idea and its data</a></li>
+  <li class="sub"><a href="#b1-teacher">A text-only teacher</a></li>
+  <li class="sub"><a href="#b1-arch">LLaVA architecture</a></li>
+  <li class="sub"><a href="#b1-stage1">Stage 1: align the projection</a></li>
+  <li class="sub"><a href="#b1-stage2">Stage 2: instruction tuning</a></li>
+  <li class="sub"><a href="#b1-bench">Benchmarking LLaVA</a></li>
+  <li class="sub"><a href="#b2-map">nanoVLM: four files</a></li>
+  <li class="sub"><a href="#b2-checkpoint">The checkpoint</a></li>
+  <li class="sub"><a href="#b2-tokens">Tokens per image</a></li>
+  <li class="sub"><a href="#b2-shuffle">Pixel shuffle</a></li>
+  <li class="sub"><a href="#b2-projector">Projector parameters</a></li>
+  <li class="sub"><a href="#b2-prompt">Image tokens in the prompt</a></li>
+  <li class="sub"><a href="#b2-embed">Placeholder embeddings</a></li>
+  <li class="sub"><a href="#b2-loss">The loss mask</a></li>
+  <li class="sub"><a href="#b2-losscode">The loss in code</a></li>
+  <li class="sub"><a href="#b2-lr">Three learning rates</a></li>
+  <li class="sub"><a href="#b2-generate">The generation loop</a></li>
+  <li class="sub"><a href="#b2-demo">SmolVLM-256M demo</a></li>
+  <li class="sub"><a href="#b2-close">Part B in one view</a></li>
+  <li><a href="#part-c">C · Advanced topics and state of the art</a></li>
+  <li class="sub"><a href="#c1-map">From Part B to Part C</a></li>
+  <li class="sub"><a href="#c1-problem">Qwen3-VL: the problem</a></li>
+  <li class="sub"><a href="#c1-deepstack">DeepStack</a></li>
+  <li class="sub"><a href="#c1-results">Thinking versus Instruct</a></li>
+  <li class="sub"><a href="#c1-data">Reasoning data and its filter</a></li>
+  <li class="sub"><a href="#c1-rl">Reinforcement learning</a></li>
+  <li class="sub"><a href="#c1-evidence">Evidence and limits</a></li>
+  <li class="sub"><a href="#c2-any-to-any">Chameleon and BAGEL</a></li>
+  <li class="sub"><a href="#c2-other-modalities">UniTouch: touch</a></li>
+  <li class="sub"><a href="#c2-chameleon-result">Result: Chameleon-34B</a></li>
+  <li class="sub"><a href="#c2-computer-use">OSWorld: computer use</a></li>
+  <li class="sub"><a href="#c2-osworld-result">Result: OSWorld</a></li>
+  <li class="sub"><a href="#c2-actions-as-tokens">RT-2: actions as tokens</a></li>
+  <li class="sub"><a href="#c2-openvla">OpenVLA and the data limit</a></li>
+  <li class="sub"><a href="#c2-continuous-control">Diffusion Policy and VLASH</a></li>
+  <li class="sub"><a href="#c2-world-models">World models</a></li>
+  <li class="sub"><a href="#c2-world-action-models">DreamZero: world-action model</a></li>
+  <li class="sub"><a href="#c2-world-result">Result: world models</a></li>
+  <li class="sub"><a href="#c2-leaderboard">Leaderboard, 10 Oct 2026</a></li>
+  <li class="sub"><a href="#c2-attack">An image can carry an attack</a></li>
+  <li class="sub"><a href="#c2-part-c-close">Part C in one view</a></li>
+  <li class="sub"><a href="#d1-topic7">Topic 7 against the syllabus</a></li>
+  <li class="sub"><a href="#d1-recipe">Part 2 as one recipe</a></li>
+  <li class="sub"><a href="#d1-open">Five open questions</a></li>
+  <li class="sub"><a href="#d1-next">Where to go next</a></li>
+  <li class="sub"><a href="#d1-revise">Revising Part 2</a></li>
+  <li><a href="#close">Where we got to</a></li>
+  <li><a href="#resources">Resources</a></li>
+  <li><a href="#references">References</a></li>
+  <li><a href="#next">End of Part 2</a></li>
+</ol></nav>
+
+<main>
+<!-- D44/D49: disclosure at the start of the page, one sentence. Format: .claude/skills/make-lecture/references/disclosure.md. -->
+<div class="callout" id="about">
+<h3>About these notes</h3>
+<p>These notes and slides were prepared with the help of AI tools (Claude, by Anthropic), working from the reference slides and papers listed here.</p>
+<p><b>Reference slides</b></p>
+<ul>
+  <li><a data-ref="kira2026a">Georgia Tech CS 7643, Lecture 19: <em>Vision-language models</em></a>, Zsolt Kira, 2026. Part A.</li>
+  <li><a data-ref="wang2026l6">Georgia Tech CS 8803-VLM, Lecture 6: <em>LLaVA and Qwen3-VL</em></a>, Y. Wang, E. Anand, I. Narang, 2026. Parts B and C.</li>
+  <li><a data-ref="kira2026b">Georgia Tech CS 8803-VLM, Lecture 1: <em>Introduction and the VLM to agent arc</em></a>, Zsolt Kira, 2026. Part C.</li>
+</ul>
+<p><b>Key papers</b></p>
+<ul>
+  <li><a data-ref="radford2021">Radford et al. (2021)</a>. <em>Learning transferable visual models from natural language supervision</em>. ICML.</li>
+  <li><a data-ref="alayrac2022">Alayrac et al. (2022)</a>. <em>Flamingo: a visual language model for few-shot learning</em>. NeurIPS.</li>
+  <li><a data-ref="liu2023a">Liu et al. (2023)</a>. <em>Visual instruction tuning</em>. NeurIPS.</li>
+  <li><a data-ref="bai2025">Bai et al. (2025)</a>. <em>Qwen3-VL technical report</em>. arXiv:2511.21631.</li>
+</ul>
+</div>
+
+
+<!-- ═══════════ fragment A1 ═══════════ -->
+<h3 id="a1-recap">Lecture 3 gave us image encoders, but CLIP cannot answer a question</h3>
+<p>Lecture 3 trained foundation models without labels. It had three parts. In the first, a <em>pretext task</em> (a task whose label the data itself supplies) removes the need for human labels. In the second, contrastive learning pulls matching pairs together in a shared space and pushes all other pairs apart. In the third, one frozen backbone (a network whose weights do not change) serves many tasks.</p>
+<p>CLIP, from <a data-ref="radford2021">Radford et al. (2021)</a>, is the main result of that lecture. Given a set of label names, CLIP ranks them for an image. It cannot take a question about the image and write an answer. This lecture closes that gap.</p>
+
+<h3 id="a1-today">Today's question: how do you turn an image into vectors that an LLM can use?</h3>
+<p>An LLM reads a sequence of vectors, one per token. An image is a grid of pixels. To let the LLM use an image, we must turn the image into vectors that the LLM can read. Today's lecture asks how LLMs learned to do this, and how you build one yourself.</p>
+<p>The lecture has three parts. Each part has a different purpose.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Part</th><th>Purpose</th><th>Content</th></tr></thead>
+<tbody>
+<tr><td><a href="#part-a">A</a></td><td>History</td><td>How the methods developed, and which problem each method solved.</td></tr>
+<tr><td><a href="#part-b">B</a></td><td>Deep dive</td><td>LLaVA step by step, then the same steps in code with nanoVLM.</td></tr>
+<tr><td><a href="#part-c">C</a></td><td>Today</td><td>Advanced topics: more pixels, thinking, one model for all modalities, acting in the world.</td></tr>
+</tbody></table></div>
+<p>The session is 3 hours (4 Nov 2026, 18:00 to 20:46 in the schedule). Part A takes 38 minutes, Part B 50 minutes and Part C 39 minutes. Two breaks of 10 minutes separate them. Part A starts with the first question: what did people build before LLMs, to join images and text?</p>
+
+<div class="part" id="part-a"><div class="label">PART A</div><h2>How LLMs learned to see</h2><p>Part A follows the methods in order. It starts with multi-modality models that existed before LLMs, then covers vision-language models, then the state of the art.</p></div>
+<p class="note">This part follows Kira (2026), Georgia Tech CS 7643, Lecture 19 (<a data-ref="kira2026a">Kira, 2026</a>). The text is ours; the results come from the papers cited.</p>
+<p>Part A has three segments. <strong>Multi-modality model before LLMs</strong> covers the early systems and the design questions (this section). <strong>Vision-language model</strong> covers methods that connect an image encoder to a language model. <strong>State of art</strong> covers the Qwen-VL family.</p>
+
+<h3 id="a1-motivation">Motivation: a language model alone cannot do visual tasks</h3>
+<p>The first question is why we want a model that handles both images and text. <a data-ref="yang2023b">Yang et al. (2023)</a> list eight kinds of task that need both. A user asks a question about a picture, or about several pictures, and expects an answer in text.</p>
+<figure class="paper" style="--fig-w: 620px"><img src="slides/assets/partA/a-yang2023-fig1.png" width="2065" height="1165" loading="lazy" alt="Eight panels, each with a title, a question, an image and a text answer. The titles are visual math and text reasoning, visual-conditioned joke or meme, spatial and coordinate understanding, visual planning and prediction, multi-image reasoning, multi-hop document understanding, open-world concept understanding, and video summarization and event localization."><figcaption>Eight tasks that need images and text together. Each panel shows a user question (green icon), an image and the system answer. Figure: <a data-ref="yang2023b">Yang et al. (2023)</a>, Fig. 1.</figcaption></figure>
+<p>Examples from the figure: the user asks for the total travel cost over several receipts (multi-image reasoning). The user asks for the position of a frisbee in a photo (spatial understanding). The user asks what is funny in a comic (a joke or meme). In each panel the question is plain text and the answer is plain text. The image is the part that a text-only LLM cannot read.</p>
+<p>MM-ReAct is not one trained model. It is a system in which ChatGPT calls a pool of vision experts (separate vision models), and it works by prompting. The authors compare this system design with the alternative that this lecture follows: to extend a language model to images by training it jointly (<a data-ref="yang2023b">Yang et al., 2023</a>). The conclusion: many useful tasks need both vision and language in one answer.</p>
+<p>Which models existed before this need became clear? The next section gives the timeline.</p>
+
+<h3 id="a1-history">History: from vision-only models to large multi-modal models</h3>
+<p>The question is when each kind of model appeared. The deck gives a timeline in three eras.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Era</th><th>Year</th><th>Models named</th></tr></thead>
+<tbody>
+<tr><td rowspan="3">Before fusion (vision-only era, then the language models that came next)</td><td>2012</td><td>AlexNet (<a data-ref="krizhevsky2012">Krizhevsky et al., 2012</a>)</td></tr>
+<tr><td>2017</td><td>Transformer (<a data-ref="vaswani2017">Vaswani et al., 2017</a>)</td></tr>
+<tr><td>2020</td><td>GPT-3 (<a data-ref="brown2020">Brown et al., 2020</a>)</td></tr>
+<tr><td rowspan="2">Vision and language fusion</td><td>2021</td><td>CLIP (<a data-ref="radford2021">Radford et al., 2021</a>) and DALL·E</td></tr>
+<tr><td>2022</td><td>Flamingo (<a data-ref="alayrac2022">Alayrac et al., 2022</a>) and Stable Diffusion</td></tr>
+<tr><td rowspan="2">Large multi-modal models</td><td>2023</td><td>GPT-4V and LLaVA (<a data-ref="liu2023a">Liu et al., 2023</a>)</td></tr>
+<tr><td>2024 and later</td><td>Gemini, Claude, Qwen-VL (versions 1 to 3), InternVL</td></tr>
+</tbody></table></div>
+<p>The era names come from the deck. The deck draws the vision-only era at the left end of the timeline. The Transformer (2017) and GPT-3 (2020) are language-side milestones, so read the first three entries as the two ingredients, not as one family. In this lecture, a <em>large multi-modal model</em> (LMM) is a model that reads more than one kind of input, such as images and text, and that is built on a large language model.</p>
+<p>Before that stage, the first systems joined an image encoder to a small language model. The next section describes the earliest one.</p>
+
+<h3 id="a1-captioning">Neural image captioning: a CNN vector starts an RNN</h3>
+<p>The question is how an early model produced a sentence about an image. <em>Image captioning</em> means to write a short text that describes an image.</p>
+<figure class="paper" style="--fig-w: 620px"><img src="slides/assets/partA/a-kira2026a-p04-captioning.png" width="2190" height="1305" loading="lazy" alt="Diagram. A convolutional network (VGGNet) turns the image into a 4096-dimension vector. A linear layer maps it to the first input of a chain of RNN cells. The cells read the words start, Two, people, and, two horses. Above each cell the label P(next) marks its output."><figcaption>An early captioning model. The image vector enters a chain of RNN cells, and each cell outputs P(next), the probability of the next word. As shown in Georgia Tech CS 7643, Lecture 19 (<a data-ref="kira2026a">Kira, 2026</a>).</figcaption></figure>
+<p>The figure shows three steps.</p>
+<ol>
+<li>A pre-trained visual encoder (VGGNet, a convolutional network) turns the image into one vector with 4096 numbers.</li>
+<li>A linear projection layer maps this vector to a space from which the caption can be generated. The deck calls it the “captionable” space.</li>
+<li>The projected vector is the first input of an RNN. An <em>RNN</em> (recurrent neural network) reads one token at a time and passes a state from step to step. The RNN then reads the words <code>&lt;start&gt;</code>, “Two”, “people”, “and”, “two horses.” In each step it outputs P(next), the probability of every possible next word.</li>
+</ol>
+<p>The image enters the language side only as the first input, through a single vector. This idea stays in all later models: take an encoder that was trained on images, and use a small learned layer to pass its output to the language model.</p>
+<p>Today the language side is an LLM and the visual side is a Vision Transformer. The next section reviews these two kinds of model.</p>
+
+<h3 id="a1-unimodal">Unimodal models: each is strong in one input and weak in the other</h3>
+<p>A <em>unimodal</em> model works with one kind of input. The question is what each kind can and cannot do. The deck compares language models and vision models.</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>Language models</th><th>Vision models</th></tr></thead>
+<tbody>
+<tr><td>Model families</td><td>Transformer-based auto-regressive LLMs; BERT (masked language modeling); the GPT series (causal language models) (<a data-ref="devlin2019">Devlin et al., 2019</a>; <a data-ref="brown2020">Brown et al., 2020</a>)</td><td>CNNs for local feature extraction (ResNet, <a data-ref="he2016">He et al., 2016</a>); ViT, which splits an image into 16×16 patches (<a data-ref="dosovitskiy2021">Dosovitskiy et al., 2021</a>); DINO and MAE, which learn without labels (<a data-ref="caron2021">Caron et al., 2021</a>; <a data-ref="he2022">He et al., 2022</a>)</td></tr>
+<tr><td>Input</td><td>Tokenized text sequences</td><td>Pixel grids, turned into patch embeddings</td></tr>
+<tr><td>Strong at</td><td>Reasoning, generation, question answering</td><td>Object recognition, detection</td></tr>
+<tr><td>Weak at</td><td>Cannot perceive visual input</td><td>No semantic grounding in language</td></tr>
+</tbody></table></div>
+<p>A <em>causal</em> language model predicts each token from the tokens before it. A <em>masked</em> language model predicts a hidden token from the tokens around it. A <em>patch embedding</em> is the vector that represents one image patch.</p>
+<div class="callout">The two kinds of model are complementary. The LLM has the language and reasoning. The vision model has the perception. A vision-language model (VLM) must connect the two.</div>
+<p>To connect them, we need to decide several things. The next section lists them.</p>
+
+<h3 id="a1-questions">The design questions: representation, training, data, tasks and interface</h3>
+<p>Two deck pages state the open questions for a VLM. The first page asks how to encode the images: what representation should we use, and how will it be learned? The photos on that page (a beach scene, a baseball game and two dogs) stand for all the images the model must handle.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/a-kira2026a-p07-considerations.png" width="3000" height="1470" loading="lazy" alt="Left: three photos with arrows into a box named Visual Feature Space, followed by a question mark. Right: a yellow block named Language Model, with a Features Space (Encoder) block and a Decoder block, and example captions in English and German. Orange questions: how and what should we train, using what data, what tasks can we do, what should the interface be."><figcaption>The design questions. Images go into a visual feature space; a language model with an encoder and a decoder produces text such as captions in English and German. As shown in Georgia Tech CS 7643, Lecture 19 (<a data-ref="kira2026a">Kira, 2026</a>).</figcaption></figure>
+<p>The second page adds four questions. Each question is a design choice.</p>
+<ul>
+<li><strong>How and what should we train?</strong> This is the training method.</li>
+<li><strong>Using what data?</strong> Image-text pairs, or other data.</li>
+<li><strong>What tasks can we do?</strong> For example captioning or question answering. The right side of the figure shows captions in two languages.</li>
+<li><strong>What should the interface be?</strong> The interface is how the visual feature space connects to the language model.</li>
+</ul>
+<p>Part A answers these questions one method at a time. The first question, the image representation, comes next.</p>
+
+<h3 id="a1-representations">Image representations: an image encoder, with a ViT as the common choice</h3>
+<p>The question is which network turns an image into a representation. The deck says: use an image encoder. The architecture can be any network, for example ResNet or a Vision Transformer (ViT). Its weights can start random, or come from supervised (SL) or self-supervised (SSL) pre-training, such as DINO versions 1 to 3 and MAE.</p>
+<figure class="paper" style="--fig-w: 460px"><img src="slides/assets/partA/a-dosovitskiy2021-fig1.png" width="970" height="710" loading="lazy" alt="The Vision Transformer. An image is split into nine patches. Each patch is flattened and linearly projected. A position embedding and an extra learnable class embedding are added. The sequence goes into a Transformer encoder. An MLP head outputs the class."><figcaption>The Vision Transformer (left part of the figure). Figure: <a data-ref="dosovitskiy2021">Dosovitskiy et al. (2021)</a>, Fig. 1.</figcaption></figure>
+<p>The figure shows how a ViT works.</p>
+<ol>
+<li>Split the image into fixed-size patches (here nine patches, in a 3×3 grid).</li>
+<li>Flatten each patch to one vector and apply a linear projection. This gives one embedding per patch.</li>
+<li>Add a position embedding to each patch embedding, so the model knows where each patch came from. Add one extra learnable “class” embedding at position 0.</li>
+<li>Feed the sequence to a standard Transformer encoder. An MLP head on the class output predicts the label.</li>
+</ol>
+<p>With 16×16-pixel patches, a 224×224-pixel image gives 14 × 14 = 196 patches (computed here). The ViT output is therefore a sequence of vectors, as an LLM expects. This is why a ViT is a natural image encoder for a VLM.</p>
+<p>The encoder is one part. How the encoder and the language model fit together is the next question.</p>
+
+<h3 id="a1-taxonomy">Architecture taxonomy: dual-encoder, encoder-decoder and decoder-only</h3>
+<p>The question is how to arrange the image encoder and the language model. The deck names three architectures.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Architecture</th><th>How it works</th><th>Examples</th><th>Property</th></tr></thead>
+<tbody>
+<tr><td>Dual-encoder</td><td>Two separate encoders map image and text to one shared embedding space</td><td>CLIP</td><td>Trained with a contrastive loss. It cannot generate text by itself.</td></tr>
+<tr><td>Encoder-decoder</td><td>The encoder processes the image. The decoder generates the text.</td><td>Flamingo, CogVLM</td><td>Cross-attention layers connect the two. This is more parameter-efficient.</td></tr>
+<tr><td>Decoder-only</td><td>Image tokens go in front of the text tokens, inside one LLM</td><td>LLaVA, GPT-4V</td><td>The simplest method. It uses the full LLM. It was the most common method in 2023 and 2024.</td></tr>
+</tbody></table></div>
+<p><em>Cross-attention</em> is attention in which the queries come from one sequence (the text) and the keys and values come from another (the image features). Part A explains it with Flamingo. A <em>contrastive loss</em> is a loss that pulls matching image-text pairs together and pushes other pairs apart (Lecture 3). An <em>embedding space</em> is a vector space in which each input is a point.</p>
+<p>The deck adds one more design choice: freeze the vision encoder, or fine-tune it. A frozen ViT aligns faster and forgets less. A trained ViT is more flexible. The deck states the architecture of GPT-4V as decoder-only; <a data-ref="openai2023">OpenAI (2023)</a> does not publish that detail, so treat this entry as the deck's classification.</p>
+<p>The three architectures also differ in where the image and the text meet. The next section describes this as early and late fusion.</p>
+
+<h3 id="a1-fusion">Early fusion mixes the modalities from the first layer; late fusion mixes them at the end</h3>
+<p><em>Fusion</em> means to combine the information of two modalities. The question is at which depth the model does it.</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>Early fusion</th><th>Late fusion</th></tr></thead>
+<tbody>
+<tr><td>Where the modalities meet</td><td>At the token level; joint attention from layer 1</td><td>Each modality is encoded separately; they meet at the final representation layer</td></tr>
+<tr><td>Information flow between modalities</td><td>Higher</td><td>Lower</td></tr>
+<tr><td>Cost</td><td>Expensive: O((N<sub>text</sub> + N<sub>img</sub>)²)</td><td>Lower</td></tr>
+<tr><td>Other property</td><td>Best for fine-grained grounding</td><td>Modular: swap an encoder easily. Best for retrieval and classification.</td></tr>
+<tr><td>Examples</td><td>Unified-IO, PaLI</td><td>CLIP, AudioCLIP</td></tr>
+</tbody></table></div>
+<p>In the cost entry, N<sub>text</sub> is the number of text tokens and N<sub>img</sub> is the number of image tokens. Self-attention compares every token with every other token, so its cost grows with the square of the sequence length. “Fine-grained grounding” means to link a word to a small region of the image.</p>
+<p>A toy example (computed here, toy values): with N<sub>text</sub> = 100 and N<sub>img</sub> = 576, early fusion compares (100 + 576)² = 456,976 pairs. Two separate encoders compare 100² + 576² = 341,776 pairs. The late-fusion saving is the cross term, 2 × 100 × 576 = 115,200 pairs. Image tokens usually outnumber text tokens, so the image side dominates the cost in both cases.</p>
+<div class="callout">Early fusion gives the best grounding at higher cost. Late fusion costs less and is modular, but the modalities interact less.</div>
+<p>CLIP is the main example of late fusion. The next section shows how it works and where it is limited.</p>
+
+<h3 id="a1-clip">CLIP aligns images and text by contrastive learning, but its representation is coarse</h3>
+<p>This is the Lecture 3 model, so we recall only what the next sections need. CLIP uses contrastive learning as its method of alignment. It trains on 400 million image-text pairs from the internet (<a data-ref="radford2021">Radford et al., 2021</a>). It has one image encoder (a ResNet or a ViT) and one text encoder.</p>
+<figure class="paper" style="--fig-w: 620px"><img src="slides/assets/partA/a-radford2021-fig1.png" width="2045" height="740" loading="lazy" alt="CLIP in three parts. 1: contrastive pre-training. A text encoder gives vectors T1 to TN, an image encoder gives vectors I1 to IN, and a grid shows the dot product of each pair; the matching pairs on the diagonal are highlighted. 2: create a dataset classifier from label text, for example 'A photo of a dog'. 3: use for zero-shot prediction, where the image vector is compared with each label vector."><figcaption>CLIP. Left: in a batch of N pairs, the N matching pairs (the diagonal of the grid) are pulled together and the other pairs are pushed apart. Right: label names become sentences, and the label whose text vector is closest to the image vector wins. Figure: <a data-ref="radford2021">Radford et al. (2021)</a>, Fig. 1.</figcaption></figure>
+<p>The grid has one cell for each image-text pair. The cell holds the dot product I<sub>i</sub> · T<sub>j</sub>: image vector i times text vector j. Training raises the diagonal cells (matching pairs) and lowers all other cells. For <em>zero-shot</em> prediction (a prediction on classes the model was not trained on, with no extra examples), CLIP writes each label as a sentence, such as “A photo of a dog”, encodes it, and picks the label with the highest dot product with the image vector.</p>
+<p>The deck names one downside: the representation is coarse-grained. One vector must hold, somewhere, the objects, their relations and their locations. CLIP gives no direct way to point at a region of the image.</p>
+<p>Can a CLIP-style model locate objects? The next section shows that it can, if we change its heads.</p>
+
+<h3 id="a1-owl">Open-vocabulary detection: CLIP-style training also finds objects named by text</h3>
+<p><em>Object detection</em> means to find objects in an image and give each a box and a label. A normal detector knows only a fixed list of classes. An <em>open-vocabulary</em> detector accepts any class name as text. The question is how to transfer a contrastive image-text model to this task.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-minderer2022-fig1.png" width="1405" height="470" loading="lazy" alt="Two panels. Left, image-level contrastive pre-training: a text transformer encoder and a vision transformer encoder with token pooling and projection give a text embedding and an image embedding, and a contrastive loss runs over images in a batch. Right, transfer to open-vocabulary detection: the vision encoder outputs one token per image patch. A linear projection gives object image embeddings and an MLP head gives boxes. Query embeddings from the text encoder for giraffe, tree and car are matched with the object embeddings. A set prediction loss runs over the objects in an image."><figcaption>OWL-ViT. Left: contrastive pre-training of an image and a text encoder. Right: the same encoders, with the token pooling removed, predict boxes and match each object to a text query. Figure: <a data-ref="minderer2022">Minderer et al. (2022)</a>, Fig. 1.</figcaption></figure>
+<p><a data-ref="minderer2022">Minderer et al. (2022)</a> make a small set of changes to a ViT that was pre-trained contrastively.</p>
+<ol>
+<li>Remove the final token pooling layer. The encoder then gives one output token for each image patch.</li>
+<li>Attach to each output token a linear projection (it gives an embedding for the object in that region) and an MLP head (it gives the box as x, y, width, height).</li>
+<li>Embed each query string, such as “giraffe”, with the text encoder. Compare it with each object embedding. A high score assigns the class to that box; a token with no match gets “no object”.</li>
+<li>Fine-tune on standard detection data. A set prediction loss compares the predicted objects with the true objects of the image.</li>
+</ol>
+<p>At test time the queries can be new class names. The method also accepts an image as a query, for one-shot detection (<a data-ref="minderer2022">Minderer et al., 2022</a>, Fig. 1 caption).</p>
+<p>The second paper, <a data-ref="minderer2023">Minderer et al. (2023)</a>, attacks the lack of box labels. It uses an existing detector to write pseudo-boxes (boxes made by a model, not by humans) for web image-text pairs. The queries are N-grams (short word sequences) taken from the text of the image, such as the file name or alt text. The figure shows three examples.</p>
+<figure class="paper" style="--fig-w: 600px"><img src="slides/assets/partA/a-minderer2023-figA2.png" width="1285" height="420" loading="lazy" alt="Three web images with their text above them: a car interior, a map of the Aegean region, and a bus in a city street. Red boxes carry labels taken from the text, such as 'citroen c3 interior', '431 bc el', 'file map athenian' and 'bus'."><figcaption>Pseudo-boxes on web images. The text above each image is the web text; the red boxes carry N-grams from that text. Figure: <a data-ref="minderer2023">Minderer et al. (2023)</a>, Fig. A2 (first row; images from Wikimedia Commons).</figcaption></figure>
+<p>The labels follow the text, not the true objects. Some labels are useful (“interior”, “bus”). Others are noise (“431 bc el”, “file map athenian”). The authors filter boxes by a score threshold: a box needs a score of at least 0.1, and an image needs at least one box with a score above 0.3 (<a data-ref="minderer2023">Minderer et al., 2023</a>, Fig. A2 caption). With this self-training, they report that AP on the LVIS rare classes rises from 31.2% to 44.6% for an L/14 model, on classes for which the model saw no human boxes (<a data-ref="minderer2023">Minderer et al., 2023</a>, abstract).</p>
+<div class="verdict">Open-vocabulary detection shows that a contrastive image-text model can find objects named by any text. Its output is still a box and a label. It cannot write a sentence or answer a question. Part A continues with models that connect an image encoder to a language model, to give text answers.</div>
+
+<!-- ═══════════ fragment A2 ═══════════ -->
+<h3 id="a2-design-again">A VLM design leaves four questions open</h3>
+<p>The previous section ended with open-vocabulary detection, which uses CLIP to match image regions to any text label. That model only matches or localizes. It does not write text. A vision-language model (VLM) that answers questions must connect an image to a language model (LM), a model that predicts text. The connection raises four design questions.</p>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partA/a-kira2026a-p07-considerations.png" width="3000" height="1470" loading="lazy" alt="Three photos (a beach, a baseball game, two dogs) point to a box labelled Visual Feature Space with a question mark. The box connects to a yellow Language Model with a features-space encoder and a decoder. Around the language model are captions in English and German. Four orange questions are written on the figure."><figcaption>Three photos feed a visual feature space. A language model (encoder and decoder) writes captions around it. The question mark marks the unknown connection. Four orange questions are written on the figure: how and what to train, which data to use, which tasks to support, and what the interface is. Figure as shown in Georgia Tech CS 7643, Lecture 19 (<a data-ref="kira2026a">Kira, 2026</a>).</figcaption></figure>
+<ol>
+<li><strong>How and what to train.</strong> The model parts are the image encoder, the connection and the LM. We can train all of them or only some.</li>
+<li><strong>Which data.</strong> Image-text pairs, web pages with images, or hand-labelled examples give different abilities.</li>
+<li><strong>Which tasks.</strong> Examples are captioning, answering questions about an image, and following instructions.</li>
+<li><strong>What the interface is.</strong> The interface is the form in which image information enters the LM.</li>
+</ol>
+<p>The rest of this part answers these questions with four models: Flamingo, BLIP, BLIP-2 and, as the gap that remains, GPT-4V. The next section starts with the interface.</p>
+
+<h3 id="a2-alignment">Embedding space alignment maps image features into the token space of the LM</h3>
+<p>An LM reads tokens. Each token is a vector in the LM <em>token embedding space</em>. An image encoder outputs a different kind of object: a grid of feature vectors with spatial structure. <em>Embedding space alignment</em> is the step that turns image features into vectors that the LM can read as if they were tokens. The module that does this step is the <em>connector</em>. The goal is to bridge two differences: the shape (a grid against a sequence) and the distribution (the values of the two vector sets).</p>
+<p>The deck lists five methods. Three are connectors, one changes the LM side, and one is a training loss.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Group</th><th>Method</th><th>What it does</th><th>Used in</th></tr></thead>
+<tbody>
+<tr><td>1. Connector</td><td>Linear projector</td><td>A small multilayer perceptron (MLP) of 1 or 2 layers maps each image patch feature to the LM hidden size. One patch gives one token.</td><td>LLaVA (Part B)</td></tr>
+<tr><td>1. Connector</td><td>Q-Former</td><td>A fixed set of learnable query vectors attends to the image features. The output has a fixed length, whatever the input size.</td><td>BLIP-2</td></tr>
+<tr><td>1. Connector</td><td>Perceiver Resampler</td><td>N learnable latent vectors cross-attend to the image features. A small image and a large image both give N outputs.</td><td>Flamingo</td></tr>
+<tr><td>2. LM side</td><td>Adapters (LoRA)</td><td>The LM weights stay frozen. A small trainable low-rank path is added in parallel to learn the visual tokens.</td><td>Several VLMs</td></tr>
+<tr><td>3. Training loss</td><td>Joint objective</td><td>A contrastive loss pulls image vector \(v\) and text vector \(t\) of the same pair together. A captioning loss predicts text \(t\) from \(v\). Some models use both.</td><td>BLIP, BLIP-2</td></tr>
+</tbody></table></div>
+<p>Three terms need a definition. A <em>frozen</em> module keeps its weights fixed during training. <em>Cross-attention</em> is attention in which the queries come from one set of vectors and the keys and values come from another set. LoRA (low-rank adaptation) adds a pair of small matrices, A and B, next to a frozen weight matrix. Only A and B are trained, and their output is added to the output of the frozen weight. The deck gives one reason to freeze the LM: the LM keeps its language skills while it learns to read visual tokens.</p>
+<p>The deck gives two benefits for the fixed-size outputs. The Q-Former collapses a variable number of features into a fixed number of queries. The Perceiver Resampler keeps the visual token count constant at any image resolution. The two connectors therefore keep the cost of the LM independent of the image size. Flamingo is the first example.</p>
+<div class="verdict">A connector has to solve a shape problem (grid to sequence) and a value problem (image features to token embeddings). The linear projector keeps one token per patch. The Q-Former and the Perceiver Resampler give a fixed number of tokens.</div>
+
+<h3 id="a2-flamingo-icl">Flamingo learns a new task from a few examples in the prompt</h3>
+<p>Flamingo (<a data-ref="alayrac2022">Alayrac et al., 2022</a>) is a VLM from DeepMind. Its main result is <em>in-context learning</em> (also called few-shot learning). In-context learning means that the model learns a task from a few worked examples placed in its input, with no change to its weights. LMs showed this ability for text. Flamingo shows it for prompts that mix images and text.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-alayrac2022-fig1-row1.png" width="1660" height="284" loading="lazy" alt="Input prompt: a photo of a chinchilla with the text This is a chinchilla, they are mainly found in Chile; a photo of a shiba with the text This is a shiba, they are very popular in Japan; a photo of a flamingo followed by This is. The completion is: a flamingo, they are found in the Caribbean and South America."><figcaption>Row 1. Two image-text examples set the pattern: the animal name and one fact about where it lives. The third image has no text. Flamingo completes it with the name and a fact. Figure: <a data-ref="alayrac2022">Alayrac et al. (2022)</a>, Fig. 1.</figcaption></figure>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-alayrac2022-fig1-row4.png" width="1660" height="198" loading="lazy" alt="Input prompt: a photo of handwritten 2+1 with the text 2+1=3, a photo of handwritten 5+6 with the text 5+6=11, and a photo of handwritten 3x6. The completion is 3x6=18."><figcaption>Row 4. Two photos of handwritten sums, each followed by its answer, make the prompt. For the third photo, Flamingo writes the answer 3x6=18. The model reads the digits in the image and follows the pattern from the examples. Figure: <a data-ref="alayrac2022">Alayrac et al. (2022)</a>, Fig. 1.</figcaption></figure>
+<p>In both rows the task is not named. The examples define it. The deck calls this an emerging property: the model was not trained for these tasks. Flamingo needs an architecture that accepts a prompt with several images between pieces of text. The next sections describe it.</p>
+
+<h3 id="a2-flamingo-gated">Flamingo inserts gated cross-attention layers into a frozen LM</h3>
+<p>Flamingo keeps the pretrained LM frozen and inserts new layers between its blocks. Each new layer is a GATED XATTN-DENSE layer. It has two parts: a cross-attention in which the text reads the image features, and a feed-forward layer (FFW), a small network applied to each position. Both parts are <em>gated</em>.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-alayrac2022-fig4.png" width="1670" height="670" loading="lazy" alt="Left: an LM layer (frozen) with a GATED XATTN-DENSE layer below it. Centre: the layer opened up. The vision input X feeds a cross-attention (keys and values from X, queries from the language input Y) and then a feed-forward layer, each with tanh gating and a skip connection. Frozen self-attention and frozen feed-forward follow. Right: pseudo-code of the same steps."><figcaption>The new layer sits before each frozen LM layer. Language features \(Y\) give the queries. Vision features \(X\) give the keys and values. Each trained part is multiplied by a tanh gate before it is added to the skip path. The frozen parts are marked with a snowflake. Figure: <a data-ref="alayrac2022">Alayrac et al. (2022)</a>, Fig. 4.</figcaption></figure>
+<p>The pseudo-code in the figure gives the two gated steps. In them, \(y\) is the language features, \(x\) is the visual features, and \(q\) and \(kv\) are the queries and the keys-values of the attention.</p>
+\[ y \leftarrow y + \tanh(\alpha_{\text{xattn}}) \cdot \text{attention}(q=y,\ kv=x) \]
+\[ y \leftarrow y + \tanh(\alpha_{\text{dense}}) \cdot \text{ffw}(y) \]
+<p>Here \(\alpha_{\text{xattn}}\) and \(\alpha_{\text{dense}}\) are learnable scalars, one pair per layer. Each starts at 0 (Section 2.2 of the paper). Because \(\tanh(0)=0\), the new layer adds nothing at the start. The model then gives the same output as the original LM. Training raises the gates slowly, and the visual input enters the LM without disturbing it. The paper reports that removing the 0-initialized gating lowers the overall score by 4.2% and also makes training less stable (Section 3.3).</p>
+<p>After the gated layers, the frozen self-attention and frozen FFW of the LM run as usual. Only the new layers are trained. The next section shows where these layers sit in the full model.</p>
+
+<h3 id="a2-flamingo-overview">Flamingo mixes images and text in the embedding space of a 70B LM</h3>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-alayrac2022-fig3.png" width="1655" height="735" loading="lazy" alt="Two images (a dog, a cat) pass through frozen vision encoders and then Perceiver Resamplers. The outputs go to GATED XATTN-DENSE layers that alternate with frozen LM blocks. The interleaved text with image tags enters the stack from the bottom. The output is the text: a very serious cat."><figcaption>The full model. Each image goes through a frozen vision encoder and a trained Perceiver Resampler. The resampler output goes into every gated cross-attention layer. The interleaved text enters at the bottom. The output is text: "a very serious cat." Figure: <a data-ref="alayrac2022">Alayrac et al. (2022)</a>, Fig. 3.</figcaption></figure>
+<p>Flamingo has three parts.</p>
+<ul>
+<li><strong>Vision encoder:</strong> a frozen Normalizer-Free ResNet (NFNet, model F6). It was pretrained with a contrastive loss, as in CLIP, on Flamingo's own image-text data (Section 2.1).</li>
+<li><strong>Connection module:</strong> the Perceiver Resampler, and the gated cross-attention plus dense layers.</li>
+<li><strong>Language model:</strong> a frozen Chinchilla LM with 70B parameters. The paper also builds 1.4B and 7B versions, called Flamingo-3B and Flamingo-9B. The largest, with 80B parameters in total, is called Flamingo-80B (Section 2.2).</li>
+</ul>
+<p>The text prompt contains a tag at the position of each image. When the model writes a token, its cross-attention reads the visual tokens of the image that came just before that token (Section 2.3). The model sees one image at a time through cross-attention. The earlier images stay available through the self-attention of the LM. This rule lets the model accept more images at test time than it saw in training. The Perceiver Resampler is the next component.</p>
+
+<h3 id="a2-perceiver-resampler">The Perceiver Resampler turns any number of image features into a fixed number of tokens</h3>
+<p>A vision encoder gives a grid of features. A video gives one grid per frame. The number of features changes with the image size and the frame count. The LM cross-attention layers would cost more for more features. The Perceiver Resampler maps a variable number of features to a fixed number of output tokens. The idea comes from the Perceiver (<a data-ref="jaegle2021">Jaegle et al., 2021</a>): a small set of learned vectors reads a large input through attention.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-alayrac2022-fig5.png" width="1640" height="960" loading="lazy" alt="Left: three video frames (t=0, 1, 2) pass through vision encoders. Each gets a time embedding, then all features are flattened into one sequence called X_f. Five learned latent queries X enter an attention block: keys and values are X_f joined with X, queries are X. A feed-forward layer follows. Five output tokens leave the top. Right: pseudo-code of the same steps."><figcaption>Frames are encoded, given a time embedding, and flattened into one sequence \(X_f\). Learned latent queries \(X\) read it by attention. The figure shows five output tokens. Figure: <a data-ref="alayrac2022">Alayrac et al. (2022)</a>, Fig. 5.</figcaption></figure>
+<p>Follow the steps in the figure. Symbols: \(T\) is the number of frames, \(S\) is the number of spatial positions per frame, \(d\) is the feature size, and \(R\) is the number of learned latents.</p>
+<ol>
+<li>The vision encoder gives visual features \(X_f\) of shape \([T, S, d]\). An image is the case \(T=1\).</li>
+<li>For a video, add a learned time embedding to each frame. This tells the model the frame order.</li>
+<li>Flatten \(X_f\) to shape \([T\cdot S, d]\).</li>
+<li>Take \(R\) learned latent vectors \(X\), of shape \([R, d]\). They are model parameters.</li>
+<li>Run attention. The queries are \(X\). The keys and values are \(X_f\) joined with \(X\). The deck notes that joining the latents to the keys and values gives better results.</li>
+<li>Add the result to \(X\), apply a feed-forward layer, and add again. Repeat for the number of layers. The output is \(R\) tokens, whatever the size of the input.</li>
+</ol>
+<p>The figure shows 5 output tokens so that it stays readable. The Flamingo paper uses 64 (Section 2.1). The paper also reports that this resampler gives better results than a plain Transformer or an MLP in its ablation (Section 3.3). The next question is which data trains the whole model.</p>
+
+<h3 id="a2-flamingo-data">Flamingo trains on three kinds of web data</h3>
+<p>Few-shot ability needs training data in which images and text alternate, because a prompt has that form. Flamingo uses a mixture of three kinds of data, all scraped from the web.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-alayrac2022-fig9.png" width="1665" height="340" loading="lazy" alt="Three boxes. Image-Text Pairs dataset: one flamingo photo with the text This is an image of a flamingo. Video-Text Pairs dataset: a stack of skateboard frames with the text A kid doing a kickflip. Multi-Modal Massive Web dataset: text, a dog photo, text, a cat photo, text in alternation."><figcaption>The three data formats. A pair has one image and one text. A video pair has several frames and one text. A web page has several images between pieces of text. Figure: <a data-ref="alayrac2022">Alayrac et al. (2022)</a>, Fig. 9 of the arXiv v2 paper (training datasets).</figcaption></figure>
+<div class="table-wrap"><table>
+<thead><tr><th>Dataset</th><th>Content</th><th>Size</th></tr></thead>
+<tbody>
+<tr><td>M3W (MultiModal MassiveWeb)</td><td>Text and images from the HTML of web pages, with each image at its position in the text</td><td>About 43 million pages; 185M images and 182 GB of text (Section 2.4, Appendix F)</td></tr>
+<tr><td>ALIGN</td><td>Images with alt-text</td><td>1.8 billion images</td></tr>
+<tr><td>LTIP (Long Text &amp; Image Pairs)</td><td>Image-text pairs with longer descriptions, collected for better quality</td><td>312 million pairs</td></tr>
+<tr><td>VTP (Video &amp; Text Pairs)</td><td>Short videos (about 22 s on average) with a sentence</td><td>27 million videos</td></tr>
+</tbody></table></div>
+<p>The paper states that M3W gives the few-shot ability. Removing M3W lowers the overall score by more than 17% in the ablation (Section 3.3). Training sequences use at most 5 images each. The paper trains on a weighted sum of the text loss on each dataset. Do the results show the few-shot ability? The next section answers.</p>
+
+<h3 id="a2-flamingo-results">A larger Flamingo and more examples in the prompt both give better results</h3>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partA/a-alayrac2022v1-fig9.png" width="1350" height="585" loading="lazy" alt="Line chart. The horizontal axis is the number of shots: 0, 4, 8, 16, 32. The vertical axis is aggregated performance relative to the state of the art, from 70% to 100%. Three lines: Flamingo 80B (top), 9B (middle), 3B (bottom). All lines rise with the number of shots."><figcaption>Horizontal axis: the number of worked examples (shots) in the prompt. Vertical axis: the score averaged over 16 benchmarks, as a percentage of the best fine-tuned model on each. Figure: <a data-ref="alayrac2022">Alayrac et al. (2022)</a>, Fig. 9 of arXiv v1.</figcaption></figure>
+<p>The vertical value is a score relative to the state of the art (SotA) of models that were fine-tuned on each task. A value of 100% would match those models. Flamingo does not fine-tune. Values read from the chart (approximate):</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Model</th><th>0 shots</th><th>32 shots</th></tr></thead>
+<tbody>
+<tr><td>Flamingo 3B</td><td>about 70%</td><td>about 80%</td></tr>
+<tr><td>Flamingo 9B</td><td>about 73%</td><td>about 85%</td></tr>
+<tr><td>Flamingo 80B</td><td>about 79%</td><td>about 97%</td></tr>
+</tbody></table></div>
+<p>Two trends follow. First, at every shot count, the larger model scores higher. Second, each line rises with the shot count, and the 80B line rises most. The paper states that the largest model uses the added shots best (Section 4.2.1 of v1). The model trained with at most 5 images per sequence, but it still improves with 32 shots at test time. This follows from the one-image cross-attention rule in the previous sections.</p>
+<div class="callout">Flamingo shows that a frozen LM plus a trained connection can learn a new vision-language task from examples in the prompt. The cost is a large trained connection, 10.2B trainable parameters in Flamingo-80B (see the table in the BLIP-2 section). BLIP and BLIP-2 reduce the cost in other ways.</div>
+
+<h3 id="a2-blip">BLIP cleans noisy web text and trains one model for understanding and generation</h3>
+<p>BLIP (<a data-ref="li2022b">Li et al., 2022</a>) solves two problems that earlier VLMs had.</p>
+<p><strong>Problem 1: one task type per model.</strong> Some earlier models only understood: they picked the best text for a photo. Others only generated: they wrote a caption. BLIP trains one model that does both. In the paper, the model has an image encoder and a text part that can run as a text encoder or a text decoder, with shared layers (Section 3.1).</p>
+<p><strong>Problem 2: noisy web text.</strong> The text of web images is often wrong or unrelated. BLIP cleans the data with a method called CapFilt (captioning and filtering).</p>
+<ol>
+<li>A <em>captioner</em> writes a new text \(T_s\) (synthetic text) for each web image.</li>
+<li>A <em>filter</em> checks each web text \(T_w\) and each synthetic text \(T_s\) against the image. It removes the texts that do not match.</li>
+<li>The new model trains on the pairs that pass, together with human-annotated pairs.</li>
+</ol>
+<p>The paper starts the captioner and the filter from the same pretrained model and fine-tunes each on a small human-annotated set, COCO (Section 3.3).</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-li2022-fig4.png" width="2090" height="262" loading="lazy" alt="Three photos with two texts each. A sunset over a lake: web text From bridge near my house; synthetic text A flock of birds flying over a lake at sunset. A plant on stones: web text In front of a house door in Reichenfels, Austria; synthetic text A potted plant sitting on top of a pile of rocks. A castle: web text The current castle was built in 1180, replacing a 9th century wooden castle; synthetic text A large building with a lot of windows on it."><figcaption>For each photo, the web text \(T_w\) is in red and the synthetic text \(T_s\) is in green. In the figure, red marks a text the filter removes. Green marks a text it keeps. The web texts describe the place, not the picture. The synthetic texts describe what the picture shows. Figure: <a data-ref="li2022b">Li et al. (2022)</a>, Fig. 4.</figcaption></figure>
+<p>BLIP addresses the quality of the data. It does not change how an image enters a large LM. BLIP-2 addresses that.</p>
+
+<h3 id="a2-blip2">BLIP-2 trains only a small Q-Former between a frozen image encoder and a frozen LM</h3>
+<p>Flamingo trains a large connection module, which costs much compute. BLIP-2 (<a data-ref="li2023a">Li et al., 2023</a>) freezes both the image encoder and the LM. It trains only one small module, the Q-Former (Querying Transformer).</p>
+<figure class="paper" style="--fig-w: 540px"><img src="slides/assets/partA/a-li2023a-fig1.png" width="990" height="465" loading="lazy" alt="Left panel, Vision-and-Language Representation Learning: a frozen Image Encoder feeds a Q-Former. Learned queries and text also enter the Q-Former. Right panel, Vision-to-Language Generative Learning: the Q-Former output feeds a frozen Large Language Model, which answers Write a romantic message that goes along this photo with a short poem about a sunset."><figcaption>The two training stages. Stage 1 (left) trains the Q-Former with the frozen image encoder. Stage 2 (right) connects the Q-Former output to a frozen LLM. Snowflakes mark frozen parts. Figure: <a data-ref="li2023a">Li et al. (2023)</a>, Fig. 1.</figcaption></figure>
+<p>The Q-Former holds 32 learnable queries of size 768. Its output has shape 32 × 768. The image features from a ViT-L/14 encoder have shape 257 × 1024, so the Q-Former output is much smaller (Section 3.1). This works as a bottleneck: the queries keep the visual information that matters for the text.</p>
+<ul>
+<li><strong>Stage 1 (representation learning).</strong> The Q-Former connects to the frozen image encoder. It trains with three losses: image-text contrastive (ITC), image-grounded text generation (ITG) and image-text matching (ITM), a yes-or-no decision whether an image and a text match (Section 3.2).</li>
+<li><strong>Stage 2 (generative learning).</strong> A fully connected layer projects the Q-Former output to the input size of a frozen LLM. These vectors are placed before the text embeddings, and they act as a soft visual prompt (Section 3.3).</li>
+</ul>
+<p>The deck lists the parts of BLIP-2: an EVA-CLIP image encoder (contrastive pretrained), the Q-Former, and an LM, which is either OPT or FLAN-T5. Compared with Flamingo, only the small Q-Former and one projection layer are trained. The result of this choice is in the next section.</p>
+
+<h3 id="a2-vqa">BLIP-2 beats Flamingo-80B on VQAv2 with far fewer trainable parameters</h3>
+<p>Visual question answering (VQA) is the task in which the model answers a text question about an image. The table below gives zero-shot VQA scores. Zero-shot means the model sees no example from the benchmark in its training or prompt. Higher is better. The benchmarks are VQAv2 (general questions), OK-VQA (questions that need outside knowledge) and GQA (questions that need reasoning over the scene).</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-li2023a-table2.png" width="1530" height="785" loading="lazy" alt="Table 2 of the BLIP-2 paper. Columns: model, number of trainable parameters, number of total parameters, VQAv2 val and test-dev, OK-VQA test, GQA test-dev. Rows include VL-T5, FewVLM, Frozen, VLKD, Flamingo 3B, 9B and 80B, and six BLIP-2 variants. The best BLIP-2 row, ViT-g FlanT5-XXL, has 108M trainable parameters, 12.1B total, and scores 65.2 and 65.0 on VQAv2 and 44.7 on GQA."><figcaption>Zero-shot VQA. The first two number columns give the trainable and total parameters. Figure: <a data-ref="li2023a">Li et al. (2023)</a>, Table 2.</figcaption></figure>
+<div class="table-wrap"><table>
+<thead><tr><th>Model</th><th>Trainable params</th><th>Total params</th><th>VQAv2 test-dev</th><th>OK-VQA test</th><th>GQA test-dev</th></tr></thead>
+<tbody>
+<tr><td>Frozen</td><td>40M</td><td>7.1B</td><td>not reported (29.6 on val)</td><td>5.9</td><td>not reported</td></tr>
+<tr><td>Flamingo-80B</td><td>10.2B</td><td>80B</td><td>56.3</td><td>50.6</td><td>not reported</td></tr>
+<tr><td>BLIP-2 ViT-g FlanT5-XXL</td><td>108M</td><td>12.1B</td><td>65.0</td><td>45.9</td><td>44.7</td></tr>
+</tbody></table></div>
+<p>Compare the last two rows (values from Table 2; the ratios are computed here).</p>
+<ul>
+<li>On VQAv2 test-dev, BLIP-2 scores 65.0 and Flamingo-80B scores 56.3, a difference of 8.7 points.</li>
+<li>BLIP-2 trains 108M parameters and Flamingo-80B trains 10.2B, about 94 times more.</li>
+<li>BLIP-2 is not best on every benchmark. On OK-VQA, Flamingo-80B scores 50.6 and BLIP-2 scores 45.9.</li>
+</ul>
+<p>Among the BLIP-2 rows, the larger LM gives the higher score. FlanT5-XXL beats FlanT5-XL, which beats the OPT rows, with the same image encoder. A good connection module and a strong frozen LM together give the result. The deck does not claim more than this. Does this solve the problem? The last section shows what remains.</p>
+
+<h3 id="a2-gap">Flamingo, BLIP-2 and GIT lack instruction following, and GPT-4V has it</h3>
+<figure class="paper" style="--fig-w: 600px"><img src="slides/assets/partA/a-kira2026a-p25-gpt4v-gap.png" width="3000" height="1356" loading="lazy" alt="Diagram titled Recap on Language Modeling: Large Language Models. Top row, OpenAI models: GPT-2 to GPT-3 (new: in-context learning, chain of thoughts), to ChatGPT and InstructGPT (adds instruction following), to GPT-4 (adds multimodal input with image). Bottom row, Multimodal Space: Flamingo, BLIP2, GIT and others, then an orange box Gap? Instruction-Following, Alignment Research, then Multimodal GPT-4."><figcaption>The top row shows what each OpenAI model added: in-context learning (GPT-3), instruction following (ChatGPT, InstructGPT) and image input (GPT-4). The bottom row shows the multimodal models. The orange box marks the missing step between them. Figure as shown in Georgia Tech CS 7643, Lecture 19 (<a data-ref="kira2026a">Kira, 2026</a>); slide by Chunyuan Li.</figcaption></figure>
+<p>The figure compares two lines of work. In text-only LMs, GPT-3 added in-context learning and chain-of-thought prompting. ChatGPT and InstructGPT added instruction following, which means the model does what a user asks in plain language. GPT-4 added image input to this. In the multimodal line, Flamingo, BLIP-2 and GIT show in-context learning and strong captioning and VQA scores. The deck marks the step to a multimodal GPT-4 as a gap: instruction following, which it assigns to alignment research.</p>
+<div class="verdict">Fixed: a way to connect a frozen image encoder to a frozen LM (Flamingo, BLIP-2) with a small trained module. Not fixed: a VLM that follows free-form user instructions about an image. The next section asks how far recent VLMs have closed this gap.</div>
+
+<!-- ═══════════ fragment A3 ═══════════ -->
+<h3 id="a3-what-improved">VLMs improved in data, training stages and some design details, but no ablation shows which matter</h3>
+<p>The GPT-4V gap in the previous section leaves one question: what changed in the open models that closed much of it? The deck gives a list taken from <a data-ref="kira2026a">Kira (2026)</a>. The list has two kinds of items: things that grew, and design changes.</p>
+<ul>
+  <li><b>Scale.</b> Models, data sets and training budgets are larger.</li>
+  <li><b>Several training stages.</b> A <em>training stage</em> is one phase with its own data and its own set of trainable parameters. The stages are pre-training, alignment of the image side to the language side, supervised fine-tuning (SFT) or instruction tuning, reinforcement learning from human feedback (RLHF), and post-training for reasoning.</li>
+  <li><b>More varied data</b>, and <b>synthetic data</b>, that is, data that another model wrote.</li>
+  <li><b>Design changes:</b> input at several resolutions, a long context, and position embeddings that carry time for video.</li>
+  <li><b>Many more benchmarks</b>, across many tasks.</li>
+</ul>
+<div class="callout">The source states a limit on the design changes: it is hard to tell which of them matter, because the models come with no ablations. An ablation trains the model again with one part removed and compares the result.</div>
+<p>The next three sections follow one model family, Qwen-VL, through three versions. Each version changes one item from this list. The first one shows the training stages.</p>
+
+<h3 id="a3-qwen-vl">Qwen-VL trains in three stages, and each stage changes which parts can learn</h3>
+<p>The question: how do you train a VLM when the language model and the vision encoder start as separate, already trained models? <a data-ref="bai2023">Bai et al. (2023)</a> answer with three stages. The figure shows the three stages side by side.</p>
+<figure class="paper" style="--fig-w: 760px"><img src="slides/assets/partA/a-bai2023-fig3.png" width="1935" height="755" loading="lazy" alt="Three diagrams in a row, one per training stage of Qwen-VL. Each diagram stacks a ViT image encoder at the bottom, a cross-attention module with learnable query embeddings in the middle, and the language model QwenLM at the top, which also receives text. In stage 1 the ViT and the cross-attention module are marked trainable and the language model is marked frozen; the image is low resolution and the data are image-text pairs. In stage 2 all three parts are trainable; the image is high resolution and the data are multi-task and interleaved vision-language data. In stage 3 the ViT is frozen and the other two parts are trainable; the data are chat-style interleaved vision-language data."><figcaption>The three training stages of Qwen-VL. A flame marks a part that learns; a snowflake marks a frozen part. Figure: <a data-ref="bai2023">Bai et al. (2023)</a>, Fig. 3.</figcaption></figure>
+<p>Each diagram has the same three parts. The <b>ViT</b> is the vision encoder (see <a href="#part-a">Part A</a>, where image encoders are defined). The <b>cross-attention module</b> is the adapter between the two sides. It uses a fixed group of learnable query vectors. They read the image features and return a sequence of exactly 256 vectors (<a data-ref="bai2023">Bai et al. 2023</a>, Section 2). <b>QwenLM</b> is the language model, Qwen-7B.</p>
+<p>What differs between the three diagrams is which parts are frozen (not updated) and which learn:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Stage</th><th>Data</th><th>Image size</th><th>ViT</th><th>Adapter</th><th>Language model</th></tr></thead>
+<tbody>
+<tr><td>1. Pre-training</td><td>Image-text pairs. 5 billion collected, 1.4 billion left after cleaning</td><td>224 × 224</td><td>learns</td><td>learns</td><td>frozen</td></tr>
+<tr><td>2. Multi-task pre-training</td><td>Fine-grained annotations: captioning, VQA, grounding, OCR, interleaved image-text</td><td>448 × 448</td><td>learns</td><td>learns</td><td>learns</td></tr>
+<tr><td>3. Supervised fine-tuning</td><td>Chat-style instruction data, about 350 thousand examples</td><td>448 × 448</td><td>frozen</td><td>learns</td><td>learns</td></tr>
+</tbody></table></div>
+<p>Stage 1 runs for 50,000 steps and uses about 1.5 billion image-text samples. It keeps the language model fixed so that the adapter and the ViT learn to produce features the language model can use. Stage 2 raises the image size from 224 to 448 pixels per side and trains all parts. Stage 3 freezes the ViT again and teaches the model to follow instructions in chat form.</p>
+<p>Stage 2 also adds a way to point at image regions. A bounding box is written as plain text, with coordinates scaled to the range 0 to 1000 and wrapped in the special tokens <code>&lt;box&gt;</code> and <code>&lt;/box&gt;</code>. The language model then outputs a region in the same way it outputs a word (<a data-ref="bai2023">Bai et al. 2023</a>, Section 2).</p>
+<div class="callout">Conclusion: the stages move from "teach the image side to speak the language model's language" to "train everything together on harder tasks" to "teach chat behaviour". LLaVA in <a href="#part-b">Part B</a> uses a two-stage version of this pattern.</div>
+<p>Stage 2 and 3 still resize every image to one square. The next question is what happens when the image keeps its own shape.</p>
+
+<h3 id="a3-qwen2-vl">Qwen2-VL accepts any resolution, so the number of visual tokens follows the image size</h3>
+<p>Qwen-VL resizes every image to one fixed square, 448 × 448 pixels after stage 1. A wide page or a thin strip then loses detail or gets stretched. <a data-ref="wang2024">Wang et al. (2024)</a> remove this step. An <em>any-resolution input</em> is an image that enters the encoder at its own height and width. The encoder then returns a number of <em>visual tokens</em> (the vectors that the language model reads in place of the image) that depends on the image size.</p>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partA/a-wang2024-fig2.png" width="1970" height="1265" loading="lazy" alt="Diagram of Qwen2-VL. At the bottom are four inputs of different shapes: a tall web page 1092 wide and 8204 high (Picture 1), a thin strip of a formula 224 wide and 28 high (Picture 2), a landscape photo 1260 wide and 700 high (Picture 3), and a video 644 wide and 336 high lasting 16 seconds (Video 1). An arrow marked native resolution input leads into a vision encoder. Above it a row of colour-coded tokens shows 11427 tokens for Picture 1, 8 tokens for Picture 2, 1125 tokens for Picture 3 and 2208 tokens for Video 1, mixed with text tokens. All tokens enter the QwenLM decoder at the top."><figcaption>Qwen2-VL reads images and video at their own size. Each input gives a different number of tokens, shown above the arrows. Figure: <a data-ref="wang2024">Wang et al. (2024)</a>, Fig. 2.</figcaption></figure>
+<p>The figure shows four inputs. Their pixel sizes differ by a large factor, and so do their token counts:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Input</th><th>Width × height (pixels)</th><th>Tokens (figure)</th></tr></thead>
+<tbody>
+<tr><td>Picture 1, a long web page</td><td>1092 × 8204</td><td>11,427</td></tr>
+<tr><td>Picture 2, one line of a formula</td><td>224 × 28</td><td>8</td></tr>
+<tr><td>Picture 3, a photo</td><td>1260 × 700</td><td>1,125</td></tr>
+<tr><td>Video 1, 16 seconds</td><td>644 × 336</td><td>2,208</td></tr>
+</tbody></table></div>
+<p>The token counts follow one rule. The ViT cuts the image into patches of 14 × 14 pixels. An MLP layer then merges each block of 2 × 2 neighbouring patches into one token. One token therefore covers 28 × 28 pixels, and the count is about (width ÷ 28) × (height ÷ 28). Check with Picture 3: 1260 ÷ 28 = 45 and 700 ÷ 28 = 25, so 45 × 25 = 1,125 tokens (computed here). Picture 1 gives 39 × 293 = 11,427 tokens (computed here). The paper's own example is a 224 × 224 image: it gives 16 × 16 = 256 patches, merged to 64 tokens, and with the two marker tokens that wrap an image the LLM receives 66 (<a data-ref="wang2024">Wang et al. 2024</a>, Section 2.1).</p>
+<p>To work at any size, the ViT drops its fixed position embeddings and uses 2D rotary position embeddings (2D-RoPE), which encode the row and the column of each patch. Qwen2-VL also replaces the usual one-dimensional rotary embedding in the language model with M-RoPE. M-RoPE splits the position into three parts: time, height and width. For text the three parts are equal, so it behaves like the usual 1D version. For video, the time part counts frames.</p>
+<p>Video is sampled at two frames per second. A 3D convolution of depth two merges each pair of frames. The paper caps the total at 16,384 tokens per video by lowering the frame resolution. The model sizes are 2B, 7B and 72B, and all use a 675M-parameter ViT (<a data-ref="wang2024">Wang et al. 2024</a>, Table 1).</p>
+<div class="callout">Conclusion: the cost of an image now follows its size. A small crop is cheap and a long page is expensive. The fixed-size input of Qwen-VL had hidden this trade-off.</div>
+<p>Qwen2-VL keeps the same language model recipe. The next question is what a newer model changes when it is also larger.</p>
+
+<h3 id="a3-qwen3-vl">Qwen3-VL adds a mixture-of-experts model, DeepStack and text timestamps</h3>
+<p><a data-ref="bai2025">Bai et al. (2025)</a> describe the third generation. The figure has the same layout as the Qwen2-VL figure: inputs at their native resolution at the bottom, a vision encoder, a row of tokens, and a decoder at the top.</p>
+<figure class="paper" style="--fig-w: 700px"><img src="slides/assets/partA/a-bai2025-fig1.png" width="1915" height="1105" loading="lazy" alt="Diagram of Qwen3-VL. At the bottom are a tall web page 1248 wide and 9376 high, a thin formula strip 256 wide and 32 high, a photo 1440 wide and 800 high, and a video 736 wide and 448 high lasting 8 seconds. A native resolution input arrow leads into the vision encoder. Above it, a token row shows 11427 tokens for Picture 1, 8 for Picture 2, 1125 for Picture 3, and for the video a run of frame tokens with a timestamp written as text before each group. The tokens enter the Qwen3 LM dense or MoE decoder. At the right a dashed box labelled DeepStack shows features from several vision encoder layers entering the first LLM blocks."><figcaption>Qwen3-VL. The right side shows DeepStack: features from several layers of the vision encoder go into the first layers of the language model. Text such as "&lt;0.0 seconds&gt;" marks video frames. Figure: <a data-ref="bai2025">Bai et al. (2025)</a>, Fig. 1 (the deck takes it from the Qwen3-VL README).</figcaption></figure>
+<p>Four changes are visible in the figure and in the report.</p>
+<ol>
+  <li><b>More parameters, fewer in use.</b> The largest model, Qwen3-VL-235B-A22B, is a mixture-of-experts (MoE) model. It holds 235 billion parameters in total, and 22 billion are active for each token. The report also lists dense models of 2B, 4B, 8B and 32B, and a 30B-A3B MoE model (<a data-ref="bai2025">Bai et al. 2025</a>, Section 2). A large total size with few active parameters keeps the cost of each token low.</li>
+  <li><b>DeepStack.</b> The vision encoder gives features at three depths. Separate merger modules turn them into visual tokens, and these tokens are added to the hidden states of the first three LLM layers (<a data-ref="bai2025">Bai et al. 2025</a>, Section 2.2). Later sections of this page (<a href="#part-c">Part C</a>) return to this design.</li>
+  <li><b>Text timestamps for video.</b> Each group of frames starts with a time written as text, such as "&lt;3.0 seconds&gt;". Qwen2.5-VL tied the time to a position index; the report says this made the indices very large for long video (Section 2.3).</li>
+  <li><b>Interleaved MRoPE.</b> The time, height and width parts of M-RoPE are now spread across the low and high frequencies. In Qwen2-VL each part held one block of frequencies, which the report links to weaker long-video results (Section 2.1).</li>
+</ol>
+<p>The vision encoder is SigLIP-2, trained further at dynamic resolution. A two-layer MLP merges 2 × 2 patch features into one token. The figure counts match the Qwen2-VL figure for the same page and photo: Picture 1 gives 11,427 tokens and Picture 3 gives 1,125, which means one token covers 32 × 32 pixels here (computed here from 1248 ÷ 32 = 39, 9376 ÷ 32 = 293).</p>
+<p>Training now has four stages. The table gives them as in the report (Table 1 of <a data-ref="bai2025">Bai et al. 2025</a>):</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Stage</th><th>Goal</th><th>Trainable</th><th>Tokens</th><th>Sequence length</th></tr></thead>
+<tbody>
+<tr><td>S0</td><td>Vision-language alignment</td><td>merger only</td><td>67B</td><td>8,192</td></tr>
+<tr><td>S1</td><td>Multimodal pre-training</td><td>all parts</td><td>about 1T</td><td>8,192</td></tr>
+<tr><td>S2</td><td>Long-context pre-training</td><td>all parts</td><td>about 1T</td><td>32,768</td></tr>
+<tr><td>S3</td><td>Ultra-long-context adaptation</td><td>all parts</td><td>100B</td><td>262,144</td></tr>
+</tbody></table></div>
+<p>S0 resembles stage 1 of Qwen-VL: only the connecting module learns. After post-training (SFT, distillation and reinforcement learning), the whole pipeline is the "multi-stage training" of the first section. The report details this in a later section (<a href="#part-c">Part C</a>).</p>
+<p>The next two sections list what the model can do, as the Qwen team states it.</p>
+
+<h3 id="a3-qwen3-vl-abilities">Qwen3-VL lists eight abilities: agents, code, space, long video, reasoning, recognition, OCR and text</h3>
+<p>The question: which abilities does the newest model claim? The deck quotes the project README, which lists eight. They are the team's claims, and the report tests them with benchmarks (<a data-ref="bai2025">Bai et al. 2025</a>).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Ability</th><th>What the README says</th></tr></thead>
+<tbody>
+<tr><td>Visual agent</td><td>Operates PC and phone screens: finds elements, understands their function, calls tools, finishes tasks.</td></tr>
+<tr><td>Visual coding</td><td>Writes Draw.io, HTML, CSS and JavaScript from images or video.</td></tr>
+<tr><td>Spatial perception</td><td>Judges positions, viewpoints and occlusion. Stronger 2D grounding (marking where an object is) and new 3D grounding.</td></tr>
+<tr><td>Long context and video</td><td>256K tokens natively, expandable to 1M. Books and hours of video, with second-level time indexing.</td></tr>
+<tr><td>Multimodal reasoning</td><td>Stronger on STEM and mathematics: causal analysis and answers with evidence.</td></tr>
+<tr><td>Visual recognition</td><td>Broader pre-training data, to recognise people, anime, products, landmarks, plants and animals.</td></tr>
+<tr><td>OCR</td><td>Reads text in more languages and in poor images; parses long documents better.</td></tr>
+<tr><td>Text understanding</td><td>On par with a text-only LLM of the same family.</td></tr>
+</tbody></table></div>
+<p>Two numbers need a check against the report. The 256K window is correct: the models train up to 262,144 tokens in stage S3. The 1M figure comes from an extension at inference time (<a data-ref="bai2025">Bai et al. 2025</a>, appendix). For OCR the deck says 32 languages, up from 10. The report says 39 languages, up from 10 languages besides Chinese and English. In 32 of the 39, the model passes 70% accuracy in the report's own test (Section 5). The 32 counts the languages where the model meets that threshold, not the languages it supports.</p>
+<div class="callout">Conclusion: the list shows the direction of the family: from describing pictures to acting on screens, reading long documents and video, and solving problems.</div>
+<p>A list of claims is not a result. The summary below turns them into trends.</p>
+
+<h3 id="a3-summary">The summary: simpler designs, more data and a longer training pipeline</h3>
+<p>The summary slide of the source lecture (<a data-ref="kira2026a">Kira 2026</a>) gives five moves. Each is a change from an older practice to a newer one.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>From</th><th>To</th><th>Example in this part</th></tr></thead>
+<tbody>
+<tr><td>Captioning</td><td>Reasoning and action</td><td>Qwen3-VL as a screen-operating agent</td></tr>
+<tr><td>Static images</td><td>Long multimodal streams</td><td>Qwen2-VL video; the 256K context of Qwen3-VL</td></tr>
+<tr><td>Human-written data</td><td>Synthetic, model-written data</td><td>Not shown by a figure here; the report describes it</td></tr>
+<tr><td>SFT only</td><td>Full pipelines with reinforcement learning</td><td>Qwen3-VL post-training</td></tr>
+<tr><td>Separate parts for each modality</td><td>Some unified autoregressive plus diffusion models, still early</td><td>See <a href="#part-c">Part C</a></td></tr>
+</tbody></table></div>
+<p>The slide heading states the overall direction: simplify the design, and scale the data and the training. The design stays close to the Part A pattern of an image encoder, a connecting module and a language model. What grew is the data and the number of stages around it.</p>
+<p>The last section of the part gathers the whole path.</p>
+
+<h3 id="a3-part-a-close">Part A close: LLMs learned to see when the image became vectors that the LLM reads like words</h3>
+<p>Part A started with the question of how an LLM can read an image. The answer is one idea, repeated in each method: turn the image into vectors and give them to the language model as if they were words. Each method fixed a problem of the one before it.</p>
+<ul>
+  <li>Image captioning and early fusion joined image and text, but each model served one task.</li>
+  <li>CLIP aligned image and text vectors with contrastive pre-training, which gave zero-shot recognition and open-vocabulary detection.</li>
+  <li>Flamingo, BLIP and BLIP-2 connected a frozen vision encoder to a frozen language model with a small trainable module. The model could then answer questions about images, but a gap to GPT-4V remained.</li>
+  <li>Qwen-VL, Qwen2-VL and Qwen3-VL closed much of the gap with staged training, any-resolution input, larger data and a longer pipeline.</li>
+</ul>
+<p>These models are large and complex. <a href="#part-b">Part B</a> builds the simplest form of this idea, LLaVA, one step at a time in code. The question for Part B: what is the smallest design, and the least data, that makes an LLM answer questions about an image?</p>
+
+<!-- ═══════════ fragment B1 ═══════════ -->
+<!-- ═══════════════════════════ PART B ═══════════════════════════ -->
+<div class="part" id="part-b"><div class="label">PART B</div><h2>Make VLM chat</h2><p>Part A showed how a vision encoder connects to an LLM. Part B asks how to make the result answer questions and follow instructions. It follows LLaVA step by step, then repeats the same steps in code with nanoVLM.</p></div>
+<p>Part B has three segments: <em>Problem &amp; foundations</em>, <em>LLaVA: A simple instruction tuning method for VLM</em>, and <em>A small demo: nanoVLM</em>. This fragment covers the first two. The third segment starts after the LLaVA benchmark.</p>
+<p class="note">This part follows Georgia Tech CS 8803-VLM, Lecture 6 (<a data-ref="wang2026l6">Wang et al. (2026)</a>) and the nanoVLM repository (<a data-ref="wiedmann2025">Wiedmann et al. (2025)</a>). The text is ours; the results come from the papers cited.</p>
+
+<h3 id="b1-recap">The methods of Part A name what is in an image</h3>
+<p>Part A ended with models that connect an image to text. The first question of Part B is what these models return. Four methods from Part A, applied to one photo, give four kinds of output. The table lists them. The outputs are illustrative.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>Text input</th><th>Output</th></tr></thead>
+<tbody>
+<tr><td>Classify (<a data-ref="radford2021">CLIP</a>)</td><td>“a taxi”, “a bus”, “a bicycle”</td><td>best label: “a taxi”</td></tr>
+<tr><td>Detect (<a data-ref="minderer2022">OWL-ViT</a>)</td><td>“person”, “ironing board”</td><td>one box for each</td></tr>
+<tr><td>Caption (<a data-ref="li2022b">BLIP</a>)</td><td>none</td><td>a short sentence that names the scene</td></tr>
+<tr><td>Short answer (<a data-ref="li2023a">BLIP-2</a>)</td><td>“What color is the taxi?”</td><td>“yellow”</td></tr>
+</tbody></table></div>
+<p>Each method says what is in the image. None of them can answer “What is unusual about this image?”. The photo in the next section shows why.</p>
+
+<h3 id="b1-follow">Recognizing objects is not the same as following an instruction</h3>
+<p>The photo shows a man who irons clothes on the back of a taxi. A user asks: “What is unusual about this image?” The model must do three things.</p>
+<figure class="paper" style="--fig-w: 420px"><img src="slides/assets/partB/bv-liu2023-table3-ironing.png" width="695" height="462" loading="lazy" alt="A man irons clothes on an ironing board fixed to the back of a yellow taxi on a city street."><figcaption>The test image. Figure: <a data-ref="liu2023a">Liu et al. (2023)</a>, Table 3 (the photo is third-party; the paper gives its source).</figcaption></figure>
+<ol>
+<li><strong>Recognize.</strong> The scene has a person, clothes, an ironing board and a vehicle.</li>
+<li><strong>Relate.</strong> The activity is ironing. The place is a vehicle, not an ordinary room.</li>
+<li><strong>Answer the instruction.</strong> Explain why the combination of activity and place is unexpected.</li>
+</ol>
+<p>A list of objects fails at step 3. The request “Describe the scene” and the request “What is unusual?” need different answers from the same pixels. <a data-ref="liu2023a">Liu et al. (2023)</a>, Table 3, compare the answers of four models to this question. BLIP-2 says “a man is sitting on the back of a yellow cab”. OpenFlamingo says “the man is drying his clothes on the hood of his car”. Both describe. LLaVA explains why the scene is unusual.</p>
+<div class="callout"><strong>Key point.</strong> Visual instruction following needs two things: the right visual evidence, and the behavior that the user requested. An object list gives only the first.</div>
+<p>The deck marks the scope of the two methods in Part B. LLaVA teaches this behavior with generated instructions. <a href="#part-c">Part C</a> covers Qwen3-VL, which extends the scope to detail, long context and actions. The next section asks whether the data for this behavior can come from captions.</p>
+
+<h3 id="b1-captions">Captions are useful for alignment but do not teach instruction following</h3>
+<p>Image-caption pairs are cheap and plentiful. A training example for “describe this image” is easy to make: the question is “Describe the image” and the answer is the caption. <a data-ref="liu2023a">Liu et al. (2023)</a>, Section 3, call this the naive expansion. It lacks diversity and in-depth reasoning, both in the instructions and in the answers.</p>
+<figure class="paper" style="--fig-w: 460px"><img src="slides/assets/partB/bv-liu2023-table1-luggage.jpg" width="1200" height="750" loading="lazy" alt="A photo of several people who put luggage into a black SUV in an underground car park, with boxes around the people and objects."><figcaption>A COCO photo with boxes. Figure: <a data-ref="liu2023a">Liu et al. (2023)</a>, Tables 1 and 14 (the image comes from <a data-ref="lin2014coco">COCO</a>).</figcaption></figure>
+<p>For this photo, the caption says that people try to fit their luggage in an SUV. Three different instructions need three different answers.</p>
+<ul>
+<li>“Where is the vehicle parked?” The answer is one fact: an underground parking area.</li>
+<li>“Describe the objects and their positions.” The answer covers the people, the luggage, the SUV and the space between them.</li>
+<li>“What challenges do the people face?” The answer uses the scene and common knowledge to explain packing limits.</li>
+</ul>
+<p>One caption cannot supply all three targets. Captions still help at the start of training, because they teach the model to connect image features to words (<a href="#b1-stage1">Stage 1</a>). Richer pairs of instruction and answer teach the model to change its answer with the task. The next section shows where LLaVA gets such pairs.</p>
+
+<h3 id="b1-idea">LLaVA combines generated instruction data with a light visual connector</h3>
+<p>LLaVA (Large Language and Vision Assistant, <a data-ref="liu2023a">Liu et al. 2023</a>) reuses models that already exist. It adds two things.</p>
+<ol>
+<li><strong>Visual instruction data.</strong> Visual instruction data are examples of an instruction about an image and a good answer. A text-only model, GPT-4, writes them from captions and boxes. This model is the <em>teacher</em>.</li>
+<li><strong>A light visual model.</strong> The CLIP ViT encoder sees the image. One linear layer (a single learned matrix) maps the result into the input space of the LLM, Vicuna. Vicuna writes the answer. Vicuna is an open chat model that <a data-ref="chiang2023vicuna">Chiang et al. (2023)</a> made from LLaMA.</li>
+</ol>
+<p>The connector makes the visual evidence available to the LLM. The data teach what a useful answer does. <em>Instruction tuning</em> is training a model on pairs of instruction and answer, so that it learns to follow instructions.</p>
+<p>The dataset has 158K samples from about 80K unique images (<a data-ref="liu2023a">Liu et al. 2023</a>, Section 3 and the caption of Table 3). It has three types of answer.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Type</th><th>Samples</th><th>What the answer does</th></tr></thead>
+<tbody>
+<tr><td>Conversation</td><td>58K</td><td>Gives focused answers, and handles follow-up questions over several turns</td></tr>
+<tr><td>Detailed description</td><td>23K</td><td>Covers many objects and the relations between them</td></tr>
+<tr><td>Complex reasoning</td><td>77K</td><td>Explains what the evidence means, in steps</td></tr>
+</tbody></table></div>
+<p>The three numbers add up to 158K. The next section explains how GPT-4 writes these samples without a view of the image.</p>
+
+<h3 id="b1-teacher">The teacher reads annotations; the student reads pixels</h3>
+<p>GPT-4, in this pipeline, accepts only text. It cannot see an image. <a data-ref="liu2023a">Liu et al. (2023)</a>, Section 3, give it two symbolic descriptions of the image instead.</p>
+<ul>
+<li><strong>Captions</strong> describe the scene from several points of view.</li>
+<li><strong>Bounding boxes</strong> name the objects and place them. A box is four numbers between 0 and 1 that give the position in the image. For example, “person: [0.681, 0.242, 0.774, 0.694]”.</li>
+</ul>
+<p>The authors write a few examples for each of the three types by hand. These are the only human annotations in the pipeline. GPT-4 receives them as seed examples in its prompt (in-context learning). It then writes a question and a target answer for each new image from COCO.</p>
+<p>The pipeline has two stages. The first stage is offline: the captions and boxes go to the teacher, and the teacher writes a question and an answer. The second stage is training: LLaVA receives the original image and the generated question, and it learns to predict the generated answer. Captions and boxes are only a tool for data generation. The trained LLaVA does not need them as input.</p>
+<div class="callout"><strong>Key point.</strong> The teacher receives annotations. The student receives the pixels. The student learns from the answers that the teacher wrote.</div>
+<p>The next section describes the student: the model that reads the image.</p>
+
+<h3 id="b1-arch">The architecture changes the width of the visual vectors and passes them to the LLM</h3>
+<p>LLaVA has three parts (<a data-ref="liu2023a">Liu et al. 2023</a>, Section 4.1, Figure 1, Equation 1).</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partB/bv-liu2023-fig1-architecture.png" width="1185" height="392" loading="lazy" alt="LLaVA network architecture: an image goes through a vision encoder and a projection W; the result and the language instruction go to the language model, which writes the answer."><figcaption>The LLaVA network. Figure: <a data-ref="liu2023a">Liu et al. (2023)</a>, Fig. 1.</figcaption></figure>
+<p>Two equations describe the path of the image:</p>
+\[ Z_v = g(X_v), \qquad H_v = W Z_v \]
+<ul>
+<li>\(X_v\) is the input image.</li>
+<li>\(g\) is the CLIP ViT-L/14 image encoder (<a data-ref="radford2021">Radford et al. 2021</a>; the model is from Lecture 3). It is frozen: its weights do not change.</li>
+<li>\(Z_v \in \mathbb{R}^{d_v \times N_v}\) holds \(N_v\) visual vectors. Each vector has \(d_v\) numbers. A vector is a learned feature of the image. It does not need to match one object.</li>
+<li>\(W \in \mathbb{R}^{d_L \times d_v}\) is the projection: one learned matrix. It applies to each visual vector in the same way.</li>
+<li>\(H_v \in \mathbb{R}^{d_L \times N_v}\) holds the \(N_v\) projected vectors. Each has \(d_L\) numbers, the width of the Vicuna word embeddings.</li>
+</ul>
+<p>Vicuna reads the vectors \(H_v\) and the embeddings of the text tokens together. It then predicts the answer one token at a time. Vicuna is frozen in Stage 1 and trained in Stage 2.</p>
+<p>The projection only fits the width of the vectors. It does not write a caption. The paper names other ways to connect the two models: the gated cross-attention of <a data-ref="alayrac2022">Flamingo</a> and the Q-Former of <a data-ref="li2023a">BLIP-2</a>. It leaves them for future work. The simple connector lets the authors test data changes quickly. The next section trains this connector.</p>
+
+<h3 id="b1-stage1">Stage 1 trains only the projection while both models stay frozen</h3>
+<p>Before Stage 1, the projection \(W\) is untrained. The LLM cannot yet read the visual vectors. Stage 1 teaches \(W\) with image-caption pairs. The paper filters CC3M (<a data-ref="sharma2018cc">Sharma et al. 2018</a>) to 595K pairs (Section 4.2). Each pair becomes a one-turn conversation. The question asks for a brief description. The answer is the original caption.</p>
+<p>CLIP stays frozen. Vicuna stays frozen. Only \(W\) learns. The loss is:</p>
+\[ \min_{W}\; -\sum_{t} \log p_{W,\phi_0}\!\left(c_t \mid X_v, q, c_{\lt t}\right) \]
+<ul>
+<li>\(c_t\) is token \(t\) of the original caption \(c\).</li>
+<li>\(c_{\lt t}\) are the caption tokens before \(t\).</li>
+<li>\(q\) is the request for a brief description.</li>
+<li>\(X_v\) is the image.</li>
+<li>\(\phi_0\) are the Vicuna weights. They are fixed.</li>
+<li>\(p_{W,\phi_0}\) is the probability that the model gives to the next caption token. It depends on \(W\) through the visual vectors.</li>
+</ul>
+<p>The loss is the negative log-probability of the caption, summed over its tokens. A lower loss means that the model predicts the caption better. The gradient still passes through Vicuna to reach \(W\), but it does not change Vicuna. The paper describes this stage as training a visual tokenizer that fits the frozen LLM. It uses 1 epoch, learning rate 2e-3 and batch size 128 (Section 5).</p>
+<p>After Stage 1 the LLM can read the image. It does not yet follow instructions well. The next section changes that.</p>
+
+<h3 id="b1-stage2">Stage 2 trains the projection and Vicuna, and the loss counts only the answers</h3>
+<p>Stage 2 trains both \(W\) and the Vicuna weights \(\phi\). The trainable set is \(\theta = \{W, \phi\}\). The paper calls this “end-to-end”, but the CLIP encoder stays frozen (Section 4.2).</p>
+<p>Two branches use this stage.</p>
+<ul>
+<li><strong>Multimodal chat.</strong> The model trains on the 158K generated samples for 3 epochs. The learning rate is 2e-5 and the batch size is 32 (Section 5).</li>
+<li><strong>ScienceQA.</strong> The model trains on <a data-ref="lu2022sqa">ScienceQA</a>, a set of multiple-choice science questions. It writes a reason and then picks the answer. This is a separate training run.</li>
+</ul>
+<p>A conversation becomes one sequence: the image and the first user question, the first answer, the second question, the second answer, and so on. The model reads the whole sequence. The loss uses only the answer positions:</p>
+\[ \mathcal{L}(\theta) = -\sum_{i \in \mathcal{A}} \log p_\theta\!\left(x_i \mid X_v, x_{\lt i}\right) \]
+<ul>
+<li>\(x_i\) is token \(i\) of the sequence.</li>
+<li>\(\mathcal{A}\) is the set of positions that belong to the assistant answers. The paper also trains the model to predict where an answer stops.</li>
+<li>\(x_{\lt i}\) are all tokens before position \(i\): earlier questions, earlier answers and the system message.</li>
+<li>\(X_v\) is the image.</li>
+</ul>
+<p>Question tokens give context but add nothing to the loss. Answer tokens add to the loss. Part B returns to this idea as the loss mask in nanoVLM.</p>
+<div class="verdict"><strong>What each stage changes.</strong> Stage 1 teaches the interface: \(W\) learns to put image features in the word space. Stage 2 changes how the model answers: Vicuna learns to follow the instruction.</div>
+<p>The last LLaVA section asks how to measure whether the answers are good.</p>
+
+<h3 id="b1-bench">LLaVA-Bench scores answer quality against a reference, not the share of correct answers</h3>
+<p><a data-ref="liu2023a">Liu et al. (2023)</a>, Section 5, use three tests.</p>
+<ul>
+<li><strong>LLaVA-Bench (COCO):</strong> 30 images from COCO-Val-2014, with 3 questions each (conversation, detailed description, complex reasoning): 90 questions.</li>
+<li><strong>LLaVA-Bench (In-the-Wild):</strong> 24 images and 60 questions. The images include indoor and outdoor scenes, memes, paintings and sketches.</li>
+<li><strong>ScienceQA:</strong> multiple-choice questions. The score is accuracy.</li>
+</ul>
+<p>An open answer has no single correct string. The authors use a <em>judge</em>: a model that rates answers. A benchmark that uses a judge model is LLM-as-judge. The steps are:</p>
+<ol>
+<li>LLaVA receives the image and the question. It writes an answer.</li>
+<li>Text-only GPT-4 receives a text description of the image and the same question. It writes a reference answer. The paper calls it an approximate upper bound.</li>
+<li>A GPT-4 judge sees the description, the question and both answers. It rates each answer from 1 to 10 for helpfulness, relevance, accuracy and level of detail.</li>
+<li>Score = 100 × (rating of LLaVA) ÷ (rating of the reference).</li>
+</ol>
+<p>The score compares answer quality with the reference. It is not the share of correct answers. A score of 100 means that the judge rates LLaVA as high as the reference.</p>
+<p>On In-the-Wild, the overall relative scores in Table 5 are:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Model</th><th>Conversation</th><th>Detail</th><th>Complex reasoning</th><th>All</th></tr></thead>
+<tbody>
+<tr><td>OpenFlamingo</td><td>19.3</td><td>19.0</td><td>19.1</td><td>19.1</td></tr>
+<tr><td>BLIP-2</td><td>54.6</td><td>29.1</td><td>32.9</td><td>38.1</td></tr>
+<tr><td>LLaVA</td><td>57.3</td><td>52.5</td><td>81.7</td><td>67.3</td></tr>
+</tbody></table></div>
+<p>LLaVA scores 67.3, against 38.1 for BLIP-2 and 19.1 for OpenFlamingo (Table 5; the table gives mean and standard deviation over three runs). The two other models mostly describe the image, so they do worse on instructions. On ScienceQA, LLaVA reaches 90.92% accuracy (Table 7; trained for 12 epochs, with the reason written before the answer). The paper reports the previous best as 91.68%. These tests use GPT-4 as the judge and a small set of questions, so the scores show a trend, not a precise ranking.</p>
+<p>LLaVA is now defined: the data, the architecture, two stages and a test. The next segment of Part B builds the same steps in a small model, nanoVLM, and asks how many tokens an image gives to the LLM.</p>
+
+<!-- ═══════════ fragment B2 ═══════════ -->
+<h3 id="b2-map">nanoVLM puts the three parts of LLaVA in four files</h3>
+<p>The LLaVA section gave the recipe: an image encoder, a connector and a language model. This section shows the same recipe as running code. The code is <a data-ref="wiedmann2025">nanoVLM (Wiedmann et al., 2025)</a>, a small open-source project, read at commit 4e0c096 (27 Oct 2025). The question: where does each part of LLaVA sit in the code?</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Part in <a data-ref="liu2023a">LLaVA (Liu et al., 2023)</a></th><th>File in nanoVLM</th><th>Lines</th></tr></thead>
+<tbody>
+<tr><td>Vision encoder</td><td><code>models/vision_transformer.py</code></td><td>251</td></tr>
+<tr><td>Projection (LLaVA's matrix W)</td><td><code>models/modality_projector.py</code></td><td>45</td></tr>
+<tr><td>Language model</td><td><code>models/language_model.py</code></td><td>681</td></tr>
+<tr><td>All three, joined</td><td><code>models/vision_language_model.py</code></td><td>310</td></tr>
+</tbody></table></div>
+<p class="note">Line counts from <code>wc -l</code> at the commit above. The four files total 1,287 lines (computed here).</p>
+<p>The project follows <a data-ref="karpathy2022">nanoGPT (Karpathy, 2022)</a>, the small language-model code from Lecture 1. Compared with nanoGPT, three things are new:</p>
+<ul>
+<li>An image encoder: a vision transformer (ViT, from Lecture 3).</li>
+<li>A projector: a pixel shuffle, then one linear layer.</li>
+<li>A language model that reads vectors, not token ids. It uses RoPE, RMSNorm, a gated MLP and grouped-query attention (GQA), the parts Lecture 1 named.</li>
+</ul>
+<p>The next question: which trained model do we read the numbers from?</p>
+
+<h3 id="b2-checkpoint">We read one checkpoint: nanoVLM-230M-8k</h3>
+<p>A checkpoint is a file of trained weights. All numbers in this section come from <code>lusxvr/nanoVLM-230M-8k</code> (revision a76fa2d, read 10 Oct 2026). The reason: <code>generate.py</code> loads it by default, and the current code reads it.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Part</th><th>Design</th><th>Parameters</th></tr></thead>
+<tbody>
+<tr><td>Image encoder</td><td>SigLIP 2 (<a data-ref="tschannen2025">Tschannen et al., 2025</a>), size B/16, input 512 px, 12 blocks, width 768</td><td>86,433,024</td></tr>
+<tr><td>Projector</td><td>Pixel shuffle with factor 4: 64 tokens per tile</td><td>7,077,888</td></tr>
+<tr><td>Language model</td><td>SmolLM2-135M (<a data-ref="allal2025">Allal et al., 2025</a>): 30 blocks, width 576, 9 attention heads, 3 key/value heads</td><td>134,553,024</td></tr>
+<tr><td><b>Total</b></td><td></td><td><b>228,063,936</b> (sum computed here)</td></tr>
+</tbody></table></div>
+<p>The parameter counts come from the tensor shapes in <code>model.safetensors</code>. The projector holds 7,077,888 / 228,063,936 = 3.1% of all parameters (computed here). The projector is small, but it is the only part that starts from random weights.</p>
+<p>The next question: how many image tokens does one photo give the language model?</p>
+
+<h3 id="b2-tokens">One photo gives nanoVLM 1,088 image tokens</h3>
+<p>A ViT cuts an image into square patches and gives one vector, called a token, for each patch. For a square image with side \(H\) pixels and patch side \(p\) pixels, the number of patches is</p>
+\[ N = \left(\frac{H}{p}\right)^{2} \]
+<p>where \(N\) is the number of patches (tokens) from the image. All results below are computed here.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Model</th><th>\(H\)</th><th>\(p\)</th><th>Calculation</th><th>\(N\)</th></tr></thead>
+<tbody>
+<tr><td>LLaVA (2023)</td><td>224</td><td>14</td><td>\((224/14)^2 = 16^2\)</td><td>256</td></tr>
+<tr><td>LLaVA-1.5 (<a data-ref="liu2024a">Liu et al., 2024</a>, Table 2)</td><td>336</td><td>14</td><td>\((336/14)^2 = 24^2\)</td><td>576</td></tr>
+<tr><td>nanoVLM, one tile</td><td>512</td><td>16</td><td>\((512/16)^2 = 32^2\)</td><td>1,024</td></tr>
+</tbody></table></div>
+<p>nanoVLM then applies a pixel shuffle with factor 4. It divides the token count by \(4^2 = 16\): \(1{,}024 / 16 = 64\) tokens per tile.</p>
+<p>A large photo does not fit in one 512 × 512 tile. The code resizes the long side of the photo to at most 2,048 pixels (<code>max_img_size</code>) and cuts 512 × 512 tiles. It also adds a global view: the whole photo, resized to 512 × 512. A square 2,048 × 2,048 photo gives 4 × 4 = 16 tiles and 1 global view, so 17 views of 64 tokens each:</p>
+\[ 17 \times 64 = 1{,}088 \text{ image tokens} \]
+<p>This count does not include the 17 tile-marker tokens that label the views (see the prompt section below). The next question: how does the pixel shuffle make 1,024 vectors into 64?</p>
+
+<h3 id="b2-shuffle">Pixel shuffle joins each 4 × 4 block of patches into one vector</h3>
+<p>The encoder returns a 32 × 32 grid of vectors. Each vector has width 768, which means 768 numbers. Pixel shuffle cuts the grid into blocks of 4 × 4 patches. It puts the 16 vectors of one block end to end, and the result is one vector of 16 × 768 = 12,288 numbers (computed here). The grid becomes 8 × 8 vectors:</p>
+<ul>
+<li>Before: 1,024 vectors of width 768.</li>
+<li>After: 64 vectors of width 12,288.</li>
+</ul>
+<p>Patches that are neighbors in the image stay together in one vector. The language model gets 16 times fewer image tokens. No information is thrown away at this step: the 16 vectors are rearranged, not averaged. The method comes from small VLMs; <a data-ref="marafioti2025">Marafioti et al. (2025)</a> describe it for SmolVLM, Fig. 4. The next question: how big is the layer that follows?</p>
+
+<h3 id="b2-projector">The projector is one linear layer with 7,077,888 weights</h3>
+<p>The file <code>models/modality_projector.py</code> has 45 lines. These lines set the layer sizes and build the layer:</p>
+<pre><code>self.input_dim = cfg.vit_hidden_dim * (cfg.mp_pixel_shuffle_factor**2)
+self.output_dim = cfg.lm_hidden_dim
+...
+self.proj = nn.Linear(self.input_dim, self.output_dim, bias=False)
+...
+def forward(self, x):
+    x = self.pixel_shuffle(x)
+    x = self.proj(x)</code></pre>
+<p>Compute the parameter count one step at a time (all computed here):</p>
+<ol>
+<li>Input width: <code>vit_hidden_dim</code> × factor² = 768 × 4² = 12,288.</li>
+<li>Output width: <code>lm_hidden_dim</code> = 576, the width of the language model.</li>
+<li>A linear layer without bias has input width × output width weights: 12,288 × 576 = 7,077,888.</li>
+</ol>
+<p>The checkpoint agrees: it stores <code>MP.proj.weight</code> with shape [576, 12288]. The forward pass has two steps: shuffle, then multiply. The output is 64 vectors of width 576 per tile. The next question: how do these vectors reach the language model?</p>
+
+<h3 id="b2-prompt">The prompt holds 64 placeholder tokens for each tile</h3>
+<p>The language model takes one sequence. The code first writes the prompt as text, with a placeholder token <code>&lt;|image|&gt;</code> for every image vector. The function in <code>data/processors.py</code> builds the string (the lines below keep only the core):</p>
+<pre><code>if hasattr(tokenizer, "global_image_token"):
+    image_string += tokenizer.global_image_token
+    image_string += tokenizer.image_token * mp_image_token_length
+    if n_h == 1 and n_w == 1:  # only one patch: it is the global image
+        continue
+for i in range(n_h):
+    for j in range(n_w):
+        image_string += getattr(tokenizer, f'r{i+1}c{j+1}')
+        image_string += tokenizer.image_token * mp_image_token_length</code></pre>
+<p>Here <code>mp_image_token_length</code> is 64. The code writes a global-image marker and 64 placeholders first. Then, for each tile, it writes a marker <code>r{i}c{j}</code> (row <code>i</code>, column <code>j</code>) and 64 placeholders. With the chat template of this checkpoint, a square photo gives:</p>
+<pre><code>&lt;|im_start|&gt;user
+&lt;|global_image|&gt; &lt;|image|&gt;×64 &lt;row_1_col_1&gt; &lt;|image|&gt;×64 … &lt;row_4_col_4&gt; &lt;|image|&gt;×64 What is this?&lt;|im_end|&gt;
+&lt;|im_start|&gt;assistant</code></pre>
+<p>Each placeholder is one token with one id. The markers add 1 + 16 = 17 tokens, so the image part of this prompt has 1,088 + 17 = 1,105 tokens (computed here), before the question. At this point the placeholders carry no image data. The next question: where does the image data go in?</p>
+
+<h3 id="b2-embed">nanoVLM writes the image vectors over the placeholders</h3>
+<p>An embedding is a vector for one token id. The language model reads embeddings, not ids. The forward pass in <code>models/vision_language_model.py</code> works in four steps:</p>
+<pre><code>token_embd = self.decoder.token_embedding(input_ids)   # [B, T_sequence, D_lm]
+if images_tensor is not None:
+    image_embd = self.vision_encoder(images_tensor)
+    image_embd = self.MP(image_embd)   # [num_images, mp_image_token_length, D_lm]
+    token_embd = self._replace_img_tokens_with_embd(input_ids, token_embd, image_embd)
+
+# inside _replace_img_tokens_with_embd:
+mask = (input_ids == self.tokenizer.image_token_id)
+updated_token_embd[mask] = image_embd.view(-1, image_embd.size(-1)).to(updated_token_embd.dtype)</code></pre>
+<ol>
+<li>Every token id, including the placeholders, gets its embedding. \(B\) is the batch size, \(T_{\text{sequence}}\) the sequence length, \(D_{\text{lm}}\) = 576 the embedding width.</li>
+<li>The vision encoder turns each tile into patch vectors, and the projector turns them into 64 vectors of width \(D_{\text{lm}}\).</li>
+<li>The code finds the positions where the id equals the image-token id. It builds a Boolean mask of these positions.</li>
+<li>It flattens the image vectors into one list and writes them into the masked positions. The order is the tile order, so the first 64 vectors fill the first 64 placeholders.</li>
+</ol>
+<p>The placeholder embeddings are lost; the image vectors replace them. After this step the language model treats all positions the same way. The next question: during training, which positions count in the loss?</p>
+
+<h3 id="b2-loss">The loss counts only the tokens of the answer</h3>
+<p>The model predicts the next token at every position. The loss is the average cross-entropy over some of these positions only. In the deck's notation, which restates the answer set of LLaVA's stage-2 loss:</p>
+\[ \mathcal{L}(\theta) = -\,\frac{\sum_t m_t \,\log p_\theta\!\left(x_{t+1} \mid x_{\le t}\right)}{\sum_t m_t}, \qquad m_t = \begin{cases} 1 & x_{t+1} \text{ is in an answer} \\ 0 & \text{otherwise (label } {-100}\text{)} \end{cases} \]
+<ul>
+<li>\(\theta\): the model parameters.</li>
+<li>\(x_t\): the token at position \(t\); \(x_{\le t}\) is all tokens up to and including position \(t\).</li>
+<li>\(p_\theta(x_{t+1} \mid x_{\le t})\): the probability that the model gives to the true next token.</li>
+<li>\(m_t\): the mask. It is 1 where the next token belongs to an answer, and 0 elsewhere.</li>
+<li>The denominator \(\sum_t m_t\) is the number of answer tokens, so the loss is a mean over answer tokens.</li>
+</ul>
+<p>Example with a toy answer "A cat" (tokens are schematic). Each row gives the input token and its label, the token that the model must predict from that position:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Input token</th><th>Label</th><th>\(m_t\)</th></tr></thead>
+<tbody>
+<tr><td>image tokens and question</td><td>−100</td><td>0</td></tr>
+<tr><td>&lt;|im_start|&gt;</td><td>−100</td><td>0</td></tr>
+<tr><td>assistant</td><td>−100</td><td>0</td></tr>
+<tr><td>⏎ (line break)</td><td>A</td><td>1</td></tr>
+<tr><td>A</td><td>cat</td><td>1</td></tr>
+<tr><td>cat</td><td>&lt;|im_end|&gt;</td><td>1</td></tr>
+<tr><td>&lt;|im_end|&gt;</td><td>⏎</td><td>1</td></tr>
+<tr><td>⏎ (last position)</td><td>−100</td><td>0</td></tr>
+</tbody></table></div>
+<p>The image tokens are inside \(x_{\le t}\): the model reads them but does not predict them. The answer includes <code>&lt;|im_end|&gt;</code>, so the model learns when to stop. The same loss appears in Lecture 1 (cross-entropy) and Lecture 2 (SFT loss and mask). The next question: how does the code build this mask?</p>
+
+<h3 id="b2-losscode">Label −100 removes a token from the loss</h3>
+<p>Two places in the code do the work. In <code>data/datasets.py</code>, the code walks over the chat messages and sets the mask to 1 on assistant messages:</p>
+<pre><code>if msg["role"] == "assistant":
+    start = cursor + self.prefix_len
+    end   = cursor + seg_len
+    mask[start:end] = [1] * (end - start)
+
+labels = input_ids.clone().masked_fill(~mask, -100)
+labels = labels.roll(-1)    # shift labels for causal LM
+labels[-1] = -100           # last token has no target</code></pre>
+<p>Read it step by step:</p>
+<ol>
+<li><code>cursor</code> is the start of the current message in the token list; <code>seg_len</code> is its length. <code>prefix_len</code> skips the fixed header of the assistant turn, so the mask starts at the first answer token.</li>
+<li><code>masked_fill(~mask, -100)</code> copies the input ids as labels and sets every position outside the answer to −100.</li>
+<li><code>roll(-1)</code> moves every label one place to the left. The label at position \(t\) is now the token at \(t+1\): each position predicts the next token.</li>
+<li>The roll wraps the first label around to the end, so the last label is set to −100.</li>
+</ol>
+<p>In <code>models/vision_language_model.py</code>, the loss is one call:</p>
+<pre><code>loss = F.cross_entropy(logits.reshape(-1, logits.size(-1)),
+                       targets.reshape(-1), ignore_index=-100)</code></pre>
+<p><code>ignore_index=-100</code> makes the function skip positions with that label. The default mean is therefore taken over answer tokens only. This matches \(\sum_t m_t\) in the formula. The next question: with this loss, how are the three parts trained?</p>
+
+<h3 id="b2-lr">nanoVLM trains all three parts, at three learning rates</h3>
+<p>The learning rate is the step size of the optimizer. nanoVLM gives each part its own rate. In <code>models/config.py</code>:</p>
+<pre><code>lr_mp: float = 0.00512
+lr_vision_backbone: float = 5e-5
+lr_language_backbone: float = 5e-5</code></pre>
+<p>In <code>train.py</code>, each part becomes one optimizer group, and a rate of 0 freezes the part:</p>
+<pre><code>if train_cfg.lr_mp > 0:
+    param_groups.append({'params': list(model.MP.parameters()), 'lr': train_cfg.lr_mp})</code></pre>
+<p>The projector starts from random weights, and the other two parts are pretrained. The projector rate is 0.00512 / 0.00005 = 102.4 times larger (computed here). The code comments say that fine-tuning the backbones at a low rate makes training easier than a full freeze. <a data-ref="liu2023a">LLaVA (Liu et al., 2023)</a>, §4.2, uses two stages: first only the connector, then connector and language model. nanoVLM trains all three in one run. The next question: how does the trained model write an answer?</p>
+
+<h3 id="b2-generate">The model reads the image once; the KV cache keeps it</h3>
+<p>Generation runs in two phases in <code>generate</code>:</p>
+<ul>
+<li><b>Prefill.</b> One pass reads the whole prompt: image vectors and question. It fills the KV cache, the store of keys and values that attention has computed for earlier positions.</li>
+<li><b>Decode.</b> A loop runs for at most <code>max_new_tokens</code> steps. Each step reads the cache and adds only the key and value of the new token.</li>
+</ul>
+<pre><code>for _ in range(max_new_tokens):
+    ...
+    next_token_id = torch.multinomial(probs, num_samples=1)
+    ...
+    next_token_embed = self.decoder.token_embedding(next_token_id)   # [B, 1, D_lm]
+    decode_step_output, kv_cache_list = self.decoder(
+        next_token_embed, attention_mask=attention_mask,
+        kv_cache=kv_cache_list, start_pos=current_token_start_pos)</code></pre>
+<p>In each step the code samples the next token from the probabilities with <code>torch.multinomial</code>, embeds it, and feeds only this one embedding back. The image vectors never pass through the encoder again. The default sampling settings in the function signature are top-k 50, top-p 0.9 and temperature 0.5. The next question: how does such a small model behave in practice?</p>
+
+<h3 id="b2-demo">SmolVLM-256M runs in a browser</h3>
+<p>The demo is the Hugging Face Space <code>HuggingFaceTB/SmolVLM-256M-Instruct-WebGPU</code> (Apache-2.0). <a data-ref="marafioti2025">SmolVLM-256M (Marafioti et al., 2025)</a> has the same kinds of parts as nanoVLM: a SigLIP B/16 encoder (the nanoVLM checkpoint above uses SigLIP 2), a pixel shuffle and SmolLM2-135M. The demo runs on the viewer's device with WebGPU.</p>
+<p>Three prompts to try, in this order:</p>
+<ol>
+<li>"Describe the image."</li>
+<li>"What is unusual about this image?"</li>
+<li>A question about an object that is not in the photo.</li>
+</ol>
+<p>The third prompt tests whether a small model says that the object is absent or invents it. <a data-ref="wiedmann2025">nanoVLM (Wiedmann et al., 2025)</a> trains the same kind of model; the next part shows a larger one.</p>
+
+<h3 id="b2-close">Part B in one view</h3>
+<div class="callout">A VLM is an image encoder, a small projector and an LLM, trained on image–text data to answer questions. LLaVA showed the recipe in 2023. nanoVLM shows the same recipe in four PyTorch files of about 1,300 lines (1,287, computed here).</div>
+<div class="table-wrap"><table>
+<thead><tr><th>Step</th><th>What happens</th><th>Result in nanoVLM-230M-8k</th></tr></thead>
+<tbody>
+<tr><td>Encode</td><td>The ViT turns each 512 × 512 tile into patch vectors</td><td>32 × 32 = 1,024 vectors of width 768</td></tr>
+<tr><td>Project</td><td>Pixel shuffle, then one linear layer</td><td>64 vectors of width 576 per tile; 7,077,888 weights</td></tr>
+<tr><td>Place</td><td>The vectors replace the placeholder embeddings</td><td>17 views × 64 = 1,088 image tokens for a 2,048 × 2,048 photo</td></tr>
+<tr><td>Train</td><td>Cross-entropy on answer tokens only; three learning rates</td><td>Label −100 on all other positions</td></tr>
+<tr><td>Generate</td><td>Prefill reads the image once; decode adds one token at a time</td><td>KV cache keeps the image keys and values</td></tr>
+</tbody></table></div>
+<p>Part B used a small model. Part C asks what a frontier VLM adds, and what it can do beyond answering questions about an image: <a href="#part-c">Part C</a>.</p>
+
+<!-- ═══════════ fragment C1 ═══════════ -->
+<div class="part" id="part-c"><div class="label">PART C</div><h2>Advanced topics and today's state of the art</h2><p>Part C asks how a strong VLM works inside, and where VLMs go next. It has five segments: Qwen3-VL, building a VLM, making it act, acting in the world, and today's state of the art with safety.</p></div>
+
+<p class="note">This part follows Georgia Tech CS 8803-VLM, Lecture 6 (<a data-ref="wang2026l6">Wang et al. (2026)</a>) and Lecture 1 (<a data-ref="kira2026b">Kira (2026)</a>). The text is ours; the results come from the papers cited.</p>
+
+<h3 id="c1-map">Part B built a small VLM; Part C looks at a frontier one</h3>
+<p>Part B ended with a complete recipe for a small VLM, in three parts and one warning:</p>
+<ul>
+<li><strong>Data.</strong> A text-only teacher model turns captions and bounding boxes into questions and answers.</li>
+<li><strong>Model.</strong> The image becomes patches, and the patches become vectors. Pixel shuffle and one linear layer shrink and map the vectors. They then fill placeholder positions in the prompt.</li>
+<li><strong>Loss.</strong> The loss is next-token cross-entropy on the answer tokens only. Every other position carries the label −100, which the loss ignores.</li>
+<li><strong>Limits.</strong> A judge score is not accuracy. A model that sees two objects does not always see the relation between them.</li>
+</ul>
+<p>Part C uses the same three questions (why, how, results) for each method. It starts with one recent model family, Qwen3-VL, described in the technical report by <a data-ref="bai2025">Bai et al. (2025)</a>. The next section states the problem the Qwen team set out to solve.</p>
+
+<h3 id="c1-problem">Qwen3-VL must add vision without losing language skill</h3>
+<p>The Qwen3-VL report starts from a strong language model, Qwen3. The team does not want to lose any language skill when it adds vision. The question is how to add three things at once: rich visual understanding, a long context, and useful actions (<a data-ref="bai2025">Bai et al., 2025</a>, Sections 1–2).</p>
+<p>The family has six models. Four are dense: 2B, 4B, 8B and 32B parameters. Two are mixture-of-experts (MoE) models, where each token uses only part of the weights: 30B-A3B and 235B-A22B. The name 235B-A22B means 235 billion parameters in total and 22 billion active for each token. Each model is trained with a context window of up to 256K tokens (<a data-ref="bai2025">Bai et al., 2025</a>, Section 1).</p>
+<p>Data moves through the model in four steps:</p>
+<ol>
+<li>The inputs are images, video and documents.</li>
+<li>A vision encoder (SigLIP-2, trained further at dynamic resolution) turns each input into a grid of feature vectors. The grid size follows the input size.</li>
+<li>A merger, which is a two-layer MLP, compresses each 2 × 2 block of features into one visual token with the width of the LLM. Extra mergers serve DeepStack, which the next section explains.</li>
+<li>The Qwen3 decoder reads the visual tokens together with the text tokens. It reasons, grounds objects in the image and uses tools.</li>
+</ol>
+<figure class="paper" style="--fig-w: 640px"><img src="slides/assets/partC/c-bai2025-fig1.png" width="1921" height="1133" loading="lazy" alt="Qwen3-VL framework. Images and video enter a vision encoder at native resolution. The visual tokens go to a Qwen3 dense or MoE decoder, mixed with text tokens. Three images of different sizes give 11,427, 8 and 1,125 tokens. Video frames carry text timestamps. On the right, features from three levels of the encoder enter LLM blocks 1, 2 and 3."><figcaption>The Qwen3-VL framework. The number of visual tokens follows the size of each input: 11,427, 8 and 1,125 tokens for three pictures. The dashed box on the right is DeepStack. Figure: <a data-ref="bai2025">Bai et al. (2025)</a>, Fig. 1.</figcaption></figure>
+<p>The report lists three architecture upgrades. DeepStack gets its own sections below. The other two are shorter:</p>
+<ul>
+<li><strong>Interleaved MRoPE.</strong> MRoPE gives each visual token a position in three axes: time (t), horizontal (h) and vertical (w). The old form gave each axis its own block of embedding dimensions, so the axes used different frequency ranges. The new form interleaves t, h and w across the dimensions, so each axis uses both low and high frequencies (Section 2.1).</li>
+<li><strong>Text timestamps.</strong> Each group of video frames gets a text prefix such as <code>&lt;3.0 seconds&gt;</code>. The old method tied position ids to absolute time, and those ids became large and sparse for long videos. The new method adds a little context length (Section 2.3).</li>
+</ul>
+<p>The system goal has four parts: strong perception, reliable transfer of information from vision to language, a 256K multimodal context, and effective training. The first part to look at is how information moves from the vision encoder into the LLM.</p>
+
+<h3 id="c1-deepstack">DeepStack adds visual features at several layers of the LLM</h3>
+<p>A usual VLM, such as the one in Part B, feeds the output of the last encoder layer into the LLM once, at its input. DeepStack adds visual information at three more places. It takes features from three levels of the vision encoder: a low, a middle and a high level. A dedicated merger maps each set to the LLM width. Each result is added to the hidden states of one of the first three LLM layers (<a data-ref="bai2025">Bai et al., 2025</a>, Section 2.2 and Fig. 1).</p>
+<p>The report credits the idea to DeepStack by Meng et al. (2024). The original stacks tokens from several image scales. Qwen3-VL instead takes features from several depths of one ViT.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Source in the vision encoder</th><th>Merger</th><th>Target in the LLM</th></tr></thead>
+<tbody>
+<tr><td>Feature level 1</td><td>M<sub>1</sub></td><td>Hidden states of LLM layer 1</td></tr>
+<tr><td>Feature level 2</td><td>M<sub>2</sub></td><td>Hidden states of LLM layer 2</td></tr>
+<tr><td>Feature level 3</td><td>M<sub>3</sub></td><td>Hidden states of LLM layer 3</td></tr>
+</tbody></table></div>
+<p>The additions go to positions that already exist. The visual tokens keep their places, so the number of positions in the context does not grow.</p>
+<p>The equations below write this step by step. Take <em>k</em> = 1, 2, 3:</p>
+\[ D_k = M_k\big(F^{(a_k)}\big) \in \mathbb{R}^{N_v \times d_L}, \qquad H^{(k)} = T_k\big(H^{(k-1)}\big) + S_{\mathcal{V}}(D_k) \]
+<ul>
+<li>\(F^{(a_k)}\): the feature grid taken from the vision encoder at depth \(a_k\). The report does not give the three depths in the text we read.</li>
+<li>\(M_k\): the merger for level <em>k</em>. It maps the features to the LLM width.</li>
+<li>\(N_v\): the number of visual tokens. \(d_L\): the hidden width of the LLM. So \(D_k\) has one row of width \(d_L\) for each visual token.</li>
+<li>\(T_k\): LLM layer <em>k</em>. \(H^{(k-1)}\): the hidden states that enter this layer. \(H^{(k)}\): the hidden states that leave it.</li>
+<li>\(S_{\mathcal{V}}\): puts the rows of \(D_k\) at the positions of the visual tokens. Text positions get nothing added.</li>
+</ul>
+<p>So layer <em>k</em> runs as usual, and then the projected features of level <em>k</em> are added at the visual positions. The deck marks these equations as schematic.</p>
+<div class="callout">DeepStack has a cost. It needs extra feature extraction, extra mergers and extra additions. It adds no context positions. Two statements must stay apart: multi-level features are not more image scales, and an unchanged context length is not zero extra computation.</div>
+<p>The report gives a controlled test of DeepStack. A later section shows it. Before that, the next section shows how the report compares Instruct and Thinking versions of the flagship model.</p>
+
+<h3 id="c1-results">Thinking helps some tasks and does not help others</h3>
+<p>The question here is whether the Thinking version of a model is better on every task. Table 2 of the report compares the flagship model, Qwen3-VL-235B-A22B, in its Thinking and Instruct versions. The Thinking version writes a long chain of reasoning before it answers. We list five rows from that table (<a data-ref="bai2025">Bai et al., 2025</a>, Table 2, Sections 5.2–5.4).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Benchmark</th><th>Instruct</th><th>Thinking</th><th>Thinking minus Instruct (computed here)</th><th>What the row tests</th></tr></thead>
+<tbody>
+<tr><td>MathVision</td><td>66.5</td><td>74.6</td><td>+8.1</td><td>Visual mathematical reasoning</td></tr>
+<tr><td>MUIRBENCH</td><td>73.0</td><td>80.1</td><td>+7.1</td><td>Multi-image understanding</td></tr>
+<tr><td>DocVQA test</td><td>97.1</td><td>96.5</td><td>−0.6</td><td>Document question answering</td></tr>
+<tr><td>OCRBench</td><td>920</td><td>875</td><td>−45</td><td>Text recognition (score out of 1,000)</td></tr>
+<tr><td>Video-MME, no subtitles</td><td>79.2</td><td>79.0</td><td>−0.2</td><td>General video understanding</td></tr>
+</tbody></table></div>
+<p>Read each row on its own, from left to right. The scores of different benchmarks do not share one scale. OCRBench uses its own scale, so its difference of −45 cannot be compared with the other rows.</p>
+<p>The trend is this. Thinking gains about 7 to 8 points on the two reasoning-heavy tasks, mathematics and multi-image understanding. It loses a little on reading text in documents and on general video. More reasoning does not make visual reading better.</p>
+<div class="callout">The table compares whole systems, not parts. It does not show why a number moves. A 256K context, a larger model or a Thinking label is a setting. It does not guarantee a correct answer on every input.</div>
+<p>The next question is what data teaches a model to reason about images.</p>
+
+<h3 id="c1-data">Reasoning data trains perception and reasoning, and a filter forces the image to matter</h3>
+<p>A wrong answer to a visual maths problem can have three causes: the model misreads the diagram, the model reasons badly, or both. The report therefore builds data for each skill separately. Its authors call this a divide-and-conquer strategy (<a data-ref="bai2025">Bai et al., 2025</a>, Section 3.2.8).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Skill</th><th>Data</th><th>Example question type</th></tr></thead>
+<tbody>
+<tr><td>Perception</td><td>Diagrams drawn by code. 1M point-grounding samples (for example intersection points and corners), 2M perception question-answer pairs and 6M diagram captions. Model ensembles write and check the captions.</td><td>Which lines intersect?</td></tr>
+<tr><td>Reasoning</td><td>Over 60M exercises from school and university level, cleaned and reformatted. Over 12M long reasoning samples with images. Each reasoning path is validated and filtered.</td><td>What follows from that intersection?</td></tr>
+</tbody></table></div>
+<p>A second problem is shortcuts. A model can answer some maths questions from the text alone and ignore the image. The report adds a filter for this, called multimodal-necessity filtering. It applies to the long chain-of-thought data for the Thinking models (Section 4.2.2):</p>
+<ol>
+<li>Give a visual maths question to Qwen3-30B-nothink, a text-only model, with the image removed.</li>
+<li>If the model answers correctly, discard the question. Text alone is enough.</li>
+<li>If the model fails, keep the question for further curation. It may need the image.</li>
+</ol>
+<div class="verdict">The filter is empirical. It does not prove that the image carries information the text lacks. It removes the questions that a text-only model of this size can already solve.</div>
+<p>The point for benchmarks is this. A high score on a visual benchmark means little if the model can ignore the image and use text shortcuts. The next section covers how Qwen3-VL trains on these tasks with reinforcement learning (RL).</p>
+
+<h3 id="c1-rl">Reinforcement learning trains on checkable answers near the edge of what the model can do</h3>
+<p>Qwen3-VL uses two RL stages. Reasoning RL covers tasks where code or a rule can check the answer: mathematics, code, logic, visual grounding and puzzles. General RL covers instruction following, alignment with human preferences, language consistency and the correction of known errors. It uses rules and model judges (<a data-ref="bai2025">Bai et al., 2025</a>, Section 4.4).</p>
+<p>The aim of reasoning RL is to maximise the expected reward:</p>
+\[ \max_{\theta}\; \mathbb{E}_{y \sim \pi_\theta(\cdot \mid x)}\big[R(x, y)\big] \]
+<ul>
+<li>\(\theta\): the model weights.</li>
+<li>\(x\): an input, which is a question with an image.</li>
+<li>\(\pi_\theta(\cdot \mid x)\): the probability distribution over answers <em>y</em> that the model gives for \(x\).</li>
+<li>\(R(x, y)\): the reward. A rule or a code executor checks answer \(y\), and a correct answer gets a high reward.</li>
+<li>\(\mathbb{E}\): the average over answers that the model samples.</li>
+</ul>
+<p>The report names the update method as SAPO, a smooth and adaptive policy-gradient method. The report does not give its update equations, and so we do not give them either. The deck marks the objective as explanatory.</p>
+<p>Data selection decides what the model can learn from. The report uses two filters on the queries:</p>
+<ol>
+<li>Sample 16 responses for each query with a preliminary checkpoint of the largest model. Discard a query if all 16 answers are wrong.</li>
+<li>For each model to train, sample 16 responses again. Discard a query if more than 90% of the answers are correct.</li>
+</ol>
+<p>The curated pool has about 30K queries. The first filter removes queries that give no signal because nothing succeeds. The second removes queries that the model already solves.</p>
+<p>Zero successes in 16 samples is weak evidence that a task is impossible. Let <em>p</em> be the chance of success in one sample, and assume the 16 samples are independent. The chance of no success in 16 samples is</p>
+\[ \Pr(\text{no success in 16 trials}) = (1-p)^{16} \]
+<p>For the toy value \(p = 0.1\), the result is about 0.19 (computed here). A task with a 10% success rate still gives no success in about one in five sets of 16 samples. The first filter therefore also removes some queries that a model could learn from.</p>
+<div class="callout">The reward and the data selection decide what the model learns. A verifier or a judge model can be exploited by the model, which is called reward hacking. A judge is not safe from it by default.</div>
+<p>The last section of this segment asks how much of Qwen3-VL's quality the report can attribute to one design choice.</p>
+
+<h3 id="c1-evidence">The report proves DeepStack with a controlled test and long context only in part</h3>
+<p>Two kinds of claims appear in the report. A component ablation changes one part and holds the rest fixed. A whole-system claim compares complete models that differ in many ways. The report gives a concrete ablation for DeepStack (<a data-ref="bai2025">Bai et al., 2025</a>, Section 5.12.2, Table 12).</p>
+<p>In that test, an internal MoE model named 15B-A2B is pre-trained on 200 billion tokens, with and without DeepStack. The two models are scored on validation sets with no post-training. We list the average and the three rows with the largest gains in the deck's selection.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Metric</th><th>Baseline</th><th>DeepStack</th><th>Gain (computed here)</th></tr></thead>
+<tbody>
+<tr><td>Average over 11 benchmarks</td><td>74.7</td><td>76.0</td><td>+1.3</td></tr>
+<tr><td>InfoVQA</td><td>71.9</td><td>74.2</td><td>+2.3</td></tr>
+<tr><td>DocVQA</td><td>89.5</td><td>91.1</td><td>+1.6</td></tr>
+<tr><td>MMMU</td><td>52.9</td><td>54.1</td><td>+1.2</td></tr>
+</tbody></table></div>
+<p>The report says the gain is largest for fine-grained visual tasks, InfoVQA and DocVQA. Not every column rises: TVQA falls from 80.6 to 80.5. The report gives one run for each model. It does not state a spread. The deck adds a second ablation, of the vision encoder. That one uses a 1.7B language model and 1.5T tokens (Table 11), and it tests the encoder, not DeepStack.</p>
+<p>The evidence for long context is narrower. The report builds a video needle-in-a-haystack test on Qwen3-VL-235B-A22B-Instruct. A key frame, the needle, goes into a long video. The model must find it and answer a question about it. Videos are sampled at 1 frame per second (<a data-ref="bai2025">Bai et al., 2025</a>, Section 5.12.3, Fig. 3).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Video length</th><th>Context length</th><th>Accuracy</th></tr></thead>
+<tbody>
+<tr><td>Up to 30 minutes</td><td>Up to 256K tokens (the training window)</td><td>100%</td></tr>
+<tr><td>Up to about 2 hours</td><td>Up to 1M tokens (YaRN position extension)</td><td>99.5%</td></tr>
+</tbody></table></div>
+<p>Three limits apply:</p>
+<ul>
+<li><strong>Scope.</strong> The test checks whether the model can find one salient frame. It does not show equally strong reasoning over a long video.</li>
+<li><strong>Extrapolation.</strong> The 1M-token case goes beyond the native 256K window. YaRN is a method that stretches the positional encoding to longer inputs.</li>
+<li><strong>Fairness.</strong> In the video benchmark comparison (Section 5.9), the frame caps differ: Qwen3-VL 2,048, Gemini 2.5 Pro 512, GPT-5 256, Claude Opus 4.1 100. The report says the comparison cannot guarantee full fairness.</li>
+</ul>
+<div class="callout">Headline gains on benchmarks do not identify one cause. Only a controlled test, such as the DeepStack ablation, links a gain to a single design choice.</div>
+<p>Qwen3-VL reads images, video and documents and answers with text. The next question for Part C is how to build such a model from the start, and how to make it produce images, not only read them.</p>
+
+<!-- ═══════════ fragment C2 ═══════════ -->
+<h3 id="c2-any-to-any">Chameleon and BAGEL: one model reads and draws</h3>
+<p>Qwen3-VL, the model of the previous sections, takes images and text as input and writes only text. This section asks a new question. Can one model also produce images, so that it reads and draws?</p>
+<p>A model that accepts and produces several modalities is an <strong>any-to-any model</strong>. The deck shows two designs for it.</p>
+<p><a data-ref="chameleon2024">Chameleon Team (2024)</a> uses early fusion (the model mixes the modalities at its input). An image tokenizer cuts each 512 × 512 image into 1,024 discrete tokens. The tokens come from a codebook of 8,192 image entries (Section 2.1 of the paper). The text and image tokens share one vocabulary of 65,536 entries. A single autoregressive transformer then predicts the next token, whether it is a word or a part of an image. For output, an image de-tokenizer turns the predicted image tokens back into pixels. Special "Start Image" and "End Image" tokens mark where an image begins and ends in the stream.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partC/c-chameleon2024-fig1.png" width="2000" height="1092" loading="lazy" alt="Two diagrams of Chameleon. Left, pre-training: a text prompt becomes green text tokens and an image prompt goes through an image tokenizer into blue image tokens, with Start Image and End Image markers. Both go into one mixed-modal autoregressive language model. Right, generation: the same model outputs text tokens and then image tokens, and an image de-tokenizer turns the image tokens into a picture of banana bread."><figcaption>Left: the model reads text and image tokens in one sequence. Right: it writes text tokens, then image tokens, and a de-tokenizer makes the image. Figure: <a data-ref="chameleon2024">Chameleon Team (2024)</a>, Fig. 1.</figcaption></figure>
+<p><a data-ref="deng2025">Deng et al. (2025)</a> make a different choice in BAGEL. The model has two transformer experts (separate sets of weights) that share one self-attention stack. The understanding expert predicts the next text token. The generation expert predicts a "velocity" (the direction in which a noisy image latent must move toward a clean image, the method called rectified flow). Both experts see all text and image tokens through the shared attention. The paper calls this design Mixture-of-Transformer-Experts.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partC/c-deng2025-fig2.png" width="1775" height="675" loading="lazy" alt="Diagram of BAGEL. Bottom: a text tokenizer and an understanding encoder feed the understanding expert, and a generation encoder feeds the generation expert. Middle: a multi-modal self-attention layer spans both experts. Top: the understanding expert outputs a language response by next-token prediction, and the generation expert outputs an image, multi-image or video clip by velocity prediction."><figcaption>BAGEL has two experts. They share one multi-modal self-attention layer. The understanding side outputs text. The generation side outputs images or video. Figure: <a data-ref="deng2025">Deng et al. (2025)</a>, Fig. 2.</figcaption></figure>
+<div class="callout"><strong>Key point.</strong> Both models aim at one network for reading and drawing. Chameleon puts everything in one token vocabulary. BAGEL keeps separate experts for understanding and generation, and joins them with shared attention.</div>
+<p>The deck takes these two models from the reference lecture by Kira (<a data-ref="kira2026b">Kira 2026, lecture 1</a>). The next question is which other signals a model can take in besides images and text.</p>
+
+<h3 id="c2-other-modalities">UniTouch: touch joins the same space</h3>
+<p>The deck adds one more modality: touch. <a data-ref="yang2024">Yang et al. (2024)</a> train UniTouch. Its input is an image from a touch sensor, which records the shape and texture of a surface under contact. UniTouch links this touch image to the embedding space of a pre-trained vision-language model (the idea from the section on embedding space alignment in <a href="#part-a">Part A</a>).</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partC/c-yang2024-fig1.png" width="2067" height="796" loading="lazy" alt="Five panels of UniTouch tasks. Zero-shot touch understanding: a touch image is compared with text prompts such as denim, cotton and nylon by cosine similarity. Cross-modal retrieval: a touch image of a guitar string matches an image, an audio clip and a sentence. Touch-LLM: a language model answers a question about materials in a touch image. Zero-shot image synthesis with touch: a touch image and a reference make a new image. X-to-touch generation: an image or a sentence makes a touch image."><figcaption>UniTouch tasks. Touch understanding by similarity to text, retrieval across touch, image, audio and text, a language model that answers questions about touch, and image generation from touch. Figure: <a data-ref="yang2024">Yang et al. (2024)</a>, Fig. 1.</figcaption></figure>
+<p>The figure shows five uses of one touch representation.</p>
+<ul>
+<li>Zero-shot touch understanding: the model compares a touch image with text such as "denim", "cotton" and "nylon". It measures cosine similarity and gives each class a score.</li>
+<li>Cross-modal retrieval: a touch image of a guitar string finds the matching image, audio clip and sentence.</li>
+<li>Touch-LLM: a language model reads the touch image and answers a question about the material and its hardness.</li>
+<li>Image synthesis and touch generation: the model makes a new image from touch, or a touch image from an image or a sentence.</li>
+</ul>
+<p>The point is that a new modality needs a new encoder and an alignment step. It does not need a new language model. The next question is whether Chameleon, the first model above, produces better answers than text-only models.</p>
+
+<h3 id="c2-chameleon-result">Result: people prefer Chameleon-34B to Gemini-Pro and GPT-4V</h3>
+<p>The test is a human comparison. <a data-ref="chameleon2024">Chameleon Team (2024)</a> collected 1,048 prompts. Each prompt asks for an answer with text and images (Section 4.1). Three human annotators see two answers in random order. They choose the better one, or "about the same". The table gives the share of each outcome for Chameleon-34B (Sections 4.1 and 4.2.2, Figure 9b).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Chameleon-34B against</th><th>Chameleon wins</th><th>Tie</th><th>Chameleon loses</th></tr></thead>
+<tbody>
+<tr><td>Gemini-Pro (text answer)</td><td>53.5%</td><td>31.2%</td><td>15.3%</td></tr>
+<tr><td>GPT-4V (text answer)</td><td>46.0%</td><td>31.4%</td><td>22.6%</td></tr>
+<tr><td>Gemini-Pro with images added (Gemini+)</td><td>41.5%</td><td>34.5%</td><td>24.0%</td></tr>
+<tr><td>GPT-4V with images added (GPT-4V+)</td><td>35.8%</td><td>31.6%</td><td>32.6%</td></tr>
+</tbody></table></div>
+<p>Gemini and GPT-4V write text only. The authors made the "+" baselines in two steps. They asked each model to write an image caption inside the answer, and then used DALL-E 3 to draw the image from the caption (Section 4.2). The "+" rows are therefore the stronger baselines.</p>
+<div class="callout"><strong>Reading the table.</strong> Chameleon wins more often than it loses in all four rows. The closest row is GPT-4V+: 35.8% wins against 32.6% losses. The gap is 3.2 points. The paper gives no confidence interval for it, so we treat it as a near tie.</div>
+<p>Chameleon shows that one model can mix text and images in its answers. The next part moves from models that answer to models that act: can a model use a computer?</p>
+
+<h3 id="c2-computer-use">OSWorld: a model that uses a whole desktop</h3>
+<p>The deck now moves to the stages "Agents" and "Action and world models" of the roadmap in the reference course (Kira 2026, lecture 1). The first stage is software. A <strong>computer-use agent</strong> is a model that sees the screen and acts with the mouse and keyboard to finish a task on a computer. The deck names Mind2Web (<a data-ref="deng2023">Deng et al. 2023</a>), a benchmark of web-browsing tasks. OSWorld goes beyond the browser.</p>
+<p><a data-ref="xie2024">Xie et al. (2024)</a> built OSWorld, a test on a whole desktop. The agent works on a virtual machine with a real operating system. The machine has real apps: a file manager, a browser, an office suite, a code editor and a terminal.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partC/c-xie2024-fig1.png" width="1608" height="992" loading="lazy" alt="Top: two example tasks with three screenshots each. Task 1 updates a bookkeeping spreadsheet from a photo of a receipt. Task 2 edits game code so a snake can eat food. Bottom: a loop. A task instruction and an initial state go to the OSWorld environment, a virtual machine with an operating system, apps and interfaces. The agent receives a screenshot and an accessibility tree, and returns mouse and keyboard actions. A final state is checked by an execution-based evaluation."><figcaption>An OSWorld task. The agent gets a screenshot and an accessibility tree, and it sends mouse and keyboard actions. A script then checks the final state of the machine. Figure: <a data-ref="xie2024">Xie et al. (2024)</a>, Fig. 1.</figcaption></figure>
+<ul>
+<li>The task is a natural-language instruction, for example "update the bookkeeping sheet with my recent transactions".</li>
+<li>The observation is a screenshot, or an accessibility tree (a text list of the elements on the screen), or both.</li>
+<li>The action is a mouse or keyboard command.</li>
+<li>The success test is a script. It examines the final machine state. It does not judge the agent's steps.</li>
+</ul>
+<p>The deck lists what the field works on now: better screenshot grounding, agent memory, and recovery after a wrong action. The next question is how large the gap between agents and people was when the benchmark appeared.</p>
+
+<h3 id="c2-osworld-result">Result: in 2024, people finished 72% of tasks and the best model 12%</h3>
+<p>OSWorld has 369 tasks on Ubuntu. <a data-ref="xie2024">Xie et al. (2024)</a> report the share of tasks finished (Table 5, "Overall" column).</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Who does the task</th><th>Input to the model</th><th>Tasks finished</th></tr></thead>
+<tbody>
+<tr><td>Humans, not familiar with the software</td><td>none</td><td>72.36%</td></tr>
+<tr><td>GPT-4 (best model)</td><td>accessibility tree</td><td>12.24%</td></tr>
+<tr><td>GPT-4V</td><td>screenshot only</td><td>5.26%</td></tr>
+<tr><td>Claude-3-Opus</td><td>screenshot only</td><td>2.42%</td></tr>
+</tbody></table></div>
+<p>The gap between people and the best model is 60.12 points (computed here). The models that use only the screenshot do worse than GPT-4 with the accessibility tree. The paper names GUI grounding as a main cause. GUI grounding means linking a plan, such as "click Save", to the exact place on the screen.</p>
+<p class="note">These are 2024 baseline models. The paper also reports mixed inputs. GPT-4V with a screenshot and the accessibility tree reaches 12.17%. We show the rows the deck chose.</p>
+<div class="callout"><strong>Key point.</strong> A model that writes good text is not yet a model that can use a computer. The next question is whether the same idea works for a robot. A robot has no screen, so what does it output?</div>
+
+<h3 id="c2-actions-as-tokens">RT-2: robot actions as tokens</h3>
+<p>The deck now turns to the stage "Action and world models". A <strong>vision-language-action model (VLA)</strong> is a vision-language model that outputs robot actions. An <strong>action token</strong> is a vocabulary entry that stands for one value of a robot action.</p>
+<p><a data-ref="brohan2023">Brohan et al. (2023)</a> built RT-2 in three steps.</p>
+<ol>
+<li>Write the action as numbers. The action is the change of the robot hand (the end effector): a translation Δ T and a rotation Δ R.</li>
+<li>Cut each number into bins and give each bin a token. In the figure, the answer "132 114 128 5 25 156" is a list of such tokens.</li>
+<li>Train the vision-language model on web question-answer data and on robot data together (co-fine-tuning). The same output vocabulary then carries words and actions.</li>
+</ol>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partC/c-brohan2023-fig1.png" width="1892" height="712" loading="lazy" alt="Left: training data, web question-answering pairs and a robot example whose answer is a list of numbers that decode to a change in translation and rotation. Middle: RT-2, with a vision transformer and a large language model that output action tokens, which a de-tokenizer turns into a robot action. Right: closed-loop control, three robot photos with the tasks put the strawberry into the correct bowl, pick the nearly falling bag, pick the object that is different."><figcaption>RT-2 trains on web question-answer data and robot data together. At run time the model outputs action tokens, and a de-tokenizer turns them into a robot action. Figure: <a data-ref="brohan2023">Brohan et al. (2023)</a>, Fig. 1.</figcaption></figure>
+<p>At run time the robot sends the camera image and the task. The model outputs tokens. The tokens become a hand motion. The robot acts, takes a new image, and the loop repeats (closed-loop control). The web data keeps the model's world knowledge. The robot data teaches the action tokens.</p>
+<p>RT-2 is a large model with data from one robot team. The next question is whether an open model can learn from data of many robots.</p>
+
+<h3 id="c2-openvla">OpenVLA: the data limits generalist robot models</h3>
+<p><a data-ref="kim2024">Kim et al. (2024)</a> built OpenVLA, an open 7-billion-parameter VLA. It fine-tunes a vision-language model (a Llama 2 7B language model with a vision encoder) on 970,000 robot episodes. The deck rounds this to about one million. The episodes come from many types of robot (cross-embodiment data) in the Open X-Embodiment collection.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partC/c-kim2024-fig1.png" width="1746" height="879" loading="lazy" alt="Top: 970 thousand robot episodes feed OpenVLA, a base vision-language model made of a vision transformer and Llama 2 7B, fine-tuned with robot actions. The output is a closed-loop control policy: for the user command wipe the table, OpenVLA outputs a change in position, rotation and gripper. Bottom: photos of different robots and a note that data, weights and code are open source."><figcaption>OpenVLA fine-tunes a vision-language model on 970 thousand robot episodes. It outputs a change in position, rotation and gripper state. Data, weights and code are open. Figure: <a data-ref="kim2024">Kim et al. (2024)</a>, Fig. 1.</figcaption></figure>
+<p>OpenVLA uses the same action-token idea as RT-2. It cuts each continuous action dimension into 256 bins (Section 3.2). It overwrites the 256 least used tokens in the Llama vocabulary with the action tokens.</p>
+<p>The deck draws one lesson. Vision-language models learn from billions of web examples. Robot datasets have only about 100,000 to 1 million examples. The paper states this imbalance in its introduction. The deck's conclusion is that robot trajectories limit these models more than the number of parameters. The next question is how a robot moves smoothly, because tokens may be a poor fit.</p>
+
+<h3 id="c2-continuous-control">Diffusion Policy and VLASH: fast, smooth control</h3>
+<p>The deck says that discrete tokens fit smooth motion at 30–50 Hz poorly. Hz means control steps per second. The deck gives two fixes: predict chunks, and hide the delay. The 30–50 Hz range comes from the reference lecture. The VLASH paper uses 50 Hz in its experiments.</p>
+<p><strong>First fix: predict a chunk.</strong> <a data-ref="chi2023">Chi et al. (2023)</a> propose Diffusion Policy. The model does not output one step. It starts from random noise and removes the noise step by step (denoising). The result is a whole sequence of future actions. The model conditions this process on the last few observations. In the figure, the observation sequence O<sub>t</sub> enters a denoising network, and the output A<sub>t</sub> is an action sequence over a prediction horizon T<sub>p</sub>. The robot executes the first part of the sequence and then predicts the next sequence. The network can use a convolutional network (b) or a transformer (c).</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partC/c-chi2023-fig2.png" width="2117" height="588" loading="lazy" alt="Left: input is an image observation sequence of a robot pushing a T-shaped block, with robot pose. Output is an action sequence shown as dots that change from scattered noise to a smooth path in three stages. Middle: a general formulation. A diffusion policy takes observations O and an action sequence A with a noise step k and outputs a longer action sequence over a prediction horizon, then the next one starts. Right: two network designs, CNN-based with FiLM conditioning and transformer-based with cross attention."><figcaption>Diffusion Policy. It removes noise from a whole action sequence, conditioned on recent observations. Two network designs are shown. Figure: <a data-ref="chi2023">Chi et al. (2023)</a>, Fig. 2.</figcaption></figure>
+<p><strong>Second fix: hide the delay.</strong> A large model needs time to compute an action. This time is the inference delay. If the robot stops and waits, its motion stalls (synchronous inference, panel a). If the robot keeps moving while the model computes, the new actions start from an old state and the path jumps (naive asynchronous inference, panel b). <a data-ref="tang2025">Tang et al. (2025)</a> propose VLASH. It rolls the robot state forward by the actions that run during the delay. In the figure, s<sub>3</sub> = s<sub>1</sub> + a<sub>1</sub> + a<sub>2</sub> (s is the robot state and a is an action). The model then predicts actions for the state s<sub>3</sub> at which the robot will be when the actions begin. The motion stays smooth and the reaction stays fast.</p>
+<figure class="paper" style="--fig-w: 560px"><img src="slides/assets/partC/c-tang2025-fig3.png" width="2233" height="638" loading="lazy" alt="Three panels of robot action paths over time. (a) Synchronous inference: the robot stalls while the model computes; slow reaction and action stall. (b) Naive asynchronous inference: the path jumps because the prediction was made for an old state; fast reaction but discontinued actions. (c) VLASH: the model uses the future state after the delay; fast reaction and smooth actions."><figcaption>Three ways to handle inference delay. Stall, jump, or smooth motion with future-state awareness. Figure: <a data-ref="tang2025">Tang et al. (2025)</a>, Fig. 3.</figcaption></figure>
+<p>The two fixes solve different problems. Chunks give smooth multi-step motion. Rolling the state forward removes the effect of the delay. Both still need data from the real world. The next question is whether a model can learn from a copy of the world instead.</p>
+
+<h3 id="c2-world-models">World models: planning inside a learned copy of the world</h3>
+<p>A <strong>world model</strong> is a model that predicts what the world will look like after an action. If the model is good enough, an agent can plan inside it and does not need the real world for every trial.</p>
+<p><a data-ref="ha2018">Ha and Schmidhuber (2018)</a> split the agent into three parts.</p>
+<ul>
+<li>V, the vision model, is a variational autoencoder. It compresses each frame into a small latent vector z.</li>
+<li>M, the memory model, is a recurrent network (RNN). It reads z and its hidden state h, and predicts the next latent vector.</li>
+<li>C, the controller, is a small network. It reads z and h and chooses the action a.</li>
+</ul>
+<figure class="paper" style="--fig-w: 420px"><img src="slides/assets/partC/c-ha2018-fig4.png" width="1033" height="704" loading="lazy" alt="Diagram over three time steps. A game frame enters the vision model V, which outputs a latent vector z. The memory RNN M takes z and passes a hidden state h to the next step. The controller C takes z and h and outputs an action a that goes back to the environment."><figcaption>At each step V compresses the frame to z. M carries the history in h. C uses z and h to choose an action. Figure: <a data-ref="ha2018">Ha and Schmidhuber (2018)</a>, Fig. 4.</figcaption></figure>
+<p>V and M together are the world model. Because M predicts the next latent vector, the controller can train on M's predictions alone. The deck calls this training inside the dream. The deck also notes the change over time. The 2018 version is a VAE with an RNN. The 2026 version is a video generator, the topic of the next section.</p>
+
+<h3 id="c2-world-action-models">DreamZero: a model that predicts frames and actions</h3>
+<p>A <strong>world-action model</strong> predicts future video frames and the actions that lead to them, in one model. <a data-ref="ye2026">Ye et al. (2026)</a> build DreamZero, a 14-billion-parameter model of this type. Its inputs are video, language and the robot's own state (proprioception). Its outputs are future video and continuous actions.</p>
+<figure class="paper" style="--fig-w: 520px"><img src="slides/assets/partC/c-ye2026-fig1.png" width="1975" height="1517" loading="lazy" alt="Overview of DreamZero. Top: diverse, non-repetitive pretraining data from bi-manual mobile and single-arm robots, with the note that task diversity matters more than repetition. Middle: the world action model takes videos, language and proprioception and outputs future videos and continuous actions. Left: generalization after post-training on fruit packing and table bussing. Right: task transfer between bimanual arm and human video. Bottom: zero-shot generalization to unseen tasks in unseen environments, and few-shot adaptation to a new robot with 30 minutes of play data."><figcaption>DreamZero predicts future video and actions together. Claimed results: zero-shot tasks in new scenes and adaptation to a new robot with 30 minutes of play data. Figure: <a data-ref="ye2026">Ye et al. (2026)</a>, Fig. 1.</figcaption></figure>
+<p>The deck lists three ideas.</p>
+<ul>
+<li>Joint video-action modelling can use supervision from video alone. Video is cheaper than robot teleoperation data (a person drives the robot to record a demonstration).</li>
+<li>The loop is: predict an imagined future, act, observe again, and correct.</li>
+<li>The claimed payoff is zero-shot transfer (no examples of the new case) to unseen tasks, scenes and robot bodies.</li>
+</ul>
+<p>The word "claimed" matters. This is a 2026 frontier paper. The figure states the claims; it does not prove them. The next question is what evidence exists for the older idea, the 2018 world model.</p>
+
+<h3 id="c2-world-result">Result: a policy trained only in a learned dream beat the best earlier result</h3>
+<p><a data-ref="ha2018">Ha and Schmidhuber (2018)</a> test the world model on two tasks. In VizDoom Take Cover the score is the number of time steps the agent survives. The task counts as solved above 750 (Section 3.3). In CarRacing-v0 the score is the average reward over 100 trials. The task counts as solved at 900.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Task</th><th>Agent</th><th>Average score</th></tr></thead>
+<tbody>
+<tr><td>VizDoom Take Cover</td><td>Best earlier result (OpenAI Gym leaderboard)</td><td>820 ± 58</td></tr>
+<tr><td>VizDoom Take Cover</td><td>World model, trained only inside its dream, tested in the real game</td><td>1092 ± 556</td></tr>
+<tr><td>CarRacing-v0</td><td>Best earlier deep RL method (A3C, discrete)</td><td>652 ± 10</td></tr>
+<tr><td>CarRacing-v0</td><td>World model (V, M and C together)</td><td>906 ± 21</td></tr>
+</tbody></table></div>
+<p>Table 1 of the paper gives the CarRacing rows. Table 2 gives the Take Cover rows (Section 4.4). The dream was run with temperature τ = 1.15. The temperature scales the randomness of M's predictions. A higher τ makes the dream more random. The paper reports that τ = 1.30 gave a lower score than τ = 1.15, with a less risky strategy and a lower variance of returns.</p>
+<div class="verdict"><strong>Limit.</strong> The Take Cover spread is large: ± 556 on a mean of 1092. The mean is above the earlier 820, but the spread is wider than the gap, so this row alone does not show a clear win. The CarRacing result (906 ± 21 against 652 ± 10) is the clearer one.</div>
+<p>This part covers methods that act. The last two sections ask which models lead today, and what risk comes with an image input.</p>
+
+<h3 id="c2-leaderboard">Today's best vision-language models, 10 Oct 2026</h3>
+<p>The deck read the Vision Arena leaderboard on 10 Oct 2026 (<a data-ref="arena2026">Arena 2026</a>, page date 9 Oct 2026). The deck asks to check it again in the week of 4 Nov 2026. The score is a rating from human votes. A person sees two answers to one image and picks the better one. The deck shows one closed model per developer, the two best open models, and Qwen3-VL.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Rank (95% interval)</th><th>Model</th><th>Developer</th><th>Weights</th><th>Score</th></tr></thead>
+<tbody>
+<tr><td>1 (1–10)</td><td>claude-fable-5-high</td><td>Anthropic</td><td>Closed</td><td>1308</td></tr>
+<tr><td>2 (1–19)</td><td>qwen3.8-max</td><td>Alibaba</td><td>Closed</td><td>1301</td></tr>
+<tr><td>6 (1–26)</td><td>gemini-3.7-flash-high</td><td>Google</td><td>Closed</td><td>1297</td></tr>
+<tr><td>8 (1–37)</td><td>gpt-6.1-sol-max</td><td>OpenAI</td><td>Closed</td><td>1294</td></tr>
+<tr><td>35 (11–47)</td><td>glm-5.3-flash</td><td>Z.ai</td><td>Open (MIT)</td><td>1273</td></tr>
+<tr><td>44 (34–58)</td><td>gemma-4-31b</td><td>Google</td><td>Open (Apache 2.0)</td><td>1262</td></tr>
+<tr><td>83 (74–91)</td><td>qwen3-vl-235b-a22b-instruct</td><td>Alibaba</td><td>Open (Apache 2.0)</td><td>1215</td></tr>
+</tbody></table></div>
+<p>The intervals overlap, so the top rank is not certain. The list changes fast. In May 2026 the Stanford CS231n lecture named Gemini the best closed model (<a data-ref="feifei2026b">Fei-Fei et al. 2026</a>, lecture 16). Qwen3-VL, released in November 2025, is now at rank 83. These leaderboard rows come from one page on one day and may be out of date when you read this.</p>
+
+<h3 id="c2-attack">An image can carry an attack</h3>
+<p>A VLM accepts images as input, so an image can carry an attack. The deck shows two types. The deck connects both to a risk that Lecture 2 session 02 described: prompt injection through a tool result. In both cases data and instructions share one input.</p>
+<p><strong>Typed text in an image (FigStep).</strong> <a data-ref="gong2025">Gong et al. (2025)</a> write a harmful request as typed text inside an image and ask the model to follow it. Often the model does not refuse. On six open-source VLMs, the average attack success rate was 82.50% (abstract). One reason is that the language model learned to refuse harmful text. The image path did not get the same safety training.</p>
+<figure class="paper" style="--fig-w: 460px"><img src="slides/assets/partC/c-gong2025-fig1.png" width="854" height="358" loading="lazy" alt="Diagram of the FigStep attack. A prohibited question is turned into an image that shows the question as typed text, and the image is sent to a vision-language model with a neutral text prompt."><figcaption>FigStep moves the harmful text from the text prompt into an image. The harmful text itself is not shown here. Figure: <a data-ref="gong2025">Gong et al. (2025)</a>, Fig. 1.</figcaption></figure>
+<p><strong>Adversarial pixels.</strong> <a data-ref="qi2024a">Qi et al. (2024)</a> change each pixel of an image by a very small amount, at most ε = 16/255 on the 0–255 scale. The change is hard to see. One such image made MiniGPT-4 obey harmful requests that it refused before (Fig. 1 and its caption). They optimise the pixels with gradient steps so that the model produces the harmful target text.</p>
+<figure class="paper" style="--fig-w: 460px"><img src="slides/assets/partC/c-qi2024a-fig1-top.png" width="1008" height="467" loading="lazy" alt="Top strip of a figure. A clean panda image and an adversarial panda image look the same. A box shows that the adversarial image is optimised so that the model outputs a target harmful corpus."><figcaption>A clean image and an adversarial image look the same to a person. We show only the top part of the figure. The model outputs below it are cut off. Figure: <a data-ref="qi2024a">Qi et al. (2024)</a>, Fig. 1.</figcaption></figure>
+<div class="callout"><strong>Key point.</strong> The safety training of the language model does not cover the image input. Any input channel that the model reads as instructions is a place for an attack.</div>
+<p>This closes the list of methods in Part C. The next section sums up Part C in one view.</p>
+
+<h3 id="c2-part-c-close">Part C in one view: VLMs learned to see more, to think, and to act</h3>
+<p>Since 2023, vision-language models have learned to see more, to think, and to act. Part C covered six methods, each with its reason, its method and its result: the Qwen3-VL recipe and thinking (earlier sections of <a href="#part-c">Part C</a>), and the four methods in the table.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Method</th><th>What it adds</th><th>Result in this part</th></tr></thead>
+<tbody>
+<tr><td>Chameleon, BAGEL, UniTouch</td><td>One model for several modalities, and output of images</td><td>Chameleon-34B preferred over Gemini-Pro (53.5% against 15.3%) and GPT-4V (46.0% against 22.6%)</td></tr>
+<tr><td>OSWorld agents</td><td>Use of a whole desktop</td><td>People 72.36%, best model 12.24% (2024)</td></tr>
+<tr><td>RT-2, OpenVLA, Diffusion Policy, VLASH, DreamZero</td><td>Robot actions as tokens, smooth control, predicted video</td><td>Data limits generalist robot models</td></tr>
+<tr><td>World models</td><td>Learning inside a model of the world</td><td>CarRacing 906 ± 21 against 652 ± 10</td></tr>
+</tbody></table></div>
+<p>Two more points close the part: the leaderboard changes fast, and an image input is an attack surface. The next section sums up all of Part 2.</p>
+
+<!-- ═══════════ fragment D1 ═══════════ -->
+<!-- ═══════════════════════════ CLOSE OF PART 2 ═══════════════════════════ -->
+<h3 id="d1-topic7">Topic 7 is covered: each phrase of the syllabus has a place in this lecture</h3>
+<p>Part C ended with the state of the art and the safety problem. This section asks a different question: did the lecture cover what the syllabus lists for Topic 7? The table matches each phrase of the syllabus to the part of the lecture that covers it.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Syllabus phrase</th><th>Where in this lecture</th></tr></thead>
+<tbody>
+<tr><td>Extending LLMs to other data</td><td><a href="#part-a">Part A</a> and <a href="#part-b">Part B</a></td></tr>
+<tr><td>… and prompting</td><td><a href="#part-b">Part B</a>, last segment (the demo of a small model and its generation loop)</td></tr>
+<tr><td>Especially visual data (large vision-language models)</td><td>All three parts</td></tr>
+<tr><td>CLIP</td><td>Lecture 3, and <a href="#part-a">Part A</a> of this lecture</td></tr>
+<tr><td>Applications; other multi-modal models</td><td><a href="#part-c">Part C</a></td></tr>
+</tbody></table></div>
+<p>The next section puts Topic 7 next to the other lectures of Part 2.</p>
+
+<h3 id="d1-recipe">Part 2 is one recipe, and Lecture 4 adds images to it</h3>
+<p>Part 2 of the module has six lectures. Each one gave the multi-modal model of today one ingredient. The table lists them in order.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Lecture</th><th>Topic</th><th>What it gave a multi-modal model</th></tr></thead>
+<tbody>
+<tr><td>1 · 01</td><td>Architecture</td><td>The Transformer and next-token prediction. The LLM inside every model in this lecture is one.</td></tr>
+<tr><td>1 · 02</td><td>Training</td><td>Pre-training at scale, and cheap adaptation with LoRA (low-rank adaptation, which trains a small added set of weights).</td></tr>
+<tr><td>2 · 01</td><td>Post-training</td><td>Instruction tuning and reinforcement learning. A model gives answers, not only continuations of the text.</td></tr>
+<tr><td>2 · 02</td><td>Prompting</td><td>Prompts, reasoning and agents with a fixed model.</td></tr>
+<tr><td>3</td><td>Self-supervised learning</td><td>Image encoders trained without labels, such as CLIP.</td></tr>
+<tr><td>4</td><td>Multi-modal models</td><td>Connect the encoder to the LLM, train the result, prompt it, and let it act.</td></tr>
+</tbody></table></div>
+<p>Read the table as a sequence of dependencies. Lecture 4 does not add a new kind of model. It joins two parts that earlier lectures built: an image encoder from Lecture 3 and an LLM from Lectures 1 and 2. The training steps of <a href="#part-b">Part B</a> repeat the pre-training and instruction-tuning steps of Lectures 1 and 2. The agents of <a href="#part-c">Part C</a> extend the prompting and agent ideas of Lecture 2 · 02. The next section lists what this recipe does not yet solve.</p>
+
+<h3 id="d1-open">Five questions are still open</h3>
+<p>The recipe works, but the parts of this lecture also showed its limits. The deck lists five questions that a student could work on.</p>
+<ul>
+  <li><strong>Fewer image tokens without losing detail.</strong> An image becomes many visual tokens, and each token adds cost in the LLM (see the token counts in <a href="#part-b">Part B</a>).</li>
+  <li><strong>Grounding: counting, positions and small text.</strong> A model must tie its words to exact places and quantities in the image. The results in <a href="#part-c">Part C</a> show that these skills are still weaker than general description.</li>
+  <li><strong>Long video, and memory over hours.</strong> A video has far more frames than a context window can hold.</li>
+  <li><strong>One model that understands and generates every modality.</strong> <a href="#part-c">Part C</a> showed models that read and draw, and models that handle other modalities. A single model for all of them is not yet standard.</li>
+  <li><strong>Agents and robots that stay reliable over long tasks.</strong> Each step of an agent can fail, and the errors add up over many steps.</li>
+</ul>
+<p>The next section names code and courses for readers who want to start on one of these.</p>
+
+<h3 id="d1-next">Where to go next: read the code, change one piece, measure</h3>
+<p>The deck gives one way to learn more: read a small open implementation, change one part of it, and measure the effect.</p>
+<ul>
+  <li><strong>Code.</strong> nanoGPT (<a data-ref="karpathy2022">Karpathy (2022)</a>), from Lecture 1, and nanoVLM (<a data-ref="wiedmann2025">Wiedmann et al. (2025)</a>), from <a href="#part-b">Part B</a>. The first is a small LLM. The second adds an image encoder and a projector to a small LLM. LLaVA (<a data-ref="liu2023a">Liu et al. (2023)</a>) has a paper and open code.</li>
+  <li><strong>Courses.</strong> Stanford CS231n, Lecture 16 (vision and language). Georgia Tech CS 8803-VLM (vision-language models and agents). CMU 11-777 (multimodal machine learning).</li>
+</ul>
+<p>The links to the code are in Resources at the end of this page. The next section gives a method for revising what the lecture taught.</p>
+
+<h3 id="d1-revise">Revising Part 2: derive again, and judge each method by problem, cost and failure</h3>
+<p>The deck gives two ways to revise.</p>
+<ol>
+  <li>Work each derivation again from the start. Examples in this lecture: the contrastive loss of CLIP, the count of tokens per image, the parameter count of the projector, and the loss mask. Write every symbol with its name before you use it.</li>
+  <li>For each method, answer three questions. What problem does it solve? What does it cost? When does it fail? Use the lecture's own methods as a list: CLIP, the Perceiver Resampler, the Q-Former, LLaVA, pixel shuffle, DeepStack and the action tokens of a vision-language-action model.</li>
+</ol>
+<p>A method with a clear answer to all three questions is one that you understand well. The last section sums up the lecture.</p>
+
+<!-- ═══════════════════════════ WHERE WE GOT TO ═══════════════════════════ -->
+<h2 id="close">Where we got to</h2>
+<p>The question of this lecture was: how did LLMs learn to see? The answer has three parts, and each part has one job.</p>
+<ul>
+  <li>The <strong>encoder</strong> turns the image into vectors. It is usually a Transformer that was trained on images, as CLIP was in Lecture 3.</li>
+  <li>The <strong>projector</strong> is a small network. It maps those vectors to the width of the LLM's token embeddings, so the LLM can read them like words.</li>
+  <li>The <strong>LLM</strong> reads the image tokens and the text tokens together. It predicts the next text token, as it did before it could see.</li>
+</ul>
+<p>The recipe has two training stages. The first stage uses image–text pairs to align the projector. The second stage uses instruction data, so the model answers questions about images. <a href="#part-a">Part A</a> compared the ways to connect an encoder to an LLM. <a href="#part-b">Part B</a> built the smallest working version and showed each step in code. <a href="#part-c">Part C</a> showed that the same recipe reaches reasoning, computer use, robot control and image generation.</p>
+<p>Five questions remain open: fewer image tokens, exact grounding, long video, one model for every modality, and reliable agents over long tasks. Each one is a place where a small change to an open implementation can give a measurable result.</p>
+
+<!-- ═══════════════════════════════ RESOURCES ═══════════════════════════════ -->
+<h2 id="resources">Resources</h2>
+<h3>Reading</h3>
+<ul>
+  <li>Radford et al., <a href="https://arxiv.org/abs/2103.00020"><em>Learning Transferable Visual Models From Natural Language Supervision</em></a>, ICML 2021. The CLIP method.</li>
+  <li>Alayrac et al., <a href="https://arxiv.org/abs/2204.14198"><em>Flamingo: a Visual Language Model for Few-Shot Learning</em></a>, NeurIPS 2022. The Perceiver Resampler and gated cross-attention.</li>
+  <li>Liu et al., <a href="https://arxiv.org/abs/2304.08485"><em>Visual Instruction Tuning</em></a>, NeurIPS 2023. The method (LLaVA) and the benchmark.</li>
+  <li>Bai et al., <a href="https://arxiv.org/abs/2511.21631"><em>Qwen3-VL Technical Report</em></a>, 2025. The model and its training recipe.</li>
+</ul>
+<p class="note">The official reading list for the module is on Canvas.</p>
+<h3>Code</h3>
+<ul>
+  <li><a href="https://github.com/huggingface/nanoVLM">huggingface/nanoVLM</a> — the small vision-language model used in Part B.</li>
+  <li><a href="https://github.com/haotian-liu/LLaVA">haotian-liu/LLaVA</a> — the open code of LLaVA.</li>
+</ul>
+
+<h2 id="references">References</h2>
+<p class="note">Every work cited on this page, in APA style with shortened author lists. Titles link to the paper.</p>
+<ul class="refs-list" data-refs-list></ul>
+
+<h2 id="next">End of Part 2</h2>
+<p>This is the last lecture of Part 2. Logistics for the coming weeks are on Canvas.</p>
+
+</main>
+</div>
+</div>
+
+<footer><div class="wrap">
+  <p>CEG5305 · Department of Electrical and Computer Engineering, National University of Singapore · AY2026/27 Semester 1. Part 2 page maintained by Junyuan Hong.</p>
+  <p>Figures on this page are redrawn in HTML; the papers they follow are cited where used. Embedded demos are the work of their authors and are loaded from their own sites.</p>
+</div></footer>
+</body>
+</html>
