@@ -2,6 +2,15 @@
 
 Newest first. The version is shown on slide 1 and is set in the commit that publishes it.
 
+## 2026.11.04v2
+
+- Corrected five numbers and labels against the sources:
+  - OpenVLA is trained on 970k robot episodes (was "~1M").
+  - Removed "30–50 Hz" from the Fast, continuous control slides; neither Diffusion Policy nor VLASH states it.
+  - Removed the 1.7B backbone and 1.5T-token line from the DeepStack ablation slide; it belongs to the vision-encoder ablation (Table 11).
+  - DeepStack equations: the meaning line now uses the same symbols as the equations (M_k, S_V).
+  - LLaVA In-the-Wild slide cites Table 5 only; the numbers shown come from that table.
+
 ## 2026.11.04v1
 
 - First version of the deck: extending LLMs to large multi-modal models, in three parts, 111 slides.

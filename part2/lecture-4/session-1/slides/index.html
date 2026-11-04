@@ -30,7 +30,7 @@
   <p>CEG5305 Introduction to Generative AI with Foundation Models<br>Junyuan Hong · AY2026/27 Semester 1</p>
   <div class="copyright">© 2026 Junyuan Hong. All rights reserved.</div>
   <!-- version: set only in the commit that publishes (stage 8, D34); see CHANGELOG.md beside this file -->
-  <div class="version">2026.11.04v1</div>
+  <div class="version">2026.11.04v2</div>
 </section>
 
 <!-- Disclosure (D44, 14 Oct 2026): .claude/skills/make-lecture/references/disclosure.md. Links and citations only (D29). -->
@@ -1005,7 +1005,7 @@
     </div>
     <div class="pg-bar"><ul class="pg-bul"><li>The score compares the quality of the answer with the reference. It is not the share of correct answers.</li><li>In-the-Wild score: LLaVA 67.3, BLIP-2 38.1, OpenFlamingo 19.1.</li></ul></div>
   </div>
-  <p class="src">Source: <a data-ref="liu2023a">Liu et al. (2023)</a>, Sec. 5 and Tables 5 and 7.</p>
+  <p class="src">Source: <a data-ref="liu2023a">Liu et al. (2023)</a>, Sec. 5 and Table 5.</p>
 </section>
 
 <section class="slide blue section-open seg-outline" data-title="Part B outline · 3 of 3">
@@ -1280,7 +1280,7 @@
       <h4 class="c-h">Aligned residual injection</h4>
       <p class="c-math">\(D_k = M_k\big(F^{(a_k)}\big) \in \mathbb{R}^{N_v \times d_L}, \qquad k = 1,2,3\)</p>
       <p class="c-math">\(H^{(k)} = T_k\big(H^{(k-1)}\big) + S_{\mathcal{V}}(D_k)\)</p>
-      <p><b>Meaning.</b> \(\mathrm{M}_j\) maps a selected ViT feature set to LLM width; \(\mathrm{S}_v\) places it at the corresponding visual positions.</p>
+      <p><b>Meaning.</b> \(M_k\) maps a selected ViT feature set to LLM width; \(S_{\mathcal{V}}\) places it at the corresponding visual positions.</p>
       <p><b>Cost.</b> Extra feature extraction, mergers, and additions—but no additional context positions from stacking.</p>
     </div>
     <p class="c-key">Keep the distinction: multi-level features ≠ more image scales; unchanged context length ≠ zero extra computation.</p>
@@ -1400,9 +1400,8 @@
         <tr><td>DocVQA</td><td>89.5</td><td class="c-hi">91.1</td></tr>
         <tr><td>MMMU</td><td>52.9</td><td class="c-hi">54.1</td></tr>
       </table>
-      <p class="c-note">The vision-encoder ablation also uses a matched 1.7B language backbone and 1.5T-token training.</p>
     </div>
-    <p class="src">Left panel; numbers checked against the report's Table 12, p. 24. Deck source: Report Tables 11–12, p. 24 (<a data-ref="bai2025">Bai et al., 2025</a>).</p>
+    <p class="src">Left panel; numbers checked against the report's Table 12, p. 24. Deck source: Report Table 12, p. 24 (<a data-ref="bai2025">Bai et al., 2025</a>).</p>
   </div>
 </section>
 
@@ -1574,14 +1573,14 @@
   <h2>Generalist VLAs and the Data Problem</h2>
   <div class="slide-body">
     <figure class="c-fig" style="--h:330px"><img src="./assets/partC/c-kim2024-fig1.png" alt="OpenVLA Figure 1: large-scale robot training data (970k robot episodes) fine-tune a base VLM (Llama 2 7B with a ViT) into OpenVLA, a vision-language-action model that answers 'Wipe the table.' with action deltas; photos of multi-robot control; fully open-source data, weights and code"></figure>
-    <p class="c-lede">An open 7B VLA trained on ~1M cross-embodiment episodes — the bottleneck is trajectories, not parameters.</p>
+    <p class="c-lede">An open 7B VLA trained on 970k cross-embodiment episodes — the bottleneck is trajectories, not parameters.</p>
     <p class="src">The page has no headline, so its page title is the slide title. Figure: <a data-ref="kim2024">Kim et al. (2024)</a>, Fig. 1.</p>
   </div>
 </section>
 
 <section class="slide pC c-s" data-title="Fast, continuous control (1/2)" data-refs="chi2023">
   <p class="eb">C · Part 4: Acting in the World <span class="c-lab">Fast, Continuous Control</span><span class="c-wk">Week 13</span></p>
-  <h2 class="c-h2s">Discrete tokens are a poor fit for smooth motion at 30–50 Hz. Two fixes: predict chunks, and hide the latency.</h2>
+  <h2 class="c-h2s">Discrete tokens are a poor fit for smooth, continuous motion. Two fixes: predict chunks, and hide the latency.</h2>
   <div class="slide-body">
     <figure class="c-fig" style="--h:250px"><img src="./assets/partC/c-chi2023-fig2.png" alt="Diffusion Policy Figure 2: (a) general formulation: from an image observation sequence, the diffusion policy denoises an action sequence over a prediction horizon and executes part of it; (b) a CNN-based and (c) a Transformer-based noise-prediction network, repeated K times"></figure>
     <p class="c-card">Diffusion Policy denoises a whole action sequence conditioned on recent observations, instead of emitting one step at a time.</p>
@@ -1591,7 +1590,7 @@
 
 <section class="slide pC c-s" data-title="Fast, continuous control (2/2)" data-refs="tang2025">
   <p class="eb">C · Part 4: Acting in the World <span class="c-lab">Fast, Continuous Control</span><span class="c-wk">Week 13</span></p>
-  <h2 class="c-h2s">Discrete tokens are a poor fit for smooth motion at 30–50 Hz. Two fixes: predict chunks, and hide the latency.</h2>
+  <h2 class="c-h2s">Discrete tokens are a poor fit for smooth, continuous motion. Two fixes: predict chunks, and hide the latency.</h2>
   <div class="slide-body">
     <figure class="c-fig" style="--h:250px"><img src="./assets/partC/c-tang2025-fig3.png" alt="VLASH Figure 3: (a) synchronous inference: the robot stalls while the model infers; (b) naive asynchronous inference: the model predicts from a stale state, so the actions are discontinuous; (c) VLASH rolls the robot state forward and predicts from the future state, giving fast reaction and smooth actions"></figure>
     <p class="c-card c-b">Asynchronous inference acts on predictions made for a future state, so inference delay stops turning into jerky motion.</p>
