@@ -1,0 +1,823 @@
+/* Lecture 2 session 02 deck only. GENERATED into slides/polish.css by slides_build/assemble.py:
+   this base, then each part's CSS (partA/partA.css, partB/partB.css, partC/partC.css). */
+
+/* slide 1: copyright and version (as Lecture 1 session 01) */
+.slide.cover .copyright { position: absolute; left: 64px; right: 64px; bottom: 100px; color: #7f96aa; opacity: .6; font-size: 14px; }
+.slide.cover .version { position: absolute; left: 64px; bottom: 72px; letter-spacing: .06em; color: #7f96aa; opacity: .6; font-size: 14px; font-variant-numeric: tabular-nums; }
+
+/* slide 2: recap table (as Lecture 1 session 01's Part 1 recap) */
+.slide.recap .fit > table { width: 100%; font-size: 23px; line-height: 1.32; }
+.slide.recap .fit > table th { font-size: 15px; text-align: left; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 4px 10px; }
+.slide.recap .fit > table td { padding: 8px 10px; vertical-align: top; }
+.slide.recap .fit > table td:first-child { width: 7%; font-weight: 700; color: var(--orange-2); }
+.slide.recap .fit > table td:first-child a { color: inherit; }
+.slide.recap .fit > table td:nth-child(2) { width: 33%; font-weight: 600; }
+.slide.recap p.key { margin-top: 14px; }
+
+/* outline: jump links keep the text colour */
+.slide.agenda .card .tag a { color: inherit; }
+
+/* today's question: three small cards under the question */
+.slide.opening-question .fit { gap: 18px; }
+.slide.opening-question .big span { color: var(--orange-2); }
+.slide.opening-question .fit > .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* homework task and questions (as Lecture 1 session 01, slides 68–69) */
+.slide.task .task-row { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 36px; align-items: start; margin-top: 10px; }
+.slide.task .board-steps li { font-size: 27px; line-height: 1.35; margin-bottom: 10px; padding-left: 52px; }
+.slide.task .card.deliver { border-top: 3px solid var(--orange); padding: 16px 22px; }
+.slide.task .card.deliver p { font-size: 27px; line-height: 1.3; margin-bottom: 8px; padding-left: 18px; position: relative; }
+.slide.task .card.deliver p::before { content: "•"; position: absolute; left: 0; color: var(--orange-2); }
+.slide.task .card.deliver code { font-size: .9em; }
+.slide.task p.same { font-size: 27px; color: var(--muted); margin-top: 8px; }
+.slide.homework .fit > .grid > .card p { font-size: 27px; line-height: 1.35; margin-bottom: 9px; }
+.slide.homework .callout { margin-top: 12px; padding-top: 12px; padding-bottom: 12px; }
+
+/* part openers: the plan on the left, a short recap of the previous part on the right (as Lecture 1 session 01) */
+.slide.section-open.with-recap > h1, .slide.section-open.with-recap > p, .slide.section-open.with-recap > .seg { max-width: 660px; }
+.slide.section-open.with-recap > h1 { font-size: 54px; }
+.slide.section-open.with-recap > p:not(.eb) { font-size: 26px; line-height: 1.4; margin-bottom: 30px; }
+.slide.section-open.with-recap .recap { position: absolute; top: 118px; right: 60px; width: 440px; padding: 18px 22px; border-radius: 10px; background: rgba(255, 255, 255, .07); border-left: 4px solid var(--orange); }
+.slide.section-open.with-recap .recap .t { font-size: 16px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #b9cbd8; margin-bottom: 10px; }
+.slide.section-open.with-recap .recap ul { margin: 0; padding-left: 1.1em; }
+.slide.section-open.with-recap .recap li { font-size: 20px; line-height: 1.35; color: #fff; margin: 0 0 10px; }
+.slide.section-open .seg span:last-child:empty { display: none; }
+/* jump links: outline and the part openers */
+.slide .seg a[data-goto] { color: inherit; text-decoration: underline; text-decoration-color: var(--orange); text-decoration-thickness: .06em; text-underline-offset: .16em; }
+.slide .seg a[data-goto]:hover { text-decoration-thickness: .1em; }
+/* part openers with more than four segments: tighter rows so all fit */
+.slide.section-open.many { padding-top: 40px; }
+.slide.section-open.many h1 { margin: 10px 0 12px; }
+.slide.section-open.many > p:not(.eb) { margin-bottom: 18px; }
+.slide.section-open.many .seg { padding: 9px 0; font-size: 28px; }
+
+/* ───── Session 02 frame ───── */
+
+/* outline: today's card has seven rows (opening, A, B, break, C, close, talk). The theme mutes rows 3 and 5
+   by position (made for A ☕ B ☕ C); here the break and the talk rows carry .quiet instead. */
+.slide.agenda .card .seg:nth-of-type(n) { color: var(--text); font-size: 28px; margin: 2px 0; }
+.slide.agenda .card .seg.quiet:nth-of-type(n) { color: var(--muted); font-size: 27px; }
+.slide.agenda .card .seg b { font-size: 22px; }
+.slide.agenda .fit > .card:first-child p { color: var(--muted); }
+
+/* five pieces: diagram left, list right */
+.slide.five-pieces .fp-row { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.slide.five-pieces .fp-art { width: auto; height: 330px; display: block; }
+.slide.five-pieces .fp-art .box { fill: #fff; stroke: var(--blue); stroke-width: 2; }
+.slide.five-pieces .fp-art .box.mdl { fill: var(--panel); stroke-dasharray: 6 5; }
+.slide.five-pieces .fp-art .box.env { stroke: var(--orange); }
+.slide.five-pieces .fp-art text { font-size: 24px; font-weight: 700; fill: var(--blue); text-anchor: middle; }
+.slide.five-pieces .fp-art text.sm { font-size: 18px; font-weight: 400; fill: var(--muted); }
+.slide.five-pieces .fp-art text.lbl { font-size: 18px; font-weight: 600; fill: var(--orange-2); }
+.slide.five-pieces .fp-art text.lbl.start { text-anchor: start; }
+.slide.five-pieces .fp-art .wire { fill: none; stroke: var(--blue); stroke-width: 2.4; }
+.slide.five-pieces .fp-art .wire.loop { stroke: var(--orange); stroke-dasharray: 7 5; }
+.slide.five-pieces .fp-art marker path { fill: var(--blue); }
+.slide.five-pieces .fp-list { margin: 0; padding-left: 1.3em; }
+.slide.five-pieces .fp-list li { font-size: 27px; line-height: 1.32; margin: 0 0 12px; }
+.slide.five-pieces .fp-list li span { display: inline-block; margin-left: 6px; font-size: 18px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--orange-2); }
+
+/* the verdict table at the close */
+.slide.verdict-table .fit > table { width: 100%; font-size: 27px; }
+.slide.verdict-table .fit > table td { padding: 16px 16px; line-height: 1.26; vertical-align: top; }
+.slide.verdict-table .fit > table td:first-child { width: 17%; font-weight: 700; }
+.slide.verdict-table .fit > table td:nth-child(2) { width: 36%; }
+
+/* invited talk: three cards in a row */
+.slide.talk .fit > .grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr) minmax(0, .8fr); }
+.slide.talk .card p { font-size: 27px; line-height: 1.35; }
+
+/* part openers with a recap and more than four segments (B, C): smaller title so six rows fit */
+.slide.section-open.with-recap.many > h1 { font-size: 46px; margin: 8px 0 10px; }
+
+/* opening hook: X posts. Left: X's own embed card with the media hidden (text and likes readable);
+   right: the post's own media, large (images from capture_xpost.mjs --compact and the post's media URLs) */
+.slide.xpost .xp-row { display: grid; grid-template-columns: 430px minmax(0, 1fr); gap: 36px; align-items: center; }
+.slide.xpost .xp-row:has(> .wide) { grid-template-columns: 600px minmax(0, 1fr); }
+.slide.xpost figure.xp { margin: 0; }
+.slide.xpost figure.xp img, .slide.xpost .xp-pair img { display: block; border: 1px solid var(--line); border-radius: 14px; }
+.slide.xpost figure.xp.card img { width: 430px; height: auto; border: 0; }
+.slide.xpost figure.xp.wide img { width: 600px; height: auto; border: 0; }
+.slide.xpost figure.xp.media { justify-self: center; }
+.slide.xpost figure.xp.media img { height: 380px; width: auto; max-width: 100%; }
+.slide.xpost .xp-col { display: flex; flex-direction: column; gap: 20px; width: 430px; }
+.slide.xpost .xp-pair { display: flex; gap: 16px; justify-content: center; min-width: 0; }
+.slide.xpost .xp-pair img { height: 380px; width: auto; max-width: calc(50% - 8px); object-fit: contain; }
+.slide.xpost .xp-text p { font-size: 29px; line-height: 1.35; margin: 0 0 18px; }
+.slide.xpost .xp-text .xp-table { width: 100%; font-size: 27px; margin-bottom: 22px; }
+.slide.xpost .xp-text .xp-table td { padding: 12px 14px; }
+.slide.xpost .xp-text .xp-table td:last-child { text-align: right; font-weight: 700; white-space: nowrap; }
+.slide.xpost p.key { margin: 0; }
+.slide.xpost-ask .slide-body .fit { gap: 40px; }
+.slide.xpost-ask .bubble { align-self: flex-end; max-width: 760px; padding: 26px 34px; border-radius: 28px; background: var(--panel); border: 2px solid var(--blue); font-size: 40px; line-height: 1.3; font-style: italic; color: var(--blue); }
+.slide.xpost figure.xp.media.short img { height: 340px; }
+.slide.xpost .xp-text .xp-table th { white-space: nowrap; }
+
+/* Lecture 4 (10 Oct 2026): eight rows on the outline card (two breaks, close of Part 2, questions) */
+.slide.agenda .card .seg:nth-of-type(n) { margin: 0; padding-top: 6px; padding-bottom: 6px; }
+.slide.agenda .card .seg span:last-child { white-space: nowrap; }
+
+/* Disclosure slide (D44, 14 Oct 2026) */
+.slide.about .callout { margin-bottom: 14px; }
+.slide.about .card p { margin: 2px 0; }
+.slide.about .papers { margin-top: 12px; }
+.slide.about .fit > .card { padding: 6px 18px 8px; margin-top: 10px; }
+.slide.about .fit > .callout { padding-top: 10px; padding-bottom: 10px; margin-bottom: 0; }
+.slide.about .fit > .papers { margin-top: 10px; margin-bottom: 0; }
+
+/* outline page before a segment (Lecture 3 session 01 pattern): the current segment is full, the others dim */
+.slide.seg-outline > h1 { font-size: 44px; margin: 10px 0 24px; }
+.slide.seg-outline .seg { font-size: 30px; padding: 10px 0; }
+.slide.seg-outline .seg.dim { opacity: .4; }
+
+/* part opener: the reference decks, named once per part */
+.slide.section-open .osrc { position: static; margin: 10px 0 0; max-width: 760px; font-size: 18px; line-height: 1.3; color: #b9cbd8; }
+.slide.section-open.with-recap .osrc { max-width: 660px; }
+
+/* ───── Part A (slides_build/partA/partA.css) ───── */
+/* Part A — History: how LLMs learned to see (slides_build/partA/partA.css).
+   Every selector is scoped by .slide.pA.a-s (the Part A slides only); own classes start with a-.
+   Theme: assets/css/slides-theme.css. Built 10 Oct 2026. */
+
+/* rhythm: references sit under every slide, so the title margin is smaller */
+.slide.pA.a-s > h2 { margin-bottom: 14px; }
+.slide.pA.a-s > .src { margin-top: 8px; padding-top: 6px; }
+.slide.pA.a-s .src + .refs { margin-top: 4px; }
+.slide.pA.a-s .slide-body > .fit { gap: 16px; }
+.slide.pA.a-s .fit > * { width: 100%; align-self: stretch; }
+.slide.pA.a-s .slide-body p, .slide.pA.a-s .slide-body li { font-size: 28px; line-height: 1.32; margin: 0; }
+
+/* the deck's eyebrow tag: "Recap: Lecture 3" */
+.slide.pA.a-s .eb .a-recap { display: inline-block; margin-left: 14px; padding: 1px 9px; border-radius: 3px; background: var(--tint); color: var(--orange-2); letter-spacing: .06em; }
+
+/* columns: set the widths with style="--cols: …" */
+.slide.pA.a-s .a-cols { display: grid; grid-template-columns: var(--cols, minmax(0, 1fr) minmax(0, 1fr)); gap: 32px; align-items: center; }
+.slide.pA.a-s .a-cols > * { min-width: 0; }
+.slide.pA.a-s .slide-body .a-stack > * + * { margin-top: 14px; }
+.slide.pA.a-s .slide-body p.a-key { font-weight: 650; color: var(--deep); }
+.slide.pA.a-s .slide-body p.a-center { text-align: center; }
+.slide.pA.a-s .slide-body p.a-bridge { padding: 8px 14px; border-left: 3px solid var(--blue-2); background: var(--panel); }
+
+/* figures: paper crops at 300 dpi and deck crops; set the height with style="--h:…" on the img */
+.slide.pA.a-s .a-fig { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.slide.pA.a-s .a-fig img { display: block; max-width: 100%; max-height: var(--h, 400px); width: auto; height: auto; object-fit: contain; background: #fff; }
+.slide.pA.a-s .a-fig > a { display: block; max-width: 100%; }
+.slide.pA.a-s .a-cap.tag { display: block; margin-top: 6px; font-size: 19px; line-height: 1.3; color: var(--muted); text-align: center; letter-spacing: 0; }
+.slide.pA.a-s .a-cap.tag a { color: inherit; }
+.slide.pA.a-s .a-figlabels { display: flex; justify-content: space-around; width: 100%; margin-top: 4px; }
+.slide.pA.a-s .a-figlabels .tag { font-size: 20px; color: var(--muted); }
+
+/* lists: the deck's own markers (• , ▸ , –) */
+.slide.pA.a-s ul.a-pts { margin: 0; padding-left: 1.15em; }
+.slide.pA.a-s ul.a-pts > li + li { margin-top: 10px; }
+.slide.pA.a-s ul.a-pts ul.a-pts { margin-top: 8px; padding-left: 1.3em; }
+.slide.pA.a-s ul.a-pts ul.a-pts > li + li { margin-top: 6px; }
+.slide.pA.a-s ul.a-dot > li { list-style: disc; }
+.slide.pA.a-s ul.a-dot > li::marker { color: var(--orange); }
+.slide.pA.a-s ul.a-tri > li { list-style: none; }
+.slide.pA.a-s ul.a-tri > li::marker { content: "▸  "; color: var(--deep); font-size: .8em; }
+.slide.pA.a-s ul.a-dash > li { list-style: none; }
+.slide.pA.a-s ul.a-dash > li::marker { content: "–  "; color: var(--muted); }
+.slide.pA.a-s .slide-body p.a-arrow { margin: 4px 0 0 1.2em; font-size: 27px; color: var(--text); }
+.slide.pA.a-s ul.a-sub > li + li { margin-top: 14px; }
+.slide.pA.a-s ul.a-big > li { font-size: 30px; }
+.slide.pA.a-s ul.a-big > li + li { margin-top: 26px; }
+.slide.pA.a-s ul.a-big p.a-arrow { margin-top: 8px; font-size: 28px; }
+.slide.pA.a-s .a-bold, .slide.pA.a-s .a-bold li { font-weight: 700; color: var(--deep); }
+.slide.pA.a-s .slide-body p.a-bul { font-size: 32px; font-weight: 500; color: var(--deep); }
+
+/* two panels with a coloured head (deck pp. 5 and 10) */
+.slide.pA.a-s .a-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 36px; }
+.slide.pA.a-s .a-two > div + div { padding-left: 36px; border-left: 3px solid #a9d8ef; }
+.slide.pA.a-s .slide-body p.a-panel-h { margin-bottom: 16px; padding: 6px 14px; font-weight: 700; color: var(--deep); }
+.slide.pA.a-s p.a-panel-h.lb { background: #d6edf8; border-left: 4px solid #3f9fd2; }
+.slide.pA.a-s p.a-panel-h.or { background: #fbe2d6; border-left: 4px solid #e2683a; }
+.slide.pA.a-s p.a-panel-h.gd { background: #e3eeea; border-left: 4px solid var(--good); }
+.slide.pA.a-s p.a-panel-h.bd { background: #f3e1de; border-left: 4px solid var(--bad); }
+.slide.pA.a-s .a-two ul.a-pts > li + li { margin-top: 12px; }
+.slide.pA.a-s .a-ans ul.a-pts > li + li { margin-top: 12px; }
+
+/* p. 3 timeline (text redrawn; tick colours as on the deck page) */
+.slide.pA.a-s .a-tl { --tlc: minmax(0, .9fr) minmax(0, 1.05fr) minmax(0, .9fr) minmax(0, .9fr) minmax(0, 1fr) minmax(0, .9fr) minmax(0, 1.45fr); display: grid; grid-template-columns: var(--tlc); grid-template-rows: auto 64px auto; column-gap: 8px; }
+.slide.pA.a-s .a-tl-y { display: flex; flex-direction: column; align-items: center; text-align: center; align-self: start; padding-bottom: 18px; }
+.slide.pA.a-s .a-tl-y b { font-size: 30px; color: var(--deep); }
+.slide.pA.a-s .a-tl-y span { font-size: 28px; line-height: 1.25; font-weight: 600; color: var(--deep); white-space: nowrap; }
+.slide.pA.a-s .a-tl-bar { grid-column: 1 / -1; grid-row: 2; position: relative; display: grid; grid-template-columns: var(--tlc); column-gap: 8px; align-items: center; }
+.slide.pA.a-s .a-tl-bar::before { content: ""; position: absolute; left: 2%; right: 0; top: 50%; height: 8px; margin-top: -4px; background: #b8c4cc; border-radius: 4px; }
+.slide.pA.a-s .a-tl-bar i { position: relative; justify-self: center; width: 22px; height: 50px; border-radius: 2px; }
+.slide.pA.a-s .a-tl-bar i.c1 { background: #f26d3d; }
+.slide.pA.a-s .a-tl-bar i.c2 { background: #4fc0ef; }
+.slide.pA.a-s .a-tl-bar i.c3 { background: #5cb85c; }
+.slide.pA.a-s .a-tl-bar i.c4 { background: #a64bc0; }
+.slide.pA.a-s .slide-body p.a-tl-eras { grid-column: 2 / 7; grid-row: 3; display: flex; justify-content: center; gap: 36px; padding-top: 18px; font-size: 27px; font-weight: 700; color: var(--deep); white-space: nowrap; }
+
+/* xkcd comic: linked, not copied */
+.slide.pA.a-s .a-xkcd img { border: 1px solid var(--line); }
+
+/* click-to-load demo beside the steps */
+.slide.pA.a-s .slide-body:has(.a-demo-row) > .fit { height: 100%; }
+.slide.pA.a-s .a-demo-row { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 28px; height: 100%; align-items: stretch; }
+.slide.pA.a-s .a-demo-row > * { min-width: 0; }
+.slide.pA.a-s .a-demo-row .demo { height: 100%; }
+.slide.pA.a-s .a-demo-row .a-stack { align-self: center; }
+.slide.pA.a-s .a-photo-ph { display: flex; align-items: center; justify-content: center; height: 130px; border: 2px dashed var(--line); background: var(--panel); font-size: 27px; line-height: 1.3; color: var(--muted); text-align: center; }
+
+/* deck pages with large bold text */
+.slide.pA.a-s .a-deckq p { font-size: 34px; font-weight: 700; color: var(--deep); }
+.slide.pA.a-s .a-deckq p + p { margin-top: 40px; }
+.slide.pA.a-s .slide-body p.a-deckhead { font-size: 29px; font-weight: 700; color: var(--deep); }
+.slide.pA.a-s .a-blue { color: #1f6fb2 !important; }
+.slide.pA.a-s .a-orange { color: #e2683a; }
+.slide.pA.a-s .a-design { margin-top: 10px; padding: 10px 18px; border-left: 3px solid var(--blue-2); background: var(--panel); }
+.slide.pA.a-s .a-design p.a-arrow { margin-left: 1.2em; }
+
+/* connection-module tables (deck pp. 15 and 22) */
+.slide.pA.a-s table.a-conn { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+.slide.pA.a-s table.a-conn th { width: 30%; padding: 4px 14px; border-radius: 8px; font-size: 27px; font-weight: 500; line-height: 1.25; color: var(--text); text-align: center; letter-spacing: 0; text-transform: none; }
+.slide.pA.a-s table.a-conn th.lm { background: #dcefe0; }
+.slide.pA.a-s table.a-conn th.cm { background: #fbe3d3; }
+.slide.pA.a-s table.a-conn th.ve { background: #dbe8f4; }
+.slide.pA.a-s table.a-conn td { padding: 4px 18px; border: 1px solid #555; border-left-width: 1px; font-size: 28px; line-height: 1.25; color: var(--text); }
+.slide.pA.a-s table.a-conn td:first-child { color: var(--text); }
+
+/* p. 20: the deck's "Emerging Property" star */
+.slide.pA.a-s .a-p20-head { display: flex; align-items: center; justify-content: space-between; }
+.slide.pA.a-s svg.a-burst { width: 200px; height: auto; flex: none; }
+.slide.pA.a-s svg.a-burst polygon { fill: #fbd27a; stroke: #e7b54a; stroke-width: 1.5; }
+.slide.pA.a-s svg.a-burst text { font-size: 19px; fill: var(--text); text-anchor: middle; font-family: var(--font); }
+
+/* ✋ card */
+.slide.pA.a-s .card.accent.a-ask { margin: 0; padding: 14px 20px; border: 0; border-left: 3px solid var(--orange); border-radius: 0; background: var(--tint); box-shadow: none; }
+.slide.pA.a-s .card.accent.a-ask .tag { margin-bottom: 6px; color: var(--orange-2); font-size: 18px; }
+.slide.pA.a-s .card.accent.a-ask p { font-size: 32px; line-height: 1.3; font-weight: 650; color: var(--deep); }
+
+/* p. 16 (2/2), p. 36, p. 40, p. 42 */
+.slide.pA.a-s ul.a-flam > li + li { margin-top: 12px; }
+.slide.pA.a-s ul.a-p40 > li + li { margin-top: 16px; }
+.slide.pA.a-s ul.a-p40 > li { font-size: 28px; }
+.slide.pA.a-s .a-p36 ul.a-pts > li { font-size: 30px; }
+.slide.pA.a-s .a-p36 ul.a-pts ul.a-pts > li { font-size: 27px; }
+.slide.pA.a-s .a-p36 > ul { margin-top: 8px; }
+.slide.pA.a-s .a-p36 ul.a-row { display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto); grid-template-columns: repeat(2, max-content); column-gap: 64px; row-gap: 6px; }
+.slide.pA.a-s .a-p36 ul.a-row > li { margin: 0 !important; }
+.slide.pA.a-s .a-p36 ul.a-pts > li + li { margin-top: 8px; }
+.slide.pA.a-s .a-p36 > p.a-bold { font-size: 31px; }
+.slide.pA.a-s ul.a-p42 > li { font-size: 34px; }
+.slide.pA.a-s ul.a-p42 > li + li { margin-top: 14px; }
+.slide.pA.a-s ul.a-p42 > li.a-gap { margin-top: 40px; }
+
+/* subscripts in deck text (X_f) stay at the prose floor */
+.slide.pA.a-s .slide-body sub { font-size: 27px; line-height: 0; }
+.slide.pA.a-s .a-ans p.a-panel-h { margin-bottom: 10px; }
+.slide.pA.a-s .a-ans + p.a-bridge { padding-top: 6px; padding-bottom: 6px; }
+.slide.pA.a-s table.a-conn th { vertical-align: middle; }
+
+/* Full-page figure: only the image and the source line remain. */
+.slide.pA.a-s.a-full { padding: 14px 24px 12px; }
+.slide.pA.a-s.a-full > .eb, .slide.pA.a-s.a-full > h2, .slide.pA.a-s.a-full .a-cap { display: none; }
+.slide.pA.a-s.a-full .a-fig img { max-height: var(--h, 940px); }
+.slide.pA.a-s.a-full > .src { margin-top: 6px; padding-top: 4px; }
+
+/* BLIP: the two problems it addresses, with photo examples. */
+.slide.pA.a-s .a-prob { display: grid; grid-template-columns: 170px 230px minmax(0, 1fr) 48px minmax(0, 1fr); gap: 16px 16px; align-items: center; }
+.slide.pA.a-s .a-prob > p { margin: 0; }
+.slide.pA.a-s .a-prob .pl { font-size: 28px; font-weight: 700; color: var(--orange-2); }
+.slide.pA.a-s .a-prob .pa { font-size: 48px; text-align: center; color: var(--muted); }
+.slide.pA.a-s .a-prob .ph { width: 100%; height: auto; border-radius: 4px; display: block; }
+.slide.pA.a-s .a-prob .pc { padding: 12px 20px; border-radius: 6px; border: 1px solid var(--line, #d5dde4); background: var(--panel); }
+.slide.pA.a-s .a-prob .pc.after { border-left: 4px solid var(--blue-2); }
+.slide.pA.a-s .a-prob .pc > b { display: block; margin-bottom: 4px; font-size: 26px; color: var(--muted); }
+.slide.pA.a-s .a-prob .pc p { margin: 0 0 4px; font-size: 28px; line-height: 1.28; }
+.slide.pA.a-s .a-prob .pf { grid-column: 2 / -1; margin: 0; }
+.slide.pA.a-s .a-prob .pf img { width: 100%; height: auto; max-height: none; display: block; background: #fff; }
+.slide.pA.a-s .a-prob .pn { grid-column: 2 / -1; font-size: 28px; line-height: 1.3; }
+
+/* BLIP-2: the figure rises beside the title to use the empty space. */
+.slide.pA.a-s .a-cols.a-up { margin-top: -150px; }
+.slide.pA.a-s .slide-body:has(.a-cols.a-up), .slide.pA.a-s .slide-body:has(.a-cols.a-up) > .fit { overflow: visible; }
+
+/* Embedding space alignment: one structure slide (goal, connector, LLM side, training) */
+.slide.pA.a-s .a-ea { display: flex; flex-direction: column; gap: 8px; }
+.slide.pA.a-s .a-ea .ea-goal, .slide.pA.a-s .a-ea .ea-c { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line, #d5dde4); background: var(--panel); font-size: 22px; line-height: 1.26; }
+.slide.pA.a-s .a-ea .ea-goal { border-left: 4px solid var(--orange-2); font-size: 24px; }
+.slide.pA.a-s .a-ea b { color: var(--deep); }
+.slide.pA.a-s .a-ea p.a-arrow { margin: 3px 0 0 0; font-size: 20px; line-height: 1.26; }
+.slide.pA.a-s .a-ea p.ea-out { margin: 6px 0 0; font-size: 20px; font-weight: 700; color: var(--orange-2); }
+.slide.pA.a-s .a-ea p.ea-h { margin: 4px 0 2px; font-size: 22px; font-weight: 700; color: var(--muted); }
+.slide.pA.a-s .a-ea p.ea-h span { display: inline-block; width: 28px; height: 28px; line-height: 28px; margin-right: 8px; border-radius: 50%; text-align: center; background: var(--blue-2); color: #fff; font-size: 18px; }
+.slide.pA.a-s .a-ea .ea-row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.slide.pA.a-s .a-ea .ea-row3 .ea-c { border-top: 4px solid var(--blue-2); }
+.slide.pA.a-s .a-ea .ea-row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.slide.pA.a-s .a-ea .ea-diag { margin-top: 14px; padding: 12px 10px; border-radius: 8px; background: #fff; border: 1px solid var(--line, #d5dde4); }
+.slide.pA.a-s .a-ea .ea-diag svg { display: block; width: 100%; height: auto; }
+
+/* Embedding space alignment: diagram in each card, original text on hover */
+.slide.pA.a-s .a-ea .ea-c { position: relative; padding: 8px 12px; }
+.slide.pA.a-s .a-ea p.ea-name { margin: 0 0 4px; font-size: 22px; font-weight: 700; color: var(--deep); }
+.slide.pA.a-s .a-ea .ea-fig { background: #fff; border-radius: 6px; padding: 4px 6px; }
+.slide.pA.a-s .a-ea .ea-fig svg { display: block; width: 100%; height: auto; }
+.slide.pA.a-s .a-ea .ea-row3 .ea-fig svg { max-height: 150px; }
+.slide.pA.a-s .a-ea .ea-row2 .ea-fig svg { max-height: 118px; }
+.slide.pA.a-s .a-ea .ea-txt { position: absolute; inset: 0; z-index: 3; padding: 10px 14px; border-radius: 8px; background: var(--panel); border: 2px solid var(--blue-2); font-size: 22px; line-height: 1.28; opacity: 0; pointer-events: none; transition: opacity .12s; overflow: auto; }
+.slide.pA.a-s .a-ea .ea-c:hover .ea-txt, .slide.pA.a-s .a-ea .ea-c:focus .ea-txt { opacity: 1; }
+
+/* a red box over part of a figure: percentages of the image */
+.slide.pA.a-s .a-hlwrap { position: relative; display: inline-block; line-height: 0; }
+.slide.pA.a-s .a-hlwrap .a-hlbox { position: absolute; border: 4px solid #d93025; border-radius: 6px; pointer-events: none; }
+
+/* BLIP, problem 2: the fix as two boxes, like problem 1 */
+.slide.pA.a-s .a-prob .pb { grid-column: 2 / -1; display: grid; grid-template-columns: minmax(0, .75fr) 48px minmax(0, 1.9fr); gap: 16px; align-items: center; }
+.slide.pA.a-s .a-prob .pb .pc p { font-size: 24px; }
+.slide.pA.a-s .a-prob .pb .pc > b { font-size: 24px; }
+
+/* ───── Part B (slides_build/partB/partB.css) ───── */
+/* Part B (builder B, 10 Oct 2026): Wang, Anand & Narang (2026), Georgia Tech CS 8803-VLM lecture 6, pp. 3–17
+   (LLaVA), and the added nanoVLM slides. Every selector is scoped by .slide.pB.bv-s; own classes start with bv-.
+   Theme: assets/css/slides-theme.css (read, never edited). */
+
+/* rhythm */
+.slide.pB.bv-s > h2 { margin-bottom: 8px; }
+.slide.pB.bv-s > h2.bv-long { font-size: 38px; letter-spacing: -.03em; }
+.slide.pB.bv-s > .src { margin-top: 6px; padding-top: 6px; }
+.slide.pB.bv-s .src + .refs { margin-top: 4px; }
+.slide.pB.bv-s .slide-body > .fit { gap: 12px; }
+.slide.pB.bv-s .fit > * { width: 100%; align-self: stretch; }
+.slide.pB.bv-s .slide-body p, .slide.pB.bv-s .slide-body li { font-size: 27px; line-height: 1.3; margin: 0; }
+
+/* the deck's section label rides in the eyebrow */
+.slide.pB.bv-s .eb .bv-lab { display: inline-block; margin-left: 12px; padding: 1px 9px; border-radius: 3px; background: var(--tint); color: var(--orange-2); letter-spacing: .06em; }
+.slide.pB.bv-s .eb .bv-lab.bv-add { background: var(--panel); color: var(--blue-2); }
+
+/* deck page parts: subtitle line, panels, bottom bar */
+.slide.pB.bv-s .slide-body p.bv-sub { color: var(--muted); }
+.slide.pB.bv-s .slide-body p.bv-key { padding: 7px 16px; background: var(--tint); color: var(--orange-2); font-weight: 650; }
+.slide.pB.bv-s .bv-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 30px; align-items: start; }
+.slide.pB.bv-s .bv-cols > * { min-width: 0; }
+.slide.pB.bv-s .bv-cols.c46 { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); }
+.slide.pB.bv-s .bv-cols.c64 { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
+.slide.pB.bv-s .bv-cols.c37 { grid-template-columns: minmax(0, .62fr) minmax(0, 1.38fr); }
+.slide.pB.bv-s .bv-cols.c73 { grid-template-columns: minmax(0, 1.38fr) minmax(0, .62fr); }
+.slide.pB.bv-s .bv-cols.mid { align-items: center; }
+.slide.pB.bv-s .bv-pan { padding: 2px 0 2px 18px; border-left: 3px solid var(--orange); }
+.slide.pB.bv-s .bv-pan.nv { border-left-color: var(--blue); }
+.slide.pB.bv-s .bv-pan > * + * { margin-top: 8px; }
+.slide.pB.bv-s .slide-body p.bv-ph { font-size: 29px; font-weight: 700; color: var(--deep); line-height: 1.22; }
+.slide.pB.bv-s .slide-body p.bv-ph .bv-cont { font-weight: 500; color: var(--muted); font-size: 20px; letter-spacing: .04em; }
+.slide.pB.bv-s .slide-body p.bv-h { font-weight: 700; color: var(--deep); }
+.slide.pB.bv-s .slide-body p.bv-q { font-weight: 700; color: var(--deep); }
+.slide.pB.bv-s .slide-body p.bv-note { color: var(--muted); }
+.slide.pB.bv-s .slide-body p.bv-big { font-size: 31px; font-weight: 700; color: var(--deep); line-height: 1.25; }
+.slide.pB.bv-s .bv-box { padding: 10px 16px; background: var(--panel); border-radius: 3px; }
+.slide.pB.bv-s .bv-box.tn { background: var(--tint); }
+.slide.pB.bv-s .bv-box > * + * { margin-top: 6px; }
+.slide.pB.bv-s .bv-mono { font-family: var(--mono); }
+.slide.pB.bv-s .slide-body .bv-box p.bv-mono { font-size: 28px; color: var(--deep); }
+.slide.pB.bv-s .tag.bv-tag { display: block; font-size: 18px; font-weight: 700; letter-spacing: .07em; color: var(--orange-2); margin: 0; text-transform: uppercase; }
+.slide.pB.bv-s .tag.bv-chip { display: inline-block; padding: 2px 10px; font-size: 18px; font-weight: 650; color: var(--deep); background: var(--panel); border-radius: 3px; }
+
+/* numbered items (deck badges 1, 2, 3) */
+.slide.pB.bv-s ol.bv-steps { list-style: none; margin: 0; padding: 0; }
+.slide.pB.bv-s ol.bv-steps > li { display: grid; grid-template-columns: 34px minmax(0, 1fr); column-gap: 14px; row-gap: 2px; margin: 0; }
+.slide.pB.bv-s ol.bv-steps > li + li { margin-top: 8px; }
+.slide.pB.bv-s ol.bv-steps > li > .tag.bv-n { grid-row: 1 / span 3; align-self: start; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin-top: 2px; border-radius: 3px; background: var(--tint); color: var(--orange-2); font-size: 18px; font-weight: 700; letter-spacing: 0; }
+.slide.pB.bv-s ol.bv-steps > li > p { grid-column: 2; }
+.slide.pB.bv-s ol.bv-steps > li > .bv-row { grid-column: 2; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.slide.pB.bv-s dl.bv-items { margin: 0; }
+.slide.pB.bv-s dl.bv-items > dt { font-size: 28px; font-weight: 700; color: var(--deep); line-height: 1.25; }
+.slide.pB.bv-s dl.bv-items > dd { margin: 2px 0 0; font-size: 27px; line-height: 1.3; }
+.slide.pB.bv-s dl.bv-items > dd + dt { margin-top: 8px; }
+
+/* stat cards (58K / 23K / 77K) and number rows */
+.slide.pB.bv-s .bv-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.slide.pB.bv-s .bv-stat { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 16px; padding: 14px 16px; background: var(--panel); border-radius: 3px; }
+.slide.pB.bv-s .bv-stat > .bv-num { grid-row: 1 / span 2; font-size: 40px; font-weight: 750; color: var(--orange); line-height: 1.1; }
+.slide.pB.bv-s .slide-body .bv-stat > p.bv-h { font-size: 28px; }
+.slide.pB.bv-s .bv-nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 18px; }
+.slide.pB.bv-s .bv-nums.n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.slide.pB.bv-s .bv-nums .tag.bv-tag { font-size: 17px; }
+.slide.pB.bv-s .bv-nums .bv-num { font-size: 36px; font-weight: 750; color: var(--deep); line-height: 1.15; }
+.slide.pB.bv-s .bv-nums .bv-num.gd { color: var(--orange); font-size: 42px; }
+.slide.pB.bv-s .slide-body p.bv-hero { font-size: 72px; font-weight: 750; color: var(--orange); line-height: 1; }
+
+/* flows of boxes: CLIP → W → Vicuna; teacher → supervision */
+.slide.pB.bv-s .bv-flow { display: flex; align-items: stretch; gap: 14px; }
+.slide.pB.bv-s .bv-flow > .bv-box { flex: 1; }
+.slide.pB.bv-s .bv-flow > .bv-arr { align-self: center; font-size: 40px; line-height: 1; color: var(--deep); }
+.slide.pB.bv-s .bv-flow .bv-box p.bv-h { font-size: 29px; }
+.slide.pB.bv-s .bv-grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.slide.pB.bv-s .bv-grid2 > .bv-box p { font-weight: 700; color: var(--deep); }
+.slide.pB.bv-s .bv-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.slide.pB.bv-s .bv-cards > .bv-pan > .bv-ph .tag.bv-chip { margin-right: 10px; vertical-align: 4px; }
+
+/* tables */
+.slide.pB.bv-s table.bv-tbl { width: 100%; border-collapse: collapse; font-size: 27px; }
+.slide.pB.bv-s table.bv-tbl th { padding: 9px 14px; background: var(--deep); color: #fff; font-size: 18px; letter-spacing: .05em; text-align: left; }
+.slide.pB.bv-s table.bv-tbl th.r, .slide.pB.bv-s table.bv-tbl td.r { text-align: right; }
+.slide.pB.bv-s table.bv-tbl td { padding: 6px 14px; border-bottom: 1px solid var(--line); line-height: 1.22; }
+.slide.pB.bv-s table.bv-tbl td:first-child { font-weight: 650; color: var(--deep); }
+.slide.pB.bv-s table.bv-tbl tr.hl td { background: var(--tint); font-weight: 750; }
+.slide.pB.bv-s table.bv-tbl.bv-map td { padding: 5px 12px; }
+.slide.pB.bv-s table.bv-tbl.bv-map td code { font-size: 27px; background: none; padding: 0; }
+
+/* figures: paper crops at 300 dpi and the deck crop; set the height with style="--h:…" */
+.slide.pB.bv-s .bv-fig { margin: 0; display: flex; justify-content: center; align-items: center; }
+.slide.pB.bv-s .bv-fig img { display: block; max-width: 100%; max-height: var(--h, 300px); width: auto; height: auto; object-fit: contain; background: #fff; }
+
+/* math */
+.slide.pB.bv-s .bv-math { text-align: center; font-size: 30px; }
+.slide.pB.bv-s .bv-math .katex-display { margin: 4px 0; }
+.slide.pB.bv-s .slide-body p.bv-calc { font-size: 28px; }
+.slide.pB.bv-s .bv-calc .bv-c { display: inline-block; margin-left: 8px; padding: 0 7px; font-size: 18px; font-weight: 650; letter-spacing: .05em; color: var(--blue-2); border: 1px solid var(--blue-2); border-radius: 3px; vertical-align: 3px; text-transform: uppercase; }
+.slide.pB.bv-s .slide-body p.bv-ans { padding: 8px 14px; background: var(--tint); border-left: 3px solid var(--orange); }
+
+/* code (nanoVLM, verbatim, with the file's line numbers; a long line wraps under its own text) */
+.slide.pB.bv-s pre.bv-code { margin: 0; padding: 10px 14px 10px 6px; background: var(--code); border-radius: 4px; font-size: 23px; line-height: 1.3; color: var(--deep); overflow: visible; white-space: normal; }
+.slide.pB.bv-s pre.bv-code.sm { font-size: 22px; line-height: 1.24; }
+.slide.pB.bv-s pre.bv-code.lg { font-size: 25px; }
+.slide.pB.bv-s pre.bv-code .l { display: block; white-space: pre-wrap; padding-left: 4.6em; text-indent: -4.6em; }
+.slide.pB.bv-s pre.bv-code .l::before { content: attr(data-n); display: inline-block; width: 2.6em; margin-right: .8em; text-align: right; color: #8a97a3; text-indent: 0; }
+.slide.pB.bv-s pre.bv-code .l.gap { color: #8a97a3; }
+.slide.pB.bv-s pre.bv-code .l.gap::before { content: ""; }
+.slide.pB.bv-s pre.bv-code .l.fn { color: var(--blue-2); font-family: var(--font); font-weight: 650; font-size: 18px; letter-spacing: .04em; padding-top: 2px; }
+.slide.pB.bv-s pre.bv-code .l.fn::before { content: ""; }
+.slide.pB.bv-s pre.bv-code .c { color: #6f7d8a; }
+.slide.pB.bv-s pre.bv-code .k { color: var(--orange-2); font-weight: 650; }
+.slide.pB.bv-s pre.bv-code .hl { background: #f3e3c9; }
+.slide.pB.bv-s .bv-shape { font-family: var(--mono); color: var(--blue-2); }
+.slide.pB.bv-s .slide-body p code, .slide.pB.bv-s .slide-body li code, .slide.pB.bv-s .slide-body dd code { font-size: 27px; }
+.slide.pB.bv-s > .src code { background: none; padding: 0; font-size: 1em; }
+
+/* ✋ cards */
+.slide.pB.bv-s .card.accent.bv-ask { margin: 0; padding: 14px 20px; border: 0; border-left: 3px solid var(--orange); border-radius: 0; background: var(--tint); box-shadow: none; }
+.slide.pB.bv-s .card.accent.bv-ask .tag { margin-bottom: 6px; color: var(--orange-2); }
+.slide.pB.bv-s .card.accent.bv-ask p { font-size: 30px; line-height: 1.3; font-weight: 650; color: var(--deep); }
+
+/* inline SVG drawn for the added slides */
+.slide.pB.bv-s svg.bv-svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--font); }
+.slide.pB.bv-s svg.bv-svg text { fill: var(--text); font-size: 20px; }
+.slide.pB.bv-s svg.bv-svg text.b { font-weight: 700; fill: var(--deep); }
+.slide.pB.bv-s svg.bv-svg text.m { fill: var(--muted); font-size: 18px; }
+.slide.pB.bv-s svg.bv-svg text.o { fill: var(--orange-2); font-weight: 700; }
+.slide.pB.bv-s svg.bv-svg text.mono { font-family: var(--mono); font-size: 18px; }
+.slide.pB.bv-s svg.bv-svg text.mid { text-anchor: middle; }
+.slide.pB.bv-s svg.bv-svg text.end { text-anchor: end; }
+.slide.pB.bv-s svg.bv-svg .grid { stroke: #b7c4ce; stroke-width: .8; fill: none; }
+.slide.pB.bv-s svg.bv-svg .tile { fill: #e7edf2; stroke: var(--blue-2); stroke-width: 1.5; }
+.slide.pB.bv-s svg.bv-svg .tile.hot { fill: #f3e3c9; stroke: var(--orange); stroke-width: 2.5; }
+.slide.pB.bv-s svg.bv-svg .vec { fill: #fff; stroke: var(--blue-2); stroke-width: 1.5; }
+.slide.pB.bv-s svg.bv-svg .vec.hot { fill: #f3e3c9; stroke: var(--orange); }
+.slide.pB.bv-s svg.bv-svg .vec.img { fill: #e7edf2; }
+.slide.pB.bv-s svg.bv-svg .vec.ans { fill: #f3e3c9; stroke: var(--orange); stroke-width: 2; }
+.slide.pB.bv-s svg.bv-svg .arw { stroke: var(--deep); stroke-width: 2; fill: none; }
+.slide.pB.bv-s svg.bv-svg .arw.o { stroke: var(--orange); }
+.slide.pB.bv-s svg.bv-svg marker path { fill: var(--deep); }
+.slide.pB.bv-s svg.bv-svg .bar { fill: var(--blue-2); }
+.slide.pB.bv-s svg.bv-svg .bar.o { fill: var(--orange); }
+.slide.pB.bv-s svg.bv-svg .bar.l { fill: #c9d3db; }
+.slide.pB.bv-s svg.bv-svg .axl { stroke: var(--muted); stroke-width: 1.2; }
+
+/* demo slide: the note above the embed */
+.slide.pB.bv-s .slide-body:has(> .fit > .demo) > .fit { gap: 10px; }
+
+/* annotated code: line number | code (verbatim) | the tensor shape after the line (our note) */
+.slide.pB.bv-s table.bv-ann { width: 100%; border-collapse: collapse; background: var(--code); font-family: var(--mono); font-size: 23px; line-height: 1.3; color: var(--deep); }
+.slide.pB.bv-s table.bv-ann td { padding: 2px 10px; vertical-align: top; }
+.slide.pB.bv-s table.bv-ann td.n { width: 2.4em; text-align: right; color: #8a97a3; padding-left: 6px; }
+.slide.pB.bv-s table.bv-ann td.cd { white-space: pre-wrap; }
+.slide.pB.bv-s table.bv-ann td.sh { white-space: nowrap; color: var(--orange-2); font-weight: 650; text-align: left; border-left: 1px solid var(--line); }
+.slide.pB.bv-s table.bv-ann tr.hd th.sh { padding: 8px 10px 4px; font-family: var(--font); font-size: 18px; font-weight: 650; letter-spacing: .02em; color: var(--muted); text-align: left; background: none; border-left: 1px solid var(--line); white-space: normal; text-transform: none; }
+.slide.pB.bv-s table.bv-ann tr:first-child td, .slide.pB.bv-s table.bv-ann tr:first-child th { padding-top: 8px; }
+.slide.pB.bv-s table.bv-ann tr:last-child td { padding-bottom: 8px; }
+
+/* Lead, 11 Oct 2026 (REVIEW.md B fix 1): the stage-2 loss was cut off at the right edge */
+.slide.pB[data-title="GT-L6 p12 · Training stage 2 (2/2)"] .bv-math { font-size: .8em; min-width: 0; }
+
+/* ───── Part B (slides_build/partB/partB0.css) ───── */
+/* One slide per L6 page: the deck page's own layout (headline, subtitle, cards, bottom bar).
+   Shared by partB0a/b/c. Section class: "slide pB bv-s bv-page". */
+.slide.pB.bv-s.bv-page { padding-top: 26px; }
+.slide.pB.bv-s.bv-page > h2 { font-size: 40px; margin-bottom: 4px; }
+.slide.pB.bv-s.bv-page .slide-body { justify-content: flex-start; }
+.slide.pB.bv-s.bv-page .slide-body > .fit { gap: 12px; }
+.slide.pB.bv-s.bv-page .slide-body p, .slide.pB.bv-s.bv-page .slide-body li { font-size: 24px; line-height: 1.3; }
+.slide.pB.bv-s.bv-page .slide-body p.bv-sub { font-size: 25px; margin: 0 0 4px; }
+.slide.pB.bv-s.bv-page .pg-cards { display: grid; grid-template-columns: var(--cols, minmax(0, 1fr) minmax(0, 1fr)); gap: 18px; align-items: stretch; }
+.slide.pB.bv-s.bv-page .pg-cards > * { min-width: 0; }
+.slide.pB.bv-s.bv-page .pg-card { padding: 14px 20px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.slide.pB.bv-s.bv-page .pg-card > * + * { margin-top: 8px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-card > p.pg-t { font-size: 29px; font-weight: 700; color: var(--deep); line-height: 1.2; margin-bottom: 10px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-card p.pg-cap { font-size: 20px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--orange-2); }
+.slide.pB.bv-s.bv-page .slide-body .pg-card p.pg-small { font-size: 21px; color: var(--muted); }
+.slide.pB.bv-s.bv-page .pg-box { padding: 8px 14px; background: var(--panel); border-radius: 6px; }
+.slide.pB.bv-s.bv-page .pg-box.tn { background: var(--tint); }
+.slide.pB.bv-s.bv-page .slide-body p.pg-bar { margin: 0; padding: 8px 18px; background: var(--tint); color: var(--deep); font-weight: 600; font-size: 23px; }
+
+/* ───── Part B (slides_build/partB/partB0a.css) ───── */
+/* GT-L6 pages 3-17, one slide per page. Page-specific rules only; layout classes are in partB0.css and partB.css. */
+.slide.pB.bv-s.bv-page .pg-card.a { border-left: 4px solid var(--orange); }
+.slide.pB.bv-s.bv-page .pg-card.n { border-left: 4px solid var(--blue-2); }
+.slide.pB.bv-s.bv-page .pg-cards + .pg-cards, .slide.pB.bv-s.bv-page .pg-cards + .pg-bar { margin-top: 0; }
+.slide.pB.bv-s.bv-page .slide-body .bv-note { font-size: 22px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-rule { border-top: 1px solid var(--line); padding-top: 8px; }
+.slide.pB.bv-s.bv-page .pg-card .bv-flow .bv-box p { font-size: 24px; }
+.slide.pB.bv-s.bv-page .pg-card .bv-flow .bv-box p.bv-h { font-size: 27px; }
+.slide.pB.bv-s.bv-page .pg-card .bv-grid2 .bv-box { padding: 10px 14px; }
+.slide.pB.bv-s.bv-page .pg-card .pg-t .tag.bv-chip { margin-right: 14px; vertical-align: 3px; }
+.slide.pB.bv-s.bv-page .pg-card .bv-box { margin: 0; }
+.slide.pB.bv-s.bv-page .pg-card .bv-box + .bv-box { margin-top: 8px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-card p.bv-big { font-size: 30px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-card dl.bv-items > dt, .slide.pB.bv-s.bv-page .slide-body .pg-card dl.bv-items > dd { font-size: 24px; }
+.slide.pB.bv-s.bv-page .pg-card table.bv-tbl { font-size: 24px; }
+.slide.pB.bv-s.bv-page .pg-card table.bv-tbl th { font-size: 20px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-card p.bv-hero { font-size: 80px; }
+.slide.pB.bv-s.bv-page .pg-card .bv-math { font-size: 28px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-card .bv-nums .bv-num { font-size: 34px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-card .bv-nums .bv-num.gd { font-size: 44px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-card .tag.bv-tag { font-size: 20px; }
+
+/* compact tier: the deck page is dense, and the body area is about 680 px of the 1080 px slide */
+.slide.pB.bv-s.bv-page { padding-top: 22px; }
+.slide.pB.bv-s.bv-page .eb { margin-bottom: 4px; }
+.slide.pB.bv-s.bv-page > h2 { font-size: 38px; margin-bottom: 2px; line-height: 1.1; }
+.slide.pB.bv-s.bv-page > .src { margin-top: 4px; padding-top: 4px; }
+.slide.pB.bv-s.bv-page .slide-body > .fit { gap: 8px; }
+.slide.pB.bv-s.bv-page .slide-body .fit p, .slide.pB.bv-s.bv-page .slide-body .fit li, .slide.pB.bv-s.bv-page .slide-body .fit dt, .slide.pB.bv-s.bv-page .slide-body .fit dd { font-size: 22px; line-height: 1.25; }
+.slide.pB.bv-s.bv-page .slide-body .fit p.bv-sub { font-size: 23px; margin: 0; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card > p.pg-t { font-size: 26px; margin-bottom: 4px; }
+.slide.pB.bv-s.bv-page .slide-body .fit p.pg-bar { font-size: 22px; padding: 6px 16px; }
+.slide.pB.bv-s.bv-page .pg-cards { gap: 14px; }
+.slide.pB.bv-s.bv-page .pg-card { padding: 10px 18px; }
+.slide.pB.bv-s.bv-page .pg-card > * + * { margin-top: 6px; }
+.slide.pB.bv-s.bv-page .pg-card ol.bv-steps > li + li { margin-top: 4px; }
+.slide.pB.bv-s.bv-page .pg-card dl.bv-items > dd + dt { margin-top: 5px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card p.bv-big { font-size: 26px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card p.bv-hero { font-size: 64px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card p.bv-mono, .slide.pB.bv-s.bv-page .slide-body .fit .pg-card .bv-box p.bv-mono { font-size: 24px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card .bv-flow .bv-box p { font-size: 22px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card .bv-flow .bv-box p.bv-h { font-size: 24px; }
+.slide.pB.bv-s.bv-page .pg-card .bv-box { padding: 6px 12px; }
+.slide.pB.bv-s.bv-page .pg-card .bv-grid2 .bv-box { padding: 6px 12px; }
+.slide.pB.bv-s.bv-page .pg-card .bv-math { font-size: 24px; }
+.slide.pB.bv-s.bv-page .pg-card .bv-math .katex-display { margin: 2px 0; }
+.slide.pB.bv-s.bv-page .pg-card table.bv-tbl { font-size: 22px; }
+.slide.pB.bv-s.bv-page .pg-card table.bv-tbl th { font-size: 18px; padding: 6px 12px; }
+.slide.pB.bv-s.bv-page .pg-card table.bv-tbl td { padding: 4px 12px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card .bv-nums .bv-num { font-size: 28px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card .bv-nums .bv-num.gd { font-size: 36px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card .tag.bv-tag, .slide.pB.bv-s.bv-page .slide-body .fit .bv-tag { font-size: 18px; }
+.slide.pB.bv-s.bv-page .bv-stat { padding: 8px 14px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .bv-stat > p.bv-h { font-size: 24px; }
+.slide.pB.bv-s.bv-page .bv-stat > .bv-num { font-size: 36px; }
+.slide.pB.bv-s.bv-page .bv-stats { gap: 14px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .bv-note { font-size: 22px; }
+
+/* the card row takes the body height; a figure takes what the text leaves (it never sets the row height) */
+.slide.pB.bv-s.bv-page .slide-body > .fit { min-height: 100%; }
+.slide.pB.bv-s.bv-page .pg-cards { flex: 1 1 auto; }
+.slide.pB.bv-s.bv-page .pg-card { display: flex; flex-direction: column; }
+.slide.pB.bv-s.bv-page .pg-card > .bv-fig { flex: 1 1 0; min-height: var(--min, 120px); position: relative; display: block; }
+.slide.pB.bv-s.bv-page .pg-card > .bv-fig img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; object-fit: contain; }
+.slide.pB.bv-s.bv-page .pg-card > .pg-t { flex: none; }
+
+/* squeeze: wider text column, tighter lines, smaller source line */
+.slide.pB.bv-s.bv-page { padding-left: 44px; padding-right: 44px; padding-top: 18px; }
+.slide.pB.bv-s.bv-page > .eb { line-height: 1.15; margin-bottom: 2px; }
+.slide.pB.bv-s.bv-page > h2 { font-size: 36px; line-height: 1.08; }
+.slide.pB.bv-s.bv-page > .src { font-size: 18px; line-height: 1.2; margin-top: 4px; padding-top: 3px; }
+.slide.pB.bv-s.bv-page > .refs { font-size: 16px; line-height: 1.25; margin-top: 3px; padding-top: 3px; }
+.slide.pB.bv-s.bv-page .slide-body > .fit { gap: 6px; }
+.slide.pB.bv-s.bv-page .slide-body .fit p, .slide.pB.bv-s.bv-page .slide-body .fit li, .slide.pB.bv-s.bv-page .slide-body .fit dt, .slide.pB.bv-s.bv-page .slide-body .fit dd { line-height: 1.2; }
+.slide.pB.bv-s.bv-page .pg-card { padding: 8px 14px; }
+.slide.pB.bv-s.bv-page .pg-cards { gap: 12px; }
+.slide.pB.bv-s.bv-page .pg-card > * + * { margin-top: 5px; }
+.slide.pB.bv-s.bv-page .slide-body .fit p.pg-bar { padding: 5px 14px; }
+.slide.pB.bv-s.bv-page ol.bv-steps > li { grid-template-columns: 30px minmax(0, 1fr); column-gap: 12px; row-gap: 0; }
+.slide.pB.bv-s.bv-page ol.bv-steps > li > .tag.bv-n { width: 28px; height: 28px; }
+.slide.pB.bv-s.bv-page .pg-box { padding: 6px 12px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-box p + p { margin-top: 2px; }
+
+/* pages with room: text at 24 px */
+.slide.pB.bv-s.bv-page.lg .slide-body .fit p, .slide.pB.bv-s.bv-page.lg .slide-body .fit li, .slide.pB.bv-s.bv-page.lg .slide-body .fit dt, .slide.pB.bv-s.bv-page.lg .slide-body .fit dd { font-size: 24px; }
+.slide.pB.bv-s.bv-page.lg .slide-body .fit p.bv-sub { font-size: 23px; }
+.slide.pB.bv-s.bv-page.lg .slide-body .fit .pg-card > p.pg-t { font-size: 28px; }
+.slide.pB.bv-s.bv-page.lg .slide-body .fit p.pg-bar { font-size: 23px; }
+.slide.pB.bv-s.bv-page.lg .slide-body .fit .bv-note { font-size: 22px; }
+.slide.pB.bv-s.bv-page.lg .slide-body .fit .pg-card p.bv-big { font-size: 28px; }
+.slide.pB.bv-s.bv-page.lg .pg-card table.bv-tbl { font-size: 24px; }
+.slide.pB.bv-s.bv-page.lg .pg-card table.bv-tbl td { padding: 7px 12px; }
+.slide.pB.bv-s.bv-page.lg .slide-body .fit .bv-tag { font-size: 18px; }
+.slide.pB.bv-s.bv-page.lg .slide-body .fit .tag.bv-chip { font-size: 18px; }
+.slide.pB.bv-s.bv-page.lg .slide-body .fit .bv-stat > p.bv-h { font-size: 26px; }
+.slide.pB.bv-s.bv-page.lg .slide-body .fit .pg-card p.bv-hero { font-size: 72px; }
+.slide.pB.bv-s.bv-page .slide-body .fit .pg-card > p.pg-t.sm { font-size: 24px; }
+
+/* Recap of Part A: input and output by method. */
+.slide.pB.bv-s.bv-page table.pg-rec { font-size: 22px; }
+.slide.pB.bv-s.bv-page table.pg-rec th { font-size: 18px; }
+.slide.pB.bv-s.bv-page table.pg-rec td { padding: 7px 10px; vertical-align: top; }
+
+.slide.pB.bv-s.bv-page ul.pg-bul { margin: 0; padding-left: 22px; }
+.slide.pB.bv-s.bv-page ul.pg-bul li { margin: 0; }
+.slide.pB.bv-s.bv-page ul.pg-bul li + li { margin-top: 4px; }
+
+.slide.pB.bv-s.bv-page .slide-body div.pg-bar { margin: 0; padding: 8px 18px; background: var(--tint); color: var(--deep); font-weight: 600; }
+.slide.pB.bv-s.bv-page .slide-body div.pg-bar li { font-size: 23px; }
+
+/* L6 p4 split: model and data diagrams, then the data size as bars. */
+.slide.pB.bv-s.bv-page .pg-flow { display: flex; align-items: stretch; gap: 8px; margin-top: 14px; }
+.slide.pB.bv-s.bv-page .pg-flow .pg-node { flex: 1; min-width: 0; padding: 14px 12px; background: var(--panel); border-radius: 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.slide.pB.bv-s.bv-page .pg-flow .pg-node.hl { background: var(--tint); }
+.slide.pB.bv-s.bv-page .pg-flow .pg-node b { font-size: 26px; color: var(--deep); line-height: 1.15; }
+.slide.pB.bv-s.bv-page .pg-flow .pg-node span { font-size: 21px; color: var(--muted); line-height: 1.25; }
+.slide.pB.bv-s.bv-page .slide-body .pg-flow p.pg-arr { margin: 0; align-self: center; font-size: 38px; line-height: 1; color: var(--deep); }
+.slide.pB.bv-s.bv-page .pg-bars { display: flex; flex-direction: column; gap: 22px; margin-top: 10px; }
+.slide.pB.bv-s.bv-page .pg-brow { display: grid; grid-template-columns: 330px minmax(0, 1fr) 110px; gap: 22px; align-items: center; }
+.slide.pB.bv-s.bv-page .slide-body .pg-brow p.bl { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.slide.pB.bv-s.bv-page .pg-brow p.bl b { font-size: 28px; color: var(--deep); }
+.slide.pB.bv-s.bv-page .pg-brow p.bl span { font-size: 22px; color: var(--muted); line-height: 1.25; }
+.slide.pB.bv-s.bv-page .pg-brow .bt { height: 48px; background: var(--panel); border-radius: 4px; overflow: hidden; }
+.slide.pB.bv-s.bv-page .pg-brow .bt i { display: block; height: 100%; background: var(--orange); border-radius: 4px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-brow p.bn { margin: 0; font-size: 44px; font-weight: 750; color: var(--orange-2); text-align: right; line-height: 1; }
+.slide.pB.bv-s.bv-page .pg-flow .pg-node { padding: 12px 6px; }
+.slide.pB.bv-s.bv-page .pg-flow .pg-node b { font-size: 23px; overflow-wrap: anywhere; }
+.slide.pB.bv-s.bv-page .pg-flow .pg-node span { font-size: 20px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-flow p.pg-arr { font-size: 32px; }
+.slide.pB.bv-s.bv-page .pg-bars { gap: 44px; margin-top: 36px; }
+.slide.pB.bv-s.bv-page .pg-brow .bt { height: 70px; }
+.slide.pB.bv-s.bv-page .pg-brow p.bl b { font-size: 32px; }
+.slide.pB.bv-s.bv-page .pg-brow p.bl span { font-size: 24px; }
+.slide.pB.bv-s.bv-page .slide-body .pg-brow p.bn { font-size: 54px; }
+.slide.pB.bv-s.bv-page .pg-brow { grid-template-columns: 400px minmax(0, 1fr) 130px; }
+.slide.pB.bv-s.bv-page .pg-flow { margin-top: 40px; }
+.slide.pB.bv-s.bv-page .pg-flow .pg-node { padding: 34px 6px; }
+
+.slide.pB.bv-s.bv-page .pg-flow .pg-node { position: relative; }
+.slide.pB.bv-s.bv-page .pg-flow .pg-node .pg-role { position: absolute; left: 0; right: 0; bottom: -40px; text-align: center; font-style: normal; font-size: 26px; font-weight: 700; color: var(--orange-2); }
+.slide.pB.bv-s.bv-page .pg-flow { margin-bottom: 44px; }
+
+/* L6 p6: the training step as a diagram */
+.slide.pB.bv-s.bv-page .pg-train { display: flex; align-items: stretch; gap: 6px; margin-top: 4px; }
+.slide.pB.bv-s.bv-page .pg-train .pg-node { flex: 1; min-width: 0; padding: 10px 6px; background: var(--panel); border-radius: 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.slide.pB.bv-s.bv-page .pg-train .pg-node.hl { background: var(--tint); }
+.slide.pB.bv-s.bv-page .pg-train .pg-node.tn { background: #e3eee9; }
+.slide.pB.bv-s.bv-page .pg-train .pg-node b { font-size: 20px; line-height: 1.15; color: var(--deep); }
+.slide.pB.bv-s.bv-page .pg-train .pg-node span { font-size: 18px; color: var(--muted); }
+.slide.pB.bv-s.bv-page .slide-body .pg-train p.pg-plus, .slide.pB.bv-s.bv-page .slide-body .pg-train p.pg-arr { margin: 0; align-self: center; font-size: 28px; line-height: 1; color: var(--deep); }
+
+.slide.pB.bv-s.bv-page .pg-train { position: relative; }
+.slide.pB.bv-s.bv-page .pg-train .pg-node.tn { background: var(--tint); }
+.slide.pB.bv-s.bv-page .pg-train .pg-node.gy { background: var(--panel); }
+.slide.pB.bv-s.bv-page .pg-train svg.pg-link { position: absolute; left: 0; width: 100%; top: -36px; height: 36px; overflow: visible; pointer-events: none; }
+.slide.pB.bv-s.bv-page .pg-train svg.pg-link path { fill: none; stroke: var(--deep); stroke-width: 2px; vector-effect: non-scaling-stroke; }
+.slide.pB.bv-s.bv-page .pg-train i.pg-tip { position: absolute; top: -9px; width: 0; height: 0; margin-left: -6px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 9px solid var(--deep); }
+
+/* benchmark slide: three rows of the scoring flow */
+.slide.pB.bv-s.bv-page .pg-card .pg-train + .pg-train { margin-top: 14px; }
+.slide.pB.bv-s.bv-page .pg-card .pg-train .pg-node b { font-size: 21px; }
+
+/* ───── Part C (slides_build/partC/partC.css) ───── */
+/* Part C (builder C), Lecture 4 session 01: Advanced topics and today's state of the art (slides_build/partC/partC.css).
+   Decks: Kira (2026), GT CS 8803-VLM L1 pp. 9, 20, 22-37; Wang, Anand & Narang (2026), GT CS 8803-VLM L6 pp. 18-37.
+   Every selector is scoped by .slide.pC.c-s (the Part C slides only); own classes start with c-.
+   Theme: assets/css/slides-theme.css. Deck text is verbatim; prose stays at 27px or more (D22). */
+
+/* rhythm: the APA footer sits under every slide, so title and footer margins are smaller */
+.slide.pC.c-s > .eb { margin-bottom: 6px; }
+.slide.pC.c-s > h2 { margin-bottom: 8px; }
+.slide.pC.c-s > h2.c-h2s { font-size: 36px; }
+.slide.pC.c-s > .refs { margin-top: 6px; padding-top: 5px; }
+.slide.pC.c-s .slide-body > .fit { gap: 10px; }
+.slide.pC.c-s .fit > * { width: 100%; align-self: stretch; }
+.slide.pC.c-s .slide-body p, .slide.pC.c-s .slide-body li { font-size: 27px; line-height: 1.3; margin: 0; }
+.slide.pC.c-s .slide-body .src { font-size: 18px; line-height: 1.3; margin: 2px 0 0; padding-top: 6px; }
+
+/* eyebrow: segment name, then the deck's own section label, and the deck's week tag at the top right */
+.slide.pC.c-s > .eb { position: static; }
+.slide.pC.c-s > .eb .c-lab { margin-left: 10px; padding-left: 12px; border-left: 2px solid var(--line); color: var(--blue-2); }
+.slide.pC.c-s > .eb .c-wk { position: absolute; top: 26px; right: 64px; padding: 3px 12px; background: var(--deep); color: #fff; font-size: 16px; letter-spacing: .06em; }
+
+/* deck text pieces */
+.slide.pC.c-s .slide-body p.c-sub { color: var(--muted); }
+.slide.pC.c-s .slide-body p.c-key { padding: 5px 14px; background: var(--tint); border-left: 3px solid var(--orange); color: var(--deep); font-weight: 650; }
+.slide.pC.c-s .slide-body p.c-lede { font-size: 31px; line-height: 1.25; font-weight: 700; color: var(--deep); }
+.slide.pC.c-s .slide-body p.c-q { font-size: 31px; line-height: 1.25; font-weight: 700; color: var(--deep); }
+.slide.pC.c-s .slide-body p.c-note { color: var(--muted); }
+.slide.pC.c-s .c-tag { display: block; margin: 0 0 4px; font-size: 17px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--orange-2); }
+.slide.pC.c-s .c-tag.c-blue { color: var(--blue-2); }
+.slide.pC.c-s .c-xref { display: inline-block; margin-left: 8px; padding: 1px 8px; border: 1px solid var(--orange); border-radius: 3px; color: var(--orange-2); font-size: 17px; font-weight: 650; letter-spacing: .05em; text-transform: uppercase; vertical-align: 4px; }
+.slide.pC.c-s h4.c-h { margin: 0 0 6px; font-size: 29px; line-height: 1.2; color: var(--deep); }
+.slide.pC.c-s ul.c-pts { margin: 0; padding-left: 1.05em; }
+.slide.pC.c-s ul.c-pts > li { list-style: none; position: relative; }
+.slide.pC.c-s ul.c-pts > li::before { content: "▪"; position: absolute; left: -1.05em; color: var(--orange); }
+.slide.pC.c-s ul.c-pts > li + li { margin-top: 10px; }
+.slide.pC.c-s ul.c-dots { margin: 0; padding-left: 1.1em; }
+.slide.pC.c-s ul.c-dots > li { font-weight: 700; color: var(--deep); }
+
+/* columns */
+.slide.pC.c-s .c-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.slide.pC.c-s .c-cols > * { min-width: 0; }
+.slide.pC.c-s .c-cols.c-mid { align-items: center; }
+.slide.pC.c-s .c-cols.c-three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.slide.pC.c-s .c-cols.c-fl { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+.slide.pC.c-s .c-cols.c-fl2 { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); }
+.slide.pC.c-s .c-cols.c-fr { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+.slide.pC.c-s .c-cols.c-fr2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); }
+.slide.pC.c-s .c-stack > * + * { margin-top: 8px; }
+
+/* the deck's text cards: a coloured rule on the left, no box */
+.slide.pC.c-s .c-card { padding: 2px 0 2px 16px; border-left: 3px solid var(--orange); }
+.slide.pC.c-s .c-card > p + p, .slide.pC.c-s .c-box > p + p { margin-top: 6px; }
+.slide.pC.c-s .c-card > h4 + p, .slide.pC.c-s .c-box > p.c-bt + p { margin-top: 2px; }
+.slide.pC.c-s .c-card.c-b { border-left-color: var(--deep); }
+.slide.pC.c-s .c-card.c-g { border-left-color: var(--blue-2); }
+.slide.pC.c-s .c-box { padding: 8px 14px; border-radius: 4px; background: var(--tint); }
+.slide.pC.c-s .c-box.c-b { background: var(--panel); }
+.slide.pC.c-s .c-box b { color: var(--deep); }
+
+/* box-and-arrow rows rebuilt from the L6 deck (every word kept) */
+.slide.pC.c-s .c-flow { display: flex; align-items: stretch; gap: 0; }
+.slide.pC.c-s .c-flow > .c-box { flex: 1 1 0; min-width: 0; }
+.slide.pC.c-s .c-flow > .c-arr { flex: 0 0 34px; display: flex; align-items: center; justify-content: center; color: var(--orange-2); font-size: 27px; font-weight: 700; }
+.slide.pC.c-s .c-box p.c-bt { font-weight: 700; color: var(--deep); }
+
+/* L1 p9: the four shifts */
+.slide.pC.c-s .c-shift { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); column-gap: 26px; padding-bottom: 6px; }
+.slide.pC.c-s .c-shift > .c-sh { grid-column: 1 / -1; margin: 0 0 8px; padding: 6px 14px; background: var(--deep); color: #fff; font-size: 29px; font-weight: 700; }
+.slide.pC.c-s .c-shift > .c-sh span.c-num { display: inline-block; margin-right: 10px; padding: 0 8px; border-radius: 9px; background: var(--orange); color: var(--deep); font-size: 20px; vertical-align: 3px; }
+.slide.pC.c-s .c-shift > div:nth-child(2) p { color: var(--muted); }
+
+/* figures: set the height with style="--h:…" */
+.slide.pC.c-s .c-fig { margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.slide.pC.c-s .c-fig img { display: block; max-width: 100%; max-height: var(--h, 400px); width: auto; height: auto; object-fit: contain; background: #fff; }
+
+/* tables (deck tables, verbatim) */
+.slide.pC.c-s table.c-tab { width: 100%; border-collapse: collapse; font-size: 27px; }
+.slide.pC.c-s table.c-tab th { padding: 7px 12px; background: var(--deep); color: #fff; font-size: 18px; letter-spacing: .05em; text-align: center; }
+.slide.pC.c-s table.c-tab th:first-child, .slide.pC.c-s table.c-tab td:first-child { text-align: left; }
+.slide.pC.c-s table.c-tab td { padding: 4px 12px; text-align: center; border-bottom: 1px solid var(--line); line-height: 1.22; }
+.slide.pC.c-s table.c-tab td:first-child { font-weight: 700; color: var(--deep); }
+.slide.pC.c-s table.c-tab tr:nth-child(even) td { background: var(--panel); }
+.slide.pC.c-s table.c-tab td.c-hi { font-weight: 700; color: var(--orange-2); }
+.slide.pC.c-s table.c-tab td.c-bd { font-weight: 700; color: var(--deep); }
+
+/* math */
+.slide.pC.c-s .slide-body p.c-math { text-align: center; font-size: 27px; line-height: 1.2; }
+.slide.pC.c-s .slide-body p.c-math .katex { font-size: 1.12em; }
+
+/* L6 p22: DeepStack levels; L6 p24: the frequency strips */
+.slide.pC.c-s .c-ds { display: grid; grid-template-columns: minmax(0, 1fr) 140px minmax(0, 1fr); row-gap: 4px; align-items: center; }
+.slide.pC.c-s .c-ds .c-m { text-align: center; font-weight: 700; color: var(--deep); font-size: 27px; white-space: nowrap; }
+.slide.pC.c-s .c-ds .c-box p { line-height: 1.2; }
+.slide.pC.c-s .c-ds .c-up { text-align: center; color: var(--blue-2); font-size: 16px; line-height: 1; }
+.slide.pC.c-s .c-strip { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; }
+.slide.pC.c-s .c-strip > span { display: block; padding: 3px 0; text-align: center; color: #fff; font-size: 27px; font-weight: 700; line-height: 1.2; }
+.slide.pC.c-s .c-strip > .t { background: #a58d4c; }
+.slide.pC.c-s .c-strip > .h { background: var(--deep); }
+.slide.pC.c-s .c-strip > .w { background: #5f7d99; }
+
+/* ✋ question and answer */
+.slide.pC.c-s .card.accent.c-ask { margin: 0; padding: 14px 20px; border: 0; border-left: 3px solid var(--orange); border-radius: 0; background: var(--tint); box-shadow: none; }
+.slide.pC.c-s .card.accent.c-ask .tag { margin-bottom: 6px; color: var(--orange-2); }
+.slide.pC.c-s .card.accent.c-ask p { font-size: 29px; line-height: 1.32; }
+
+/* state-of-the-art table */
+.slide.pC.c-s table.c-tab.c-sota td { padding: 4px 10px; }
+.slide.pC.c-s table.c-tab.c-sota td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.slide.pC.c-s table.c-tab.c-sota tr.c-open td { background: #eef3f1; }
+.slide.pC.c-s .c-check { display: inline-block; padding: 2px 10px; border: 1px dashed var(--bad); color: var(--bad); font-size: 17px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+
+/* L6 p24: two labels on one row */
+.slide.pC.c-s .c-row2 { display: flex; align-items: center; gap: 16px; }
+.slide.pC.c-s .c-row2 > .c-tag { margin: 0; }
+.slide.pC.c-s .c-row2 > .c-line { flex: 1; height: 0; border-top: 2px solid var(--blue-2); position: relative; }
+.slide.pC.c-s .c-row2 > .c-line::after { content: ""; position: absolute; right: -2px; top: -7px; border: 6px solid transparent; border-left: 10px solid var(--blue-2); }
+
+/* L1 pp. 24, 28, 32: the course roadmap, one row per stage; the current stage is highlighted */
+.slide.pC.c-s table.c-road { width: 100%; border-collapse: collapse; font-size: 27px; }
+.slide.pC.c-s table.c-road td { padding: 2px 8px; line-height: 1.12; vertical-align: middle; color: var(--muted); border-bottom: 1px solid var(--line); }
+.slide.pC.c-s table.c-road td:nth-child(1) { width: 34px; text-align: center; font-weight: 700; }
+.slide.pC.c-s table.c-road td:nth-child(2) { width: 132px; }
+.slide.pC.c-s table.c-road td:nth-child(3) { width: 250px; font-weight: 700; }
+.slide.pC.c-s table.c-road td:nth-child(5) { width: 330px; font-weight: 650; }
+.slide.pC.c-s table.c-road .c-badge { display: inline-block; padding: 1px 9px; border-radius: 10px; background: #b9c4ce; color: #fff; font-size: 17px; font-weight: 700; white-space: nowrap; }
+.slide.pC.c-s table.c-road tr.c-on td { background: var(--deep); color: #fff; }
+.slide.pC.c-s table.c-road tr.c-on .c-badge { background: var(--orange); color: var(--deep); }
+.slide.pC.c-s .slide-body p.c-part { font-size: 20px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--orange-2); }
+
+/* deck caption lines under a paper figure ("… — figure from the paper.") */
+.slide.pC.c-s .c-cite { display: block; margin-top: 2px; font-size: 18px; font-style: italic; color: var(--muted); text-align: left; }
+
+/* L6 p34: the loop arrow from Decide back to Act, as a label */
+.slide.pC.c-s .slide-body p.c-loop { margin: -4px 0 0; padding-left: 25%; color: var(--blue-2); font-size: 20px; font-weight: 700; letter-spacing: .04em; }
+
+/* L1 p25, p35, p36: long deck headlines */
+.slide.pC.c-s > h2.c-h2s { line-height: 1.12; }
+
+/* added slides: the state-of-the-art date tag, the drawn attack image */
+.slide.pC.c-s > .eb .c-wk.c-chk { background: var(--bad); }
+.slide.pC.c-s .c-sota td:nth-child(2) { font-family: var(--mono, ui-monospace, Menlo, monospace); font-size: 27px; }
+.slide.pC.c-s .c-typo { align-items: stretch; }
+.slide.pC.c-s .c-typo-img { padding: 22px 28px; background: #fff; border: 2px solid var(--line); box-shadow: 0 2px 6px rgba(0,0,0,.08); font-family: "Courier New", Courier, monospace; }
+.slide.pC.c-s .c-typo-img p { font-size: 30px; font-weight: 700; color: #111; line-height: 1.5; }
+.slide.pC.c-s .c-typo figcaption { margin-top: 8px; font-size: 18px; color: var(--muted); }
+.slide.pC.c-s .c-ask p + p { margin-top: 10px; }
